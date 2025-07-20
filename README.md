@@ -1,7 +1,7 @@
 # Laravel Atlas
 
 <div align="center">
-  <img src="logo.png" alt="Laravel Atlas" width="100">
+  <img src="new_logo.png" alt="Laravel Atlas" width="100">
   <p><strong>Map and visualize your Laravel application's architecture — models, services, routes, jobs, events, and more.</strong></p>
 
   [![Latest Version](https://img.shields.io/packagist/v/grazulex/laravel-atlas)](https://packagist.org/packages/grazulex/laravel-atlas)
