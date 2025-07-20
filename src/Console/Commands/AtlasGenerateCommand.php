@@ -2,34 +2,34 @@
 
 declare(strict_types=1);
 
-namespace Grazulex\LaravelAtlas\Console\Commands;
+namespace LaravelAtlas\Console\Commands;
 
-use Grazulex\LaravelAtlas\Contracts\ExporterInterface;
-use Grazulex\LaravelAtlas\Contracts\MapperInterface;
-use Grazulex\LaravelAtlas\Exporters\HtmlExporter;
-use Grazulex\LaravelAtlas\Exporters\JsonExporter;
-use Grazulex\LaravelAtlas\Exporters\MarkdownExporter;
-use Grazulex\LaravelAtlas\Exporters\MermaidExporter;
-use Grazulex\LaravelAtlas\Exporters\PdfExporter;
-use Grazulex\LaravelAtlas\Mappers\CommandMapper;
-use Grazulex\LaravelAtlas\Mappers\ControllerMapper;
-use Grazulex\LaravelAtlas\Mappers\EventMapper;
-use Grazulex\LaravelAtlas\Mappers\JobMapper;
-use Grazulex\LaravelAtlas\Mappers\MiddlewareMapper;
-use Grazulex\LaravelAtlas\Mappers\ModelMapper;
-use Grazulex\LaravelAtlas\Mappers\NotificationMapper;
-use Grazulex\LaravelAtlas\Mappers\PolicyMapper;
-use Grazulex\LaravelAtlas\Mappers\RequestMapper;
-use Grazulex\LaravelAtlas\Mappers\ResourceMapper;
-use Grazulex\LaravelAtlas\Mappers\RouteMapper;
-use Grazulex\LaravelAtlas\Mappers\RuleMapper;
-use Grazulex\LaravelAtlas\Mappers\ServiceMapper;
 use Illuminate\Console\Command;
+use LaravelAtlas\Contracts\ExporterInterface;
+use LaravelAtlas\Contracts\MapperInterface;
+use LaravelAtlas\Exporters\HtmlExporter;
+use LaravelAtlas\Exporters\JsonExporter;
+use LaravelAtlas\Exporters\MarkdownExporter;
+use LaravelAtlas\Exporters\MermaidExporter;
+use LaravelAtlas\Exporters\PdfExporter;
+use LaravelAtlas\Mappers\CommandMapper;
+use LaravelAtlas\Mappers\ControllerMapper;
+use LaravelAtlas\Mappers\EventMapper;
+use LaravelAtlas\Mappers\JobMapper;
+use LaravelAtlas\Mappers\MiddlewareMapper;
+use LaravelAtlas\Mappers\ModelMapper;
+use LaravelAtlas\Mappers\NotificationMapper;
+use LaravelAtlas\Mappers\PolicyMapper;
+use LaravelAtlas\Mappers\RequestMapper;
+use LaravelAtlas\Mappers\ResourceMapper;
+use LaravelAtlas\Mappers\RouteMapper;
+use LaravelAtlas\Mappers\RuleMapper;
+use LaravelAtlas\Mappers\ServiceMapper;
 
 class AtlasGenerateCommand extends Command
 {
     protected $signature = 'atlas:generate 
-                            {--type=all : Type of component to map (models, routes, jobs, services, controllers, events, commands, middleware, all)}
+                            {--type=all : Type of component to map (models, routes, jobs, services, controllers, events, commands, middleware, policies, resources, notifications, requests, rules, all)}
                             {--format=json : Output format (json, mermaid, markdown, pdf, html)}
                             {--output= : Output file path}
                             {--detailed : Include detailed information}';
@@ -48,12 +48,11 @@ class AtlasGenerateCommand extends Command
         'events' => EventMapper::class,
         'commands' => CommandMapper::class,
         'middleware' => MiddlewareMapper::class,
-        // Les nouveaux mappers seront ajoutés après correction des erreurs PHPStan
-        // 'policies' => PolicyMapper::class,
-        // 'notifications' => NotificationMapper::class,
-        // 'resources' => ResourceMapper::class,
-        // 'requests' => RequestMapper::class,
-        // 'rules' => RuleMapper::class,
+        'policies' => PolicyMapper::class,
+        'resources' => ResourceMapper::class,
+        'notifications' => NotificationMapper::class,
+        'requests' => RequestMapper::class,
+        'rules' => RuleMapper::class,
     ];
 
     /**

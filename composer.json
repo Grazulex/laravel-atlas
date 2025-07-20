@@ -51,7 +51,7 @@
   "license": "MIT",
   "autoload": {
     "psr-4": {
-      "Grazulex\\LaravelAtlas\\": "src/"
+      "LaravelAtlas\\": "src/"
     }
   },
   "autoload-dev": {
@@ -62,7 +62,7 @@
   "extra": {
     "laravel": {
       "providers": [
-        "Grazulex\\LaravelAtlas\\LaravelAtlasServiceProvider"
+        "LaravelAtlas\\LaravelAtlasServiceProvider"
       ]
     }
   },

@@ -1,8 +1,8 @@
 <?php
 
-namespace Grazulex\LaravelAtlas;
+namespace LaravelAtlas;
 
-use Grazulex\LaravelAtlas\Console\Commands\AtlasGenerateCommand;
+use LaravelAtlas\Console\Commands\AtlasGenerateCommand;
 use Illuminate\Support\ServiceProvider;
 use Override;
 
