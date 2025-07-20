@@ -10,7 +10,6 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Override;
 use ReflectionClass;
-use ReflectionMethod;
 use ReflectionNamedType;
 use SplFileInfo;
 
@@ -136,11 +135,11 @@ class MiddlewareMapper extends BaseMapper
         if ($reflection->hasMethod('handle')) {
             $handleMethod = $reflection->getMethod('handle');
             $parameters = $handleMethod->getParameters();
-            
+
             if (count($parameters) >= 1) {
                 $firstParam = $parameters[0];
                 $type = $firstParam->getType();
-                if ($type instanceof ReflectionNamedType && 
+                if ($type instanceof ReflectionNamedType &&
                     ($type->getName() === Request::class || is_subclass_of($type->getName(), Request::class))) {
                     return true;
                 }
@@ -192,7 +191,7 @@ class MiddlewareMapper extends BaseMapper
         }
 
         $method = $reflection->getMethod('handle');
-        
+
         $returnType = $method->getReturnType();
         $returnTypeName = 'mixed';
         if ($returnType instanceof ReflectionNamedType) {
@@ -205,15 +204,15 @@ class MiddlewareMapper extends BaseMapper
             'parameters' => array_map(
                 fn ($param): array => [
                     'name' => $param->getName(),
-                    'type' => $param->getType() instanceof ReflectionNamedType 
-                        ? $param->getType()->getName() 
+                    'type' => $param->getType() instanceof ReflectionNamedType
+                        ? $param->getType()->getName()
                         : 'mixed',
                     'optional' => $param->isOptional(),
                     'is_request' => $param->getType() instanceof ReflectionNamedType &&
                                   (is_subclass_of($param->getType()->getName(), Request::class) ||
                                    $param->getType()->getName() === Request::class),
-                    'is_closure' => $param->getName() === 'next' || 
-                                  ($param->getType() instanceof ReflectionNamedType && 
+                    'is_closure' => $param->getName() === 'next' ||
+                                  ($param->getType() instanceof ReflectionNamedType &&
                                    $param->getType()->getName() === 'Closure'),
                 ],
                 $method->getParameters()
@@ -233,14 +232,14 @@ class MiddlewareMapper extends BaseMapper
         }
 
         $method = $reflection->getMethod('terminate');
-        
+
         return [
             'parameters_count' => $method->getNumberOfParameters(),
             'parameters' => array_map(
                 fn ($param): array => [
                     'name' => $param->getName(),
-                    'type' => $param->getType() instanceof ReflectionNamedType 
-                        ? $param->getType()->getName() 
+                    'type' => $param->getType() instanceof ReflectionNamedType
+                        ? $param->getType()->getName()
                         : 'mixed',
                     'optional' => $param->isOptional(),
                 ],

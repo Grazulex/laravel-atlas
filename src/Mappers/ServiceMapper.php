@@ -141,7 +141,7 @@ class ServiceMapper extends BaseMapper
         $namespace = $reflection->getNamespaceName();
 
         // Check naming patterns
-        if (str_ends_with($className, 'Service') || 
+        if (str_ends_with($className, 'Service') ||
             str_ends_with($className, 'Repository') ||
             str_ends_with($className, 'Manager') ||
             str_ends_with($className, 'Handler') ||
@@ -159,7 +159,7 @@ class ServiceMapper extends BaseMapper
         // Check if it has service-like methods
         $methods = $reflection->getMethods(ReflectionMethod::IS_PUBLIC);
         $serviceMethodPatterns = ['handle', 'execute', 'process', 'perform', 'run', 'create', 'update', 'delete', 'find', 'get'];
-        
+
         foreach ($methods as $method) {
             foreach ($serviceMethodPatterns as $pattern) {
                 if (str_starts_with(strtolower($method->getName()), $pattern)) {
@@ -259,8 +259,8 @@ class ServiceMapper extends BaseMapper
                 'parameters' => array_map(
                     fn ($param): array => [
                         'name' => $param->getName(),
-                        'type' => $param->getType() instanceof ReflectionNamedType 
-                            ? $param->getType()->getName() 
+                        'type' => $param->getType() instanceof ReflectionNamedType
+                            ? $param->getType()->getName()
                             : 'mixed',
                         'optional' => $param->isOptional(),
                     ],
@@ -306,6 +306,7 @@ class ServiceMapper extends BaseMapper
         if ($method->isProtected()) {
             return 'protected';
         }
+
         return 'private';
     }
 

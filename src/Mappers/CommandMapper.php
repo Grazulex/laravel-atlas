@@ -10,7 +10,6 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Override;
 use ReflectionClass;
-use ReflectionMethod;
 use ReflectionNamedType;
 use SplFileInfo;
 
@@ -172,7 +171,7 @@ class CommandMapper extends BaseMapper
         // Try to extract signature from $signature property
         if (preg_match('/protected\s+\$signature\s*=\s*[\'"]([^\'"]+)[\'"]/', $content, $matches)) {
             $signatureInfo['signature'] = $matches[1];
-            
+
             // Extract command name from signature
             if (preg_match('/^([^\s{]+)/', $matches[1], $nameMatches)) {
                 $signatureInfo['name'] = $nameMatches[1];
@@ -253,7 +252,7 @@ class CommandMapper extends BaseMapper
     {
         // Clean up the definition
         $definition = trim($definition);
-        
+
         if (empty($definition)) {
             return null;
         }

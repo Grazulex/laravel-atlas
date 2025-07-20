@@ -11,7 +11,6 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Override;
 use ReflectionClass;
-use ReflectionMethod;
 use ReflectionNamedType;
 use SplFileInfo;
 
@@ -142,7 +141,7 @@ class EventMapper extends BaseMapper
         $namespace = $reflection->getNamespaceName();
 
         // Check naming patterns
-        if (str_ends_with($className, 'Event') || 
+        if (str_ends_with($className, 'Event') ||
             str_ends_with($className, 'Happened') ||
             str_ends_with($className, 'Occurred') ||
             str_starts_with($className, 'When') ||
@@ -274,6 +273,7 @@ class EventMapper extends BaseMapper
         if ($property->isProtected()) {
             return 'protected';
         }
+
         return 'private';
     }
 
@@ -286,7 +286,7 @@ class EventMapper extends BaseMapper
     {
         $listeners = [];
         $eventName = class_basename($eventClassName);
-        
+
         // Look for listeners in common locations
         $listenerPaths = [
             app_path('Listeners'),
@@ -305,7 +305,7 @@ class EventMapper extends BaseMapper
                 }
 
                 $content = File::get($file->getRealPath());
-                
+
                 // Look for handle method with event type hint
                 if (preg_match('/function\s+handle\s*\(\s*([^)]*' . preg_quote($eventName, '/') . '[^)]*)\)/', $content)) {
                     $listenerName = $this->extractClassName($content, $file);

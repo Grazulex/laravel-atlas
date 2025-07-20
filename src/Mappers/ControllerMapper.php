@@ -165,7 +165,7 @@ class ControllerMapper extends BaseMapper
         $namespace = $reflection->getNamespaceName();
         $shortName = $reflection->getShortName();
 
-        return str_contains($namespace, 'Api') || 
+        return str_contains($namespace, 'Api') ||
                str_contains($shortName, 'Api') ||
                str_contains($namespace, 'API');
     }
@@ -180,7 +180,7 @@ class ControllerMapper extends BaseMapper
         $methodNames = array_map(fn ($method): string => $method->getName(), $methods);
 
         $resourceMethodsFound = array_intersect($resourceMethods, $methodNames);
-        
+
         // If it has at least 4 resource methods, consider it a resource controller
         return count($resourceMethodsFound) >= 4;
     }
@@ -238,8 +238,8 @@ class ControllerMapper extends BaseMapper
                 'parameters' => array_map(
                     fn ($param): array => [
                         'name' => $param->getName(),
-                        'type' => $param->getType() instanceof ReflectionNamedType 
-                            ? $param->getType()->getName() 
+                        'type' => $param->getType() instanceof ReflectionNamedType
+                            ? $param->getType()->getName()
                             : 'mixed',
                         'optional' => $param->isOptional(),
                         'is_request' => $param->getType() instanceof ReflectionNamedType &&
@@ -271,7 +271,7 @@ class ControllerMapper extends BaseMapper
             foreach ($matches as $match) {
                 $middlewareName = $match[1];
                 $options = $match[2];
-                
+
                 $middleware['constructor_middleware'][] = [
                     'name' => $middlewareName,
                     'options' => trim($options, ', '),
@@ -330,7 +330,7 @@ class ControllerMapper extends BaseMapper
             $actionRequestTypes = [];
             foreach ($method->getParameters() as $parameter) {
                 $type = $parameter->getType();
-                if ($type instanceof ReflectionNamedType && 
+                if ($type instanceof ReflectionNamedType &&
                     is_subclass_of($type->getName(), Request::class)) {
                     $actionRequestTypes[] = $type->getName();
                 }

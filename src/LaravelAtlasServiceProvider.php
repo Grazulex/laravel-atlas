@@ -31,7 +31,7 @@ class LaravelAtlasServiceProvider extends ServiceProvider
         );
 
         // Register AtlasManager as singleton
-        $this->app->singleton(AtlasManager::class, fn($app): AtlasManager => new AtlasManager);
+        $this->app->singleton(AtlasManager::class, fn ($app): AtlasManager => new AtlasManager);
 
         // Register facade alias
         $this->app->alias(AtlasManager::class, 'atlas');

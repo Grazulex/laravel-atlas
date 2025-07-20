@@ -17,7 +17,12 @@ use Grazulex\LaravelAtlas\Mappers\EventMapper;
 use Grazulex\LaravelAtlas\Mappers\JobMapper;
 use Grazulex\LaravelAtlas\Mappers\MiddlewareMapper;
 use Grazulex\LaravelAtlas\Mappers\ModelMapper;
+use Grazulex\LaravelAtlas\Mappers\NotificationMapper;
+use Grazulex\LaravelAtlas\Mappers\PolicyMapper;
+use Grazulex\LaravelAtlas\Mappers\RequestMapper;
+use Grazulex\LaravelAtlas\Mappers\ResourceMapper;
 use Grazulex\LaravelAtlas\Mappers\RouteMapper;
+use Grazulex\LaravelAtlas\Mappers\RuleMapper;
 use Grazulex\LaravelAtlas\Mappers\ServiceMapper;
 use Illuminate\Console\Command;
 
@@ -29,7 +34,7 @@ class AtlasGenerateCommand extends Command
                             {--output= : Output file path}
                             {--detailed : Include detailed information}';
 
-    protected $description = 'Generate an architecture map of your Laravel app';
+    protected $description = 'Generate Laravel application atlas/map for architectural analysis';
 
     /**
      * @var array<string, class-string<MapperInterface>>
@@ -43,6 +48,12 @@ class AtlasGenerateCommand extends Command
         'events' => EventMapper::class,
         'commands' => CommandMapper::class,
         'middleware' => MiddlewareMapper::class,
+        // Les nouveaux mappers seront ajoutés après correction des erreurs PHPStan
+        // 'policies' => PolicyMapper::class,
+        // 'notifications' => NotificationMapper::class,
+        // 'resources' => ResourceMapper::class,
+        // 'requests' => RequestMapper::class,
+        // 'rules' => RuleMapper::class,
     ];
 
     /**

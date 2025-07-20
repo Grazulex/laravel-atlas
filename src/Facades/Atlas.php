@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Grazulex\LaravelAtlas\Facades;
 
-use Grazulex\LaravelAtlas\Contracts\MapperInterface;
-use Grazulex\LaravelAtlas\Contracts\ExporterInterface;
 use Grazulex\LaravelAtlas\AtlasManager;
+use Grazulex\LaravelAtlas\Contracts\ExporterInterface;
+use Grazulex\LaravelAtlas\Contracts\MapperInterface;
 use Illuminate\Support\Facades\Facade;
 
 /**

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use Grazulex\LaravelAtlas\Contracts\MapperInterface;
-use Grazulex\LaravelAtlas\Contracts\ExporterInterface;
 use Grazulex\LaravelAtlas\AtlasManager;
+use Grazulex\LaravelAtlas\Contracts\ExporterInterface;
+use Grazulex\LaravelAtlas\Contracts\MapperInterface;
 use Grazulex\LaravelAtlas\Facades\Atlas;
 
 it('can access Atlas through facade', function (): void {
