@@ -11,15 +11,20 @@ use Grazulex\LaravelAtlas\Exporters\JsonExporter;
 use Grazulex\LaravelAtlas\Exporters\MarkdownExporter;
 use Grazulex\LaravelAtlas\Exporters\MermaidExporter;
 use Grazulex\LaravelAtlas\Exporters\PdfExporter;
+use Grazulex\LaravelAtlas\Mappers\CommandMapper;
+use Grazulex\LaravelAtlas\Mappers\ControllerMapper;
+use Grazulex\LaravelAtlas\Mappers\EventMapper;
 use Grazulex\LaravelAtlas\Mappers\JobMapper;
+use Grazulex\LaravelAtlas\Mappers\MiddlewareMapper;
 use Grazulex\LaravelAtlas\Mappers\ModelMapper;
 use Grazulex\LaravelAtlas\Mappers\RouteMapper;
+use Grazulex\LaravelAtlas\Mappers\ServiceMapper;
 use Illuminate\Console\Command;
 
 class AtlasGenerateCommand extends Command
 {
     protected $signature = 'atlas:generate 
-                            {--type=all : Type of component to map (models, routes, jobs, all)}
+                            {--type=all : Type of component to map (models, routes, jobs, services, controllers, events, commands, middleware, all)}
                             {--format=json : Output format (json, mermaid, markdown, pdf, html)}
                             {--output= : Output file path}
                             {--detailed : Include detailed information}';
@@ -33,6 +38,11 @@ class AtlasGenerateCommand extends Command
         'models' => ModelMapper::class,
         'routes' => RouteMapper::class,
         'jobs' => JobMapper::class,
+        'services' => ServiceMapper::class,
+        'controllers' => ControllerMapper::class,
+        'events' => EventMapper::class,
+        'commands' => CommandMapper::class,
+        'middleware' => MiddlewareMapper::class,
     ];
 
     /**

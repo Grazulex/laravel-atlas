@@ -11,9 +11,14 @@ use Grazulex\LaravelAtlas\Exporters\JsonExporter;
 use Grazulex\LaravelAtlas\Exporters\MarkdownExporter;
 use Grazulex\LaravelAtlas\Exporters\MermaidExporter;
 use Grazulex\LaravelAtlas\Exporters\PdfExporter;
+use Grazulex\LaravelAtlas\Mappers\CommandMapper;
+use Grazulex\LaravelAtlas\Mappers\ControllerMapper;
+use Grazulex\LaravelAtlas\Mappers\EventMapper;
 use Grazulex\LaravelAtlas\Mappers\JobMapper;
+use Grazulex\LaravelAtlas\Mappers\MiddlewareMapper;
 use Grazulex\LaravelAtlas\Mappers\ModelMapper;
 use Grazulex\LaravelAtlas\Mappers\RouteMapper;
+use Grazulex\LaravelAtlas\Mappers\ServiceMapper;
 use InvalidArgumentException;
 
 class AtlasManager
@@ -23,6 +28,11 @@ class AtlasManager
         'models' => ModelMapper::class,
         'routes' => RouteMapper::class,
         'jobs' => JobMapper::class,
+        'services' => ServiceMapper::class,
+        'controllers' => ControllerMapper::class,
+        'events' => EventMapper::class,
+        'commands' => CommandMapper::class,
+        'middleware' => MiddlewareMapper::class,
     ];
 
     /** @var array<string, string> */

@@ -28,7 +28,7 @@ class AtlasCommandNewTest extends TestCase
     public function test_atlas_generate_with_invalid_type(): void
     {
         $this->artisan('atlas:generate --type=invalid')
-            ->expectsOutput('Invalid type: invalid. Available types: models, routes, jobs, all')
+            ->expectsOutput('Invalid type: invalid. Available types: models, routes, jobs, services, controllers, events, commands, middleware, all')
             ->assertExitCode(1);
     }
 }
