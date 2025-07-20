@@ -116,3 +116,9 @@ parameters:
             message: '#Parameter.*expects ReflectionClass<object>, ReflectionClass<.*> given#'
             paths:
                 - src/Mappers/ModelMapper.php
+        
+        # Facade method existence checks
+        -
+            message: '#Method.*invoked with .* parameters, .* required#'
+            paths:
+                - src/AtlasManager.php

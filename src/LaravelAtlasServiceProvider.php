@@ -29,5 +29,11 @@ class LaravelAtlasServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(
             __DIR__ . '/Config/atlas.php', 'atlas'
         );
+
+        // Register AtlasManager as singleton
+        $this->app->singleton(AtlasManager::class, fn($app): AtlasManager => new AtlasManager);
+
+        // Register facade alias
+        $this->app->alias(AtlasManager::class, 'atlas');
     }
 }
