@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{{ title }}</title>
+    <style>
+        body {
+            font-family: "DejaVu Sans", sans-serif;
+            margin: 30px;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            font-size: 24px;
+        }
+        
+        h2 {
+            color: #34495e;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            font-size: 18px;
+            border-left: 4px solid #3498db;
+            padding-left: 10px;
+        }
+        
+        h3 {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-top: 20px;
+            margin-bottom: 8px;
+        }
+        
+        .metadata {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        .summary-table th,
+        .summary-table td {
+            border: 1px solid #bdc3c7;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        
+        .summary-table th {
+            background: #34495e;
+            color: white;
+        }
+        
+        .component {
+            margin-bottom: 20px;
+            border-left: 3px solid #95a5a6;
+            padding-left: 15px;
+        }
+        
+        .component-header {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .component-details {
+            font-size: 11px;
+            color: #7f8c8d;
+        }
+        
+        .relationships {
+            margin-top: 10px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 3px;
+        }
+        
+        .page-break {
+            page-break-before: always;
+        }
+        
+        code {
+            background: #f1c40f;
+            padding: 2px 4px;
+            border-radius: 2px;
+            font-size: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ title }}</h1>
+    
+    <div class="metadata">
+        {% if data.generated_at %}
+        <strong>Generated:</strong> {{ data.generated_at }}<br>
+        {% endif %}
+        
+        {% if data.generation_time_ms %}
+        <strong>Generation Time:</strong> {{ data.generation_time_ms }}ms<br>
+        {% endif %}
+        
+        {% if data.atlas_version %}
+        <strong>Atlas Version:</strong> {{ data.atlas_version }}<br>
+        {% endif %}
+    </div>
+    
+    {% if data.summary %}
+    <h2>📈 Summary</h2>
+    
+    {% if data.summary.total_components %}
+    <p><strong>Total Components:</strong> {{ data.summary.total_components }}</p>
+    {% endif %}
+    
+    {% if data.summary.by_type %}
+    <table class="summary-table">
+        <thead>
+            <tr>
+                <th>Component Type</th>
+                <th>Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for type, count in data.summary.by_type %}
+            <tr>
+                <td>{{ type|title }}</td>
+                <td>{{ count }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+    {% endif %}
+    
+    {% if data.data %}
+    {% for type, typeData in data.data %}
+    <div class="page-break">
+        <h2>{{ type|title }} ({{ typeData.data|length }})</h2>
+        
+        {% for key, item in typeData.data %}
+        <div class="component">
+            <div class="component-header">
+                {{ item.short_name|default(key|split("\\\\")|last) }}
+            </div>
+            
+            <div class="component-details">
+                <strong>Full Name:</strong> <code>{{ key }}</code><br>
+                
+                {% if item.namespace %}
+                <strong>Namespace:</strong> <code>{{ item.namespace }}</code><br>
+                {% endif %}
+                
+                {% if item.file_path %}
+                <strong>File:</strong> <code>{{ item.file_path }}</code><br>
+                {% endif %}
+                
+                {# Model specific details #}
+                {% if type == "models" %}
+                    {% if item.relationships %}
+                    <div class="relationships">
+                        <strong>Relationships:</strong><br>
+                        {% for relationName, relation in item.relationships %}
+                        • {{ relationName }} ({{ relation.type }})<br>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    {% if item.attributes and item.attributes.table %}
+                    <strong>Table:</strong> <code>{{ item.attributes.table }}</code><br>
+                    {% endif %}
+                {% endif %}
+                
+                {# Route specific details #}
+                {% if type == "routes" %}
+                    {% if item.uri %}
+                    <strong>URI:</strong> <code>{{ item.uri }}</code><br>
+                    {% endif %}
+                    
+                    {% if item.methods %}
+                    <strong>Methods:</strong> <code>{{ item.methods|join(", ") }}</code><br>
+                    {% endif %}
+                    
+                    {% if item.controller %}
+                    <strong>Controller:</strong> <code>{{ item.controller.class }}@{{ item.controller.method }}</code><br>
+                    {% endif %}
+                {% endif %}
+                
+                {# Job specific details #}
+                {% if type == "jobs" %}
+                    {% if item.implements_should_queue %}
+                    <strong>Type:</strong> Queued Job ⚡<br>
+                    {% else %}
+                    <strong>Type:</strong> Synchronous Job 🔄<br>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endfor %}
+    {% endif %}
+</body>
+</html>

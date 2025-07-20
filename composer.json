@@ -16,7 +16,9 @@
     "mermaid",
     "markdown",
     "php8.3",
-    "laravel12"
+    "laravel12",
+    "development",
+    "documentation"
   ],
   "type": "library",
   "homepage": "https://github.com/grazulex/laravel-atlas",
@@ -33,7 +35,16 @@
     "larastan/larastan": "^3.4",
     "rector/rector": "^2.0",
     "doctrine/dbal": "^4.2",
-    "orchestra/testbench": "^10.0"
+    "orchestra/testbench": "^10.0",
+    "dompdf/dompdf": "^3.1",
+    "league/html-to-markdown": "^5.1",
+    "twig/twig": "^3.14"
+  },
+  "suggest": {
+    "pestphp/pest": "Required to run and generate Atlas tests (version >=3.0)",
+    "dompdf/dompdf": "Required for PDF export functionality",
+    "league/html-to-markdown": "Required for advanced markdown formatting",
+    "twig/twig": "Required for custom export templates"
   },
   "minimum-stability": "stable",
   "prefer-stable": true,

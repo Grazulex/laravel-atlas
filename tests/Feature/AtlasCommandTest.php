@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use Illuminate\Testing\PendingCommand;
-use Illuminate\Contracts\Console\Kernel;
 use Grazulex\LaravelAtlas\Console\Commands\AtlasGenerateCommand;
+use Illuminate\Contracts\Console\Kernel;
+use Illuminate\Testing\PendingCommand;
 use Tests\TestCase;
 
 class AtlasCommandTest extends TestCase
@@ -28,8 +28,8 @@ class AtlasCommandTest extends TestCase
     {
         $result = $this->artisan('atlas:generate');
         $this->assertInstanceOf(PendingCommand::class, $result);
-        $result->expectsOutput('Generating Laravel Atlas map...')
-            ->expectsOutput('✔ Map generated!')
+        $result->expectsOutput('🗺️  Generating Laravel Atlas map...')
+            ->expectsOutput('✔ Map generated successfully!')
             ->assertExitCode(0);
     }
 
@@ -37,18 +37,41 @@ class AtlasCommandTest extends TestCase
     {
         $result = $this->artisan('atlas:generate --format=mermaid');
         $this->assertInstanceOf(PendingCommand::class, $result);
-        $result->expectsOutput('Generating Laravel Atlas map...')
-            ->expectsOutput('✔ Map generated!')
+        $result->expectsOutput('🗺️  Generating Laravel Atlas map...')
+            ->expectsOutput('✔ Map generated successfully!')
             ->assertExitCode(0);
     }
 
     public function test_atlas_generate_command_with_multiple_formats(): void
     {
-        $result = $this->artisan('atlas:generate --format=mermaid,json,markdown');
+        // Test avec différents formats un par un
+        $formats = ['json', 'mermaid', 'markdown'];
+
+        foreach ($formats as $format) {
+            $result = $this->artisan("atlas:generate --format={$format}");
+            $this->assertInstanceOf(PendingCommand::class, $result);
+            $result->expectsOutput('🗺️  Generating Laravel Atlas map...')
+                ->expectsOutput('✔ Map generated successfully!')
+                ->assertExitCode(0);
+        }
+    }
+
+    public function test_atlas_generate_command_with_type_option(): void
+    {
+        $result = $this->artisan('atlas:generate --type=models');
         $this->assertInstanceOf(PendingCommand::class, $result);
-        $result->expectsOutput('Generating Laravel Atlas map...')
-            ->expectsOutput('✔ Map generated!')
+        $result->expectsOutput('🗺️  Generating Laravel Atlas map...')
+            ->expectsOutput('📊 Mapping models...')
+            ->expectsOutput('✔ Map generated successfully!')
             ->assertExitCode(0);
+    }
+
+    public function test_atlas_generate_command_invalid_type(): void
+    {
+        $result = $this->artisan('atlas:generate --type=invalid');
+        $this->assertInstanceOf(PendingCommand::class, $result);
+        $result->expectsOutput('Invalid type: invalid. Available types: models, routes, jobs, all')
+            ->assertExitCode(1);
     }
 
     public function test_atlas_configuration_is_loaded_in_feature_context(): void
