@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Grazulex\LaravelAtlas\Mappers;
+namespace LaravelAtlas\Mappers;
 
-use Grazulex\LaravelAtlas\Contracts\MapperInterface;
 use Illuminate\Support\Collection;
+use LaravelAtlas\Contracts\MapperInterface;
 
 abstract class BaseMapper implements MapperInterface
 {

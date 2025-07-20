@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Grazulex\LaravelAtlas\Mappers;
+namespace LaravelAtlas\Mappers;
 
 use Exception;
 use Illuminate\Http\Request;
@@ -150,11 +150,7 @@ class ControllerMapper extends BaseMapper
         }
 
         // Check namespace
-        if (str_contains($reflection->getNamespaceName(), 'Controllers')) {
-            return true;
-        }
-
-        return false;
+        return str_contains($reflection->getNamespaceName(), 'Controllers');
     }
 
     /**
@@ -336,7 +332,7 @@ class ControllerMapper extends BaseMapper
                 }
             }
 
-            if (! empty($actionRequestTypes)) {
+            if ($actionRequestTypes !== []) {
                 $requestTypes[$method->getName()] = $actionRequestTypes;
             }
         }

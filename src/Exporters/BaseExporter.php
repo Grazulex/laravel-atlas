@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Grazulex\LaravelAtlas\Exporters;
+namespace LaravelAtlas\Exporters;
 
-use Grazulex\LaravelAtlas\Contracts\ExporterInterface;
+use LaravelAtlas\Contracts\ExporterInterface;
 
 abstract class BaseExporter implements ExporterInterface
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Grazulex\LaravelAtlas\Exporters;
+namespace LaravelAtlas\Exporters;
 
 class MermaidExporter extends BaseExporter
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Grazulex\LaravelAtlas\Mappers;
+namespace LaravelAtlas\Mappers;
 
 use Exception;
 use Illuminate\Support\Collection;
@@ -54,10 +54,12 @@ class ServiceMapper extends BaseMapper
         $scanPaths = $this->config('scan_paths', [app_path('Services')]);
 
         foreach ($scanPaths as $scanPath) {
-            if (! is_string($scanPath) || ! File::isDirectory($scanPath)) {
+            if (! is_string($scanPath)) {
                 continue;
             }
-
+            if (! File::isDirectory($scanPath)) {
+                continue;
+            }
             $serviceFiles = File::allFiles($scanPath);
 
             foreach ($serviceFiles as $file) {

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Grazulex\LaravelAtlas\Facades;
+namespace LaravelAtlas\Facades;
 
-use Grazulex\LaravelAtlas\AtlasManager;
-use Grazulex\LaravelAtlas\Contracts\ExporterInterface;
-use Grazulex\LaravelAtlas\Contracts\MapperInterface;
 use Illuminate\Support\Facades\Facade;
+use LaravelAtlas\AtlasManager;
+use LaravelAtlas\Contracts\ExporterInterface;
+use LaravelAtlas\Contracts\MapperInterface;
 
 /**
  * Laravel Atlas Facade

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Grazulex\LaravelAtlas\Mappers;
+namespace LaravelAtlas\Mappers;
 
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;

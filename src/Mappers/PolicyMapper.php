@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Grazulex\LaravelAtlas\Mappers;
+namespace LaravelAtlas\Mappers;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use ReflectionClass;
+use ReflectionMethod;
 use ReflectionNamedType;
 use SplFileInfo;
 use Throwable;
@@ -116,7 +117,7 @@ class PolicyMapper extends BaseMapper
                 'dependencies' => $this->config('include_dependencies', true) ? $this->extractDependencies($reflection) : [],
                 'line_count' => substr_count($content, "\n") + 1,
             ];
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             return null;
         }
     }
@@ -127,7 +128,7 @@ class PolicyMapper extends BaseMapper
     private function extractAbilities(ReflectionClass $reflection): array
     {
         $abilities = [];
-        $methods = $reflection->getMethods(\ReflectionMethod::IS_PUBLIC);
+        $methods = $reflection->getMethods(ReflectionMethod::IS_PUBLIC);
         $policyMethods = ['viewAny', 'view', 'create', 'update', 'delete', 'restore', 'forceDelete'];
 
         foreach ($methods as $method) {
@@ -168,7 +169,7 @@ class PolicyMapper extends BaseMapper
     private function extractMethods(ReflectionClass $reflection): array
     {
         $methods = [];
-        foreach ($reflection->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+        foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
             if ($method->getDeclaringClass()->getName() === $reflection->getName()) {
                 $methods[] = [
                     'name' => $method->getName(),
@@ -205,7 +206,7 @@ class PolicyMapper extends BaseMapper
     /**
      * @return array<int, array<string, mixed>>
      */
-    private function extractMethodParameters(\ReflectionMethod $method): array
+    private function extractMethodParameters(ReflectionMethod $method): array
     {
         $parameters = [];
 

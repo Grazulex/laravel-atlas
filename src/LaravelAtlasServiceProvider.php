@@ -2,8 +2,8 @@
 
 namespace LaravelAtlas;
 
-use LaravelAtlas\Console\Commands\AtlasGenerateCommand;
 use Illuminate\Support\ServiceProvider;
+use LaravelAtlas\Console\Commands\AtlasGenerateCommand;
 use Override;
 
 class LaravelAtlasServiceProvider extends ServiceProvider

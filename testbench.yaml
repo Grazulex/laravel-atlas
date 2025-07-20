@@ -1,5 +1,5 @@
 providers:
-  - Grazulex\LaravelAtlas\LaravelAtlasServiceProvider
+  - LaravelAtlas\LaravelAtlasServiceProvider
 
 workbench:
   start: "/"

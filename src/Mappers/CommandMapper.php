@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Grazulex\LaravelAtlas\Mappers;
+namespace LaravelAtlas\Mappers;
 
 use Exception;
 use Illuminate\Console\Command;
@@ -53,10 +53,12 @@ class CommandMapper extends BaseMapper
         $scanPaths = $this->config('scan_paths', [app_path('Console/Commands')]);
 
         foreach ($scanPaths as $scanPath) {
-            if (! is_string($scanPath) || ! File::isDirectory($scanPath)) {
+            if (! is_string($scanPath)) {
                 continue;
             }
-
+            if (! File::isDirectory($scanPath)) {
+                continue;
+            }
             $commandFiles = File::allFiles($scanPath);
 
             foreach ($commandFiles as $file) {
@@ -212,7 +214,7 @@ class CommandMapper extends BaseMapper
         if (preg_match_all('/\{([^}]+)\}/', $content, $matches)) {
             foreach ($matches[1] as $argument) {
                 $argInfo = $this->parseArgumentOrOption($argument);
-                if ($argInfo && ! str_starts_with($argInfo['name'], '--')) {
+                if ($argInfo && ! str_starts_with((string) $argInfo['name'], '--')) {
                     $arguments[] = $argInfo;
                 }
             }
@@ -234,7 +236,7 @@ class CommandMapper extends BaseMapper
         if (preg_match_all('/\{([^}]+)\}/', $content, $matches)) {
             foreach ($matches[1] as $option) {
                 $optInfo = $this->parseArgumentOrOption($option);
-                if ($optInfo && str_starts_with($optInfo['name'], '--')) {
+                if ($optInfo && str_starts_with((string) $optInfo['name'], '--')) {
                     $options[] = $optInfo;
                 }
             }
@@ -253,7 +255,7 @@ class CommandMapper extends BaseMapper
         // Clean up the definition
         $definition = trim($definition);
 
-        if (empty($definition)) {
+        if ($definition === '' || $definition === '0') {
             return null;
         }
 

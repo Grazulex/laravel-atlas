@@ -6,13 +6,28 @@ namespace LaravelAtlas\Mappers;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
-use LaravelAtlas\BaseMapper;
 use ReflectionClass;
 use ReflectionNamedType;
 use SplFileInfo;
 
 class NotificationMapper extends BaseMapper
 {
+    public function getType(): string
+    {
+        return 'notifications';
+    }
+
+    protected function getDefaultOptions(): array
+    {
+        return [
+            'include_channels' => true,
+            'include_queue_config' => true,
+            'include_data_structure' => true,
+            'include_dependencies' => true,
+            'scan_path' => base_path('app/Notifications'),
+        ];
+    }
+
     public function performScan(): Collection
     {
         $notifications = collect();
@@ -125,7 +140,7 @@ class NotificationMapper extends BaseMapper
     }
 
     /**
-     * @return array<string, mixed>
+     * @return list<array<string, string>>
      */
     private function extractDataStructure(string $content): array
     {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use Grazulex\LaravelAtlas\LaravelAtlasServiceProvider;
+use LaravelAtlas\LaravelAtlasServiceProvider;
 use Orchestra\Testbench\TestCase;
 
 class BasicTest extends TestCase

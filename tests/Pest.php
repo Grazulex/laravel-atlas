@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Grazulex\LaravelAtlas\LaravelAtlasServiceProvider;
+use LaravelAtlas\LaravelAtlasServiceProvider;
 use Orchestra\Testbench\TestCase;
 
 uses(TestCase::class)->in('Feature', 'Unit');

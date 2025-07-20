@@ -6,13 +6,28 @@ namespace LaravelAtlas\Mappers;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
-use LaravelAtlas\BaseMapper;
 use ReflectionClass;
 use ReflectionNamedType;
 use SplFileInfo;
 
 class RuleMapper extends BaseMapper
 {
+    public function getType(): string
+    {
+        return 'rules';
+    }
+
+    protected function getDefaultOptions(): array
+    {
+        return [
+            'include_validation_method' => true,
+            'include_message_method' => true,
+            'include_parameters' => true,
+            'include_dependencies' => true,
+            'scan_path' => base_path('app/Rules'),
+        ];
+    }
+
     public function performScan(): Collection
     {
         $rules = collect();
@@ -82,12 +97,12 @@ class RuleMapper extends BaseMapper
             'implements\s+Rule',
             'implements\s+InvokableRule',
             'implements\s+ValidationRule',
-            'use\s+Illuminate\\Contracts\\Validation\\Rule',
-            'use\s+Illuminate\\Contracts\\Validation\\InvokableRule',
-            'use\s+Illuminate\\Contracts\\Validation\\ValidationRule',
+            'use\s+Illuminate\\\\Contracts\\\\Validation\\\\Rule',
+            'use\s+Illuminate\\\\Contracts\\\\Validation\\\\InvokableRule',
+            'use\s+Illuminate\\\\Contracts\\\\Validation\\\\ValidationRule',
             'function\s+(passes|validate|__invoke)',
             'function\s+message',
-            'class\s+\w+Rule\s*(?:implements|{)',
+            'class\s+\w+Rule\s*\(?:implements|\{\)',
         ];
 
         foreach ($rulePatterns as $pattern) {
@@ -162,7 +177,7 @@ class RuleMapper extends BaseMapper
     }
 
     /**
-     * @return array<string>
+     * @return list<array<string, string>>
      */
     private function extractParameters(string $content): array
     {

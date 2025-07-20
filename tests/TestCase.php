@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use Grazulex\LaravelAtlas\LaravelAtlasServiceProvider;
 use Illuminate\Support\Facades\File;
+use LaravelAtlas\LaravelAtlasServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Override;
 

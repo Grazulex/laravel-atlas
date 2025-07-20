@@ -6,13 +6,29 @@ namespace LaravelAtlas\Mappers;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
-use LaravelAtlas\BaseMapper;
 use ReflectionClass;
 use ReflectionNamedType;
 use SplFileInfo;
 
 class RequestMapper extends BaseMapper
 {
+    public function getType(): string
+    {
+        return 'requests';
+    }
+
+    protected function getDefaultOptions(): array
+    {
+        return [
+            'include_validation_rules' => true,
+            'include_authorization' => true,
+            'include_custom_messages' => true,
+            'include_custom_attributes' => true,
+            'include_dependencies' => true,
+            'scan_path' => base_path('app/Http/Requests'),
+        ];
+    }
+
     public function performScan(): Collection
     {
         $requests = collect();
@@ -77,7 +93,7 @@ class RequestMapper extends BaseMapper
     }
 
     /**
-     * @return array<string, mixed>
+     * @return list<array<string, array<string>|string>>
      */
     private function extractValidationRules(string $content): array
     {
@@ -115,7 +131,7 @@ class RequestMapper extends BaseMapper
             $ruleString = trim($ruleString, '[]');
             $rules = explode(',', $ruleString);
 
-            return array_map(fn ($rule) => trim($rule, " '\""), $rules);
+            return array_map(fn ($rule): string => trim($rule, " '\""), $rules);
         }
 
         // Handle string format 'required|string|max:255'
@@ -151,7 +167,7 @@ class RequestMapper extends BaseMapper
     }
 
     /**
-     * @return array<string, mixed>
+     * @return list<array<string, string>>
      */
     private function extractCustomMessages(string $content): array
     {
@@ -175,7 +191,7 @@ class RequestMapper extends BaseMapper
     }
 
     /**
-     * @return array<string, mixed>
+     * @return list<array<string, string>>
      */
     private function extractCustomAttributes(string $content): array
     {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Grazulex\LaravelAtlas\Mappers;
+namespace LaravelAtlas\Mappers;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
@@ -117,7 +117,7 @@ class ResourceMapper extends BaseMapper
                 'transformations' => $this->config('include_transformations', true) ? $this->extractTransformations($content) : [],
                 'line_count' => substr_count($content, "\n") + 1,
             ];
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             return null;
         }
     }
@@ -134,11 +134,12 @@ class ResourceMapper extends BaseMapper
     private function extractModelBinding(string $content): ?string
     {
         // Look for model type hints or usage
-        if (preg_match('/\$this->resource(?:->\w+)*/', $content)) {
-            // Look for imports to determine model type
-            if (preg_match('/use\s+App\\\\Models\\\\(\w+)/', $content, $matches)) {
-                return $matches[1];
-            }
+        if (! preg_match('/\$this->resource(?:->\w+)*/', $content)) {
+            return null;
+        }
+        // Look for imports to determine model type
+        if (preg_match('/use\s+App\\\\Models\\\\(\w+)/', $content, $matches)) {
+            return $matches[1];
         }
 
         return null;

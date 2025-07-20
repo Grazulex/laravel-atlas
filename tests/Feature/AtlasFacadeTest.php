@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use Grazulex\LaravelAtlas\AtlasManager;
-use Grazulex\LaravelAtlas\Contracts\ExporterInterface;
-use Grazulex\LaravelAtlas\Contracts\MapperInterface;
-use Grazulex\LaravelAtlas\Facades\Atlas;
+use LaravelAtlas\AtlasManager;
+use LaravelAtlas\Contracts\ExporterInterface;
+use LaravelAtlas\Contracts\MapperInterface;
+use LaravelAtlas\Facades\Atlas;
 
 it('can access Atlas through facade', function (): void {
     expect(Atlas::getAvailableTypes())->toBeArray()

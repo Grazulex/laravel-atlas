@@ -2,21 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Grazulex\LaravelAtlas\Analysis;
+namespace LaravelAtlas\Analysis;
 
-use Grazulex\LaravelAtlas\AtlasManager;
+use Exception;
+use LaravelAtlas\AtlasManager;
 
 class AnalysisEngine
 {
-    private AtlasManager $manager;
-
     /** @var array<string, mixed> */
     private array $componentData = [];
 
-    public function __construct(AtlasManager $manager)
-    {
-        $this->manager = $manager;
-    }
+    public function __construct(private readonly AtlasManager $manager) {}
 
     /**
      * Analyze relationships between all components
@@ -50,7 +46,7 @@ class AnalysisEngine
         foreach ($types as $type) {
             try {
                 $this->componentData[$type] = $this->manager->scan($type, $paths);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->componentData[$type] = ['error' => $e->getMessage()];
             }
         }
@@ -86,20 +82,14 @@ class AnalysisEngine
      */
     private function summarizeComponentType(string $type, array $data): array
     {
-        switch ($type) {
-            case 'models':
-                return $this->summarizeModels($data);
-            case 'controllers':
-                return $this->summarizeControllers($data);
-            case 'services':
-                return $this->summarizeServices($data);
-            case 'jobs':
-                return $this->summarizeJobs($data);
-            case 'events':
-                return $this->summarizeEvents($data);
-            default:
-                return ['total' => count($data)];
-        }
+        return match ($type) {
+            'models' => $this->summarizeModels($data),
+            'controllers' => $this->summarizeControllers($data),
+            'services' => $this->summarizeServices($data),
+            'jobs' => $this->summarizeJobs($data),
+            'events' => $this->summarizeEvents($data),
+            default => ['total' => count($data)],
+        };
     }
 
     /**

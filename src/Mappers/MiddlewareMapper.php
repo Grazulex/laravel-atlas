@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Grazulex\LaravelAtlas\Mappers;
+namespace LaravelAtlas\Mappers;
 
 use Exception;
 use Illuminate\Http\Request;
@@ -152,11 +152,7 @@ class MiddlewareMapper extends BaseMapper
         }
 
         // Check namespace
-        if (str_contains($reflection->getNamespaceName(), 'Middleware')) {
-            return true;
-        }
-
-        return false;
+        return str_contains($reflection->getNamespaceName(), 'Middleware');
     }
 
     /**

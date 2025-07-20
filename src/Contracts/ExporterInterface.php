@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Grazulex\LaravelAtlas\Contracts;
+namespace LaravelAtlas\Contracts;
 
 interface ExporterInterface
 {

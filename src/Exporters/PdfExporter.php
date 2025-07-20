@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Grazulex\LaravelAtlas\Exporters;
+namespace LaravelAtlas\Exporters;
 
 use Dompdf\Dompdf;
 use Dompdf\Options;

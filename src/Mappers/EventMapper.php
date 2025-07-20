@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Grazulex\LaravelAtlas\Mappers;
+namespace LaravelAtlas\Mappers;
 
 use Exception;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\File;
 use Override;
 use ReflectionClass;
 use ReflectionNamedType;
+use ReflectionProperty;
 use SplFileInfo;
 
 class EventMapper extends BaseMapper
@@ -53,10 +54,12 @@ class EventMapper extends BaseMapper
         $scanPaths = $this->config('scan_paths', [app_path('Events')]);
 
         foreach ($scanPaths as $scanPath) {
-            if (! is_string($scanPath) || ! File::isDirectory($scanPath)) {
+            if (! is_string($scanPath)) {
                 continue;
             }
-
+            if (! File::isDirectory($scanPath)) {
+                continue;
+            }
             $eventFiles = File::allFiles($scanPath);
 
             foreach ($eventFiles as $file) {
@@ -157,12 +160,11 @@ class EventMapper extends BaseMapper
         }
 
         // Check for broadcasting or queueing interfaces
-        if ($reflection->implementsInterface(ShouldBroadcast::class) ||
-            $reflection->implementsInterface(ShouldQueue::class)) {
+        if ($reflection->implementsInterface(ShouldBroadcast::class)) {
             return true;
         }
 
-        return false;
+        return $reflection->implementsInterface(ShouldQueue::class);
     }
 
     /**
@@ -265,7 +267,7 @@ class EventMapper extends BaseMapper
     /**
      * Get property visibility
      */
-    protected function getPropertyVisibility(\ReflectionProperty $property): string
+    protected function getPropertyVisibility(ReflectionProperty $property): string
     {
         if ($property->isPublic()) {
             return 'public';

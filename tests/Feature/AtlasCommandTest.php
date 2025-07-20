@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use Grazulex\LaravelAtlas\Console\Commands\AtlasGenerateCommand;
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Testing\PendingCommand;
+use LaravelAtlas\Console\Commands\AtlasGenerateCommand;
 use Tests\TestCase;
 
 class AtlasCommandTest extends TestCase
@@ -70,7 +70,7 @@ class AtlasCommandTest extends TestCase
     {
         $result = $this->artisan('atlas:generate --type=invalid');
         $this->assertInstanceOf(PendingCommand::class, $result);
-        $result->expectsOutput('Invalid type: invalid. Available types: models, routes, jobs, services, controllers, events, commands, middleware, all')
+        $result->expectsOutput('Invalid type: invalid. Available types: models, routes, jobs, services, controllers, events, commands, middleware, policies, resources, notifications, requests, rules, all')
             ->assertExitCode(1);
     }
 
