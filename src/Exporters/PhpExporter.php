@@ -166,6 +166,14 @@ class PhpExporter extends BaseExporter
         // Flows intelligents
         $php .= "    // === FLOWS & INTERCONNECTIONS ===\n";
         $php .= "    'flows' => [\n";
+        
+        // Génération automatique des flows basés sur les routes
+        $generatedFlows = $this->generateIntelligentFlows($data);
+        foreach ($generatedFlows as $flow) {
+            $php .= $this->generateFlowEntry($flow);
+        }
+        
+        // Flows personnalisés s'ils existent
         foreach ($data['flows'] ?? [] as $flow) {
             $php .= $this->generateFlowEntry($flow);
         }
@@ -513,6 +521,107 @@ class PhpExporter extends BaseExporter
         }
 
         return $flows;
+    }
+
+    /**
+     * Génère automatiquement des flows intelligents basés sur les données de l'application
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<int, array<string, mixed>>
+     */
+    private function generateIntelligentFlows(array $data): array
+    {
+        $flows = [];
+
+        // Flow de gestion des produits
+        if ($this->hasProductRoutes($data)) {
+            $flows[] = [
+                'name' => 'Product Management Flow',
+                'entry_point' => 'GET /products',
+                'type' => 'mixed',
+                'steps' => [
+                    'ProductController@index - List products',
+                    'ProductController@create - Show create form',
+                    'ProductController@store - Store product',
+                    'ProductCreated event (async)',
+                    'SendNewProductNotification job (async)',
+                ]
+            ];
+        }
+
+        // Flow de gestion des catégories  
+        if ($this->hasCategoryRoutes($data)) {
+            $flows[] = [
+                'name' => 'Category Management Flow',
+                'entry_point' => 'GET /categories',
+                'type' => 'mixed',
+                'steps' => [
+                    'CategoryController@index - List categories',
+                    'CategoryController@create - Show create form',
+                    'CategoryController@store - Store category',
+                    'CategoryCreated event (async)',
+                ]
+            ];
+        }
+
+        // Flow de maintenance via commandes
+        if ($this->hasMaintenanceCommands($data)) {
+            $flows[] = [
+                'name' => 'Maintenance & Cleanup Flow',
+                'entry_point' => 'artisan commands',
+                'type' => 'synchronous',
+                'steps' => [
+                    'CleanInactiveProducts command',
+                    'SyncProducts command',
+                    'Database cleanup operations',
+                ]
+            ];
+        }
+
+        return $flows;
+    }
+
+    /**
+     * Vérifie si l'application a des routes de produits
+     */
+    private function hasProductRoutes(array $data): bool
+    {
+        $routes = $data['routes'] ?? [];
+        foreach ($routes as $route) {
+            if (str_contains($route['uri'] ?? '', 'product')) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Vérifie si l'application a des routes de catégories
+     */
+    private function hasCategoryRoutes(array $data): bool
+    {
+        $routes = $data['routes'] ?? [];
+        foreach ($routes as $route) {
+            if (str_contains($route['uri'] ?? '', 'categor')) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Vérifie si l'application a des commandes de maintenance
+     */
+    private function hasMaintenanceCommands(array $data): bool
+    {
+        $commands = $data['commands'] ?? [];
+        foreach ($commands as $command) {
+            $className = $command['class_name'] ?? '';
+            if (str_contains(strtolower($className), 'clean') || str_contains(strtolower($className), 'sync')) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
