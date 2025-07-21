@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Mappers;
 
+use ReflectionNamedType;
+use ReflectionMethod;
 use Illuminate\Support\Collection;
 use ReflectionClass;
 use ReflectionException;
@@ -36,11 +38,12 @@ class ObserverMapper extends BaseMapper
     protected function performScan(): Collection
     {
         $basePath = app_path();
-        
+
         // Standard observer paths
         $observerPaths = [
             $basePath . '/Observers',
             $basePath . '/Models/Observers',
+            $basePath . '/Domain/Observers',
         ];
 
         /** @var Collection<string, array<string, mixed>> $observers */
@@ -48,8 +51,8 @@ class ObserverMapper extends BaseMapper
 
         foreach ($observerPaths as $path) {
             if (is_dir($path)) {
-                $foundObservers = $this->scanDirectory($path);
-                foreach ($foundObservers as $observer) {
+                $pathObservers = $this->scanDirectory($path);
+                foreach ($pathObservers as $observer) {
                     $observers->put($observer['class_name'], $observer);
                 }
             }
@@ -59,35 +62,21 @@ class ObserverMapper extends BaseMapper
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function scan(array $options = []): array
-    {
-        // Merge options with config
-        $this->config = array_merge($this->config, $options);
-        
-        // Perform the scan
-        $this->results = $this->performScan();
-        
-        return [
-            'type' => $this->getType(),
-            'data' => $this->results->values()->toArray(),
-            'summary' => $this->getSummary(),
-        ];
-    }
-
-    /**
      * Scan directory for observer files
+     *
+     * @return array<int, array<string, mixed>>
      */
     protected function scanDirectory(string $directory): array
     {
         $observers = [];
         $files = glob($directory . '/*.php');
 
-        foreach ($files as $file) {
-            $className = $this->getClassNameFromFile($file);
-            if ($className && $this->isObserver($className)) {
-                $observers[] = $this->extractObserverData($className);
+        if ($files !== false) {
+            foreach ($files as $file) {
+                $className = $this->getClassNameFromFile($file);
+                if ($className && $this->isObserver($className)) {
+                    $observers[] = $this->extractObserverData($className);
+                }
             }
         }
 
@@ -100,10 +89,11 @@ class ObserverMapper extends BaseMapper
     protected function isObserver(string $className): bool
     {
         try {
+            /** @var class-string $className */
             $reflection = new ReflectionClass($className);
-            
+
             // Check if class name ends with 'Observer'
-            if (!str_ends_with($className, 'Observer')) {
+            if (! str_ends_with($className, 'Observer')) {
                 return false;
             }
 
@@ -123,26 +113,34 @@ class ObserverMapper extends BaseMapper
 
     /**
      * Extract observer data
+     *
+     * @return array<string, mixed>
      */
     protected function extractObserverData(string $className): array
     {
         try {
+            /** @var class-string $className */
             $reflection = new ReflectionClass($className);
-            
+
             $data = [
                 'class_name' => $className,
                 'model' => $this->extractObservedModel($className),
                 'methods' => [],
+                'dependencies' => [],
+                'events' => [],
             ];
 
+            // Extract methods if enabled
             if ($this->config('include_methods')) {
                 $data['methods'] = $this->extractObserverMethods($reflection);
             }
 
+            // Extract dependencies if enabled
             if ($this->config('include_dependencies')) {
                 $data['dependencies'] = $this->extractDependencies($reflection);
             }
 
+            // Extract events if enabled
             if ($this->config('include_events')) {
                 $data['events'] = $this->extractEventsTriggered($reflection);
             }
@@ -157,22 +155,21 @@ class ObserverMapper extends BaseMapper
     }
 
     /**
-     * Extract the model this observer is observing
+     * Extract the model this observer observes
      */
-    protected function extractObservedModel(string $observerClassName): string
+    protected function extractObservedModel(string $className): ?string
     {
-        // Try to infer model from observer name
-        // e.g., UserObserver -> User
-        $baseName = str_replace('Observer', '', class_basename($observerClassName));
-        
-        // Try common model namespaces
-        $modelNamespaces = [
-            'App\\Models\\',
-            'App\\',
+        // Remove 'Observer' suffix and namespace to get model name
+        $baseName = str_replace('Observer', '', class_basename($className));
+
+        // Try to find corresponding model class
+        $possibleModelClasses = [
+            "App\\Models\\{$baseName}",
+            "App\\{$baseName}",
+            $baseName,
         ];
 
-        foreach ($modelNamespaces as $namespace) {
-            $modelClass = $namespace . $baseName;
+        foreach ($possibleModelClasses as $modelClass) {
             if (class_exists($modelClass)) {
                 return $modelClass;
             }
@@ -183,27 +180,22 @@ class ObserverMapper extends BaseMapper
 
     /**
      * Extract observer methods (lifecycle hooks)
+     *
+     * @return array<string, array<string, mixed>>
      */
     protected function extractObserverMethods(ReflectionClass $reflection): array
     {
         $methods = [];
-        $observerMethods = [
-            'creating', 'created', 'updating', 'updated', 
-            'saving', 'saved', 'deleting', 'deleted', 
-            'restoring', 'restored', 'replicating'
-        ];
+        $observerMethods = ['creating', 'created', 'updating', 'updated', 'saving', 'saved', 'deleting', 'deleted', 'restoring', 'restored'];
 
         foreach ($observerMethods as $methodName) {
             if ($reflection->hasMethod($methodName)) {
                 $method = $reflection->getMethod($methodName);
-                if ($method->isPublic()) {
-                    $methods[] = [
-                        'name' => $methodName,
-                        'lifecycle_event' => $this->getLifecycleType($methodName),
-                        'parameters' => $this->extractMethodParameters($method),
-                        'visibility' => 'public',
-                    ];
-                }
+                $methods[$methodName] = [
+                    'name' => $methodName,
+                    'parameters' => $this->extractMethodParameters($method),
+                    'type' => $this->getObserverMethodType($methodName),
+                ];
             }
         }
 
@@ -211,44 +203,50 @@ class ObserverMapper extends BaseMapper
     }
 
     /**
-     * Get lifecycle event type
+     * Get observer method type (before/after)
      */
-    protected function getLifecycleType(string $methodName): string
+    protected function getObserverMethodType(string $methodName): string
     {
-        $beforeEvents = ['creating', 'updating', 'saving', 'deleting', 'restoring'];
-        $afterEvents = ['created', 'updated', 'saved', 'deleted', 'restored'];
-        
-        if (in_array($methodName, $beforeEvents)) {
+        $beforeMethods = ['creating', 'updating', 'saving', 'deleting', 'restoring'];
+        $afterMethods = ['created', 'updated', 'saved', 'deleted', 'restored'];
+
+        if (in_array($methodName, $beforeMethods)) {
             return 'before';
-        } elseif (in_array($methodName, $afterEvents)) {
+        }
+
+        if (in_array($methodName, $afterMethods)) {
             return 'after';
         }
-        
+
         return 'other';
     }
 
     /**
      * Extract dependencies from constructor
+     *
+     * @return array<int, string>
      */
     protected function extractDependencies(ReflectionClass $reflection): array
     {
         $dependencies = [];
-        
-        if ($reflection->hasMethod('__construct')) {
-            $constructor = $reflection->getMethod('__construct');
-            foreach ($constructor->getParameters() as $parameter) {
-                $type = $parameter->getType();
-                if ($type && !$type->isBuiltin()) {
+        $constructor = $reflection->getConstructor();
+
+        if ($constructor) {
+            foreach ($constructor->getParameters() as $param) {
+                $type = $param->getType();
+                if ($type instanceof ReflectionNamedType && ! $type->isBuiltin()) {
                     $dependencies[] = $type->getName();
                 }
             }
         }
 
-        return $dependencies;
+        return array_unique($dependencies);
     }
 
     /**
      * Extract events that might be triggered by this observer
+     *
+     * @return array<int, string>
      */
     protected function extractEventsTriggered(ReflectionClass $reflection): array
     {
@@ -263,18 +261,23 @@ class ObserverMapper extends BaseMapper
     protected function getClassNameFromFile(string $filePath): ?string
     {
         $content = file_get_contents($filePath);
-        
-        // Extract namespace
-        if (preg_match('/^namespace\s+([^;]+);/m', $content, $namespaceMatches)) {
-            $namespace = $namespaceMatches[1];
-        } else {
-            $namespace = '';
+
+        if ($content === false) {
+            return null;
         }
 
+        // Extract namespace
+        $namespace = preg_match('/^namespace\s+([^;]+);/m', $content, $namespaceMatches) ? $namespaceMatches[1] : '';
+
         // Extract class name
-        if (preg_match('/^class\s+([^\s{]+)/m', $content, $classMatches)) {
+        if (preg_match('/^class\s+(\w+)/m', $content, $classMatches)) {
             $className = $classMatches[1];
-            return $namespace ? $namespace . '\\' . $className : $className;
+
+            if ($namespace !== '' && $namespace !== '0') {
+                return $namespace . '\\' . $className;
+            }
+
+            return $className;
         }
 
         return null;
@@ -282,24 +285,21 @@ class ObserverMapper extends BaseMapper
 
     /**
      * Extract method parameters
+     *
+     * @return array<int, array<string, mixed>>
      */
-    protected function extractMethodParameters(\ReflectionMethod $method): array
+    protected function extractMethodParameters(ReflectionMethod $method): array
     {
         $parameters = [];
-        
-        foreach ($method->getParameters() as $parameter) {
-            $paramData = [
-                'name' => $parameter->getName(),
-                'type' => $parameter->getType() ? $parameter->getType()->getName() : 'mixed',
-                'optional' => $parameter->isOptional(),
-                'default' => null,
+
+        foreach ($method->getParameters() as $param) {
+            $type = $param->getType();
+            $parameters[] = [
+                'name' => $param->getName(),
+                'type' => $type instanceof ReflectionNamedType ? $type->getName() : null,
+                'default' => $param->isDefaultValueAvailable() ? $param->getDefaultValue() : null,
+                'required' => ! $param->isOptional(),
             ];
-
-            if ($parameter->isDefaultValueAvailable()) {
-                $paramData['default'] = $parameter->getDefaultValue();
-            }
-
-            $parameters[] = $paramData;
         }
 
         return $parameters;

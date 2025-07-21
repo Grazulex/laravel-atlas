@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Mappers;
 
+use ReflectionNamedType;
+use ReflectionMethod;
+use ReflectionType;
 use Illuminate\Support\Collection;
 use ReflectionClass;
 use ReflectionException;
@@ -37,7 +40,7 @@ class ListenerMapper extends BaseMapper
     protected function performScan(): Collection
     {
         $basePath = app_path();
-        
+
         // Standard listener paths
         $listenerPaths = [
             $basePath . '/Listeners',
@@ -94,23 +97,21 @@ class ListenerMapper extends BaseMapper
     private function isListener(string $className): bool
     {
         // Check if class name contains 'Listener'
-        if (!str_contains($className, 'Listener')) {
+        if (! str_contains($className, 'Listener')) {
             return false;
         }
 
         try {
+            /** @var class-string $className */
             $reflection = new ReflectionClass($className);
-            
+
             // Check if it's in a Listeners namespace or directory
             if (str_contains($className, '\\Listeners\\')) {
                 return true;
-            }
-
-            // Check if it has a handle method (common pattern for listeners)
+            }            // Check if it has a handle method (common pattern for listeners)
             if ($reflection->hasMethod('handle')) {
                 return true;
             }
-
         } catch (ReflectionException) {
             return false;
         }
@@ -126,13 +127,12 @@ class ListenerMapper extends BaseMapper
     private function analyzeListener(string $className, string $filePath): ?array
     {
         try {
+            /** @var class-string $className */
             $reflection = new ReflectionClass($className);
-            
+
             if ($reflection->isAbstract() || $reflection->isInterface() || $reflection->isTrait()) {
                 return null;
-            }
-
-            $listenerData = [
+            }            $listenerData = [
                 'class_name' => $className,
                 'file_path' => $filePath,
                 'event' => $this->detectListenedEvent($reflection, $filePath),
@@ -150,11 +150,10 @@ class ListenerMapper extends BaseMapper
 
             // Extract jobs dispatched
             if ($this->config('include_jobs')) {
-                $listenerData['jobs'] = $this->extractDispatchedJobs($reflection, $filePath);
+                $listenerData['jobs'] = $this->extractDispatchedJobs($filePath);
             }
 
             return $listenerData;
-
         } catch (ReflectionException $e) {
             return [
                 'class_name' => $className,
@@ -172,12 +171,12 @@ class ListenerMapper extends BaseMapper
         if ($reflection->hasMethod('handle')) {
             $handleMethod = $reflection->getMethod('handle');
             $parameters = $handleMethod->getParameters();
-            
-            if (!empty($parameters)) {
+
+            if (! empty($parameters)) {
                 $eventParam = $parameters[0];
                 $eventType = $eventParam->getType();
-                
-                if ($eventType instanceof \ReflectionNamedType && !$eventType->isBuiltin()) {
+
+                if ($eventType instanceof ReflectionNamedType && ! $eventType->isBuiltin()) {
                     return $eventType->getName();
                 }
             }
@@ -186,26 +185,22 @@ class ListenerMapper extends BaseMapper
         // Method 2: Look for event type in file content
         if (file_exists($filePath)) {
             $content = file_get_contents($filePath);
-            if ($content !== false) {
-                // Look for patterns like "handle(EventName $event)"
-                if (preg_match('/handle\s*\(\s*([A-Za-z\\\\]+)\s*\$/', $content, $matches)) {
-                    $eventClass = $matches[1];
-                    
-                    // If it doesn't start with a backslash, it might be a relative class
-                    if (!str_starts_with($eventClass, '\\')) {
-                        // Try to resolve the full class name from use statements
-                        if (preg_match('/use\s+([^;]+\\\\' . $eventClass . ')\s*;/', $content, $useMatches)) {
-                            return $useMatches[1];
-                        }
-                        
-                        // Assume it's in App\Events namespace if no use statement found
-                        if (!str_contains($eventClass, '\\')) {
-                            return 'App\\Events\\' . $eventClass;
-                        }
+            // Look for patterns like "handle(EventName $event)"
+            if ($content !== false && preg_match('/handle\s*\(\s*([A-Za-z\\\\]+)\s*\$/', $content, $matches)) {
+                $eventClass = $matches[1];
+                // If it doesn't start with a backslash, it might be a relative class
+                if (! str_starts_with($eventClass, '\\')) {
+                    // Try to resolve the full class name from use statements
+                    if (preg_match('/use\s+([^;]+\\\\' . $eventClass . ')\s*;/', $content, $useMatches)) {
+                        return $useMatches[1];
                     }
-                    
-                    return ltrim($eventClass, '\\');
+
+                    // Assume it's in App\Events namespace if no use statement found
+                    if (! str_contains($eventClass, '\\')) {
+                        return 'App\\Events\\' . $eventClass;
+                    }
                 }
+                return ltrim($eventClass, '\\');
             }
         }
 
@@ -220,21 +215,24 @@ class ListenerMapper extends BaseMapper
     private function extractMethods(ReflectionClass $reflection): array
     {
         $methods = [];
-        $publicMethods = $reflection->getMethods(\ReflectionMethod::IS_PUBLIC);
+        $publicMethods = $reflection->getMethods(ReflectionMethod::IS_PUBLIC);
 
         foreach ($publicMethods as $method) {
             // Skip magic methods and inherited methods
-            if ($method->isConstructor() || 
-                $method->isDestructor() || 
-                $method->getDeclaringClass()->getName() !== $reflection->getName()) {
+            if ($method->isConstructor()) {
                 continue;
             }
-
+            if ($method->isDestructor()) {
+                continue;
+            }
+            if ($method->getDeclaringClass()->getName() !== $reflection->getName()) {
+                continue;
+            }
             $methodName = $method->getName();
             $methods[$methodName] = [
                 'name' => $methodName,
                 'parameters' => $this->extractMethodParameters($method),
-                'return_type' => $method->getReturnType() ? $method->getReturnType()->__toString() : null,
+                'return_type' => $method->getReturnType() instanceof ReflectionType ? $method->getReturnType()->__toString() : null,
             ];
         }
 
@@ -246,16 +244,16 @@ class ListenerMapper extends BaseMapper
      *
      * @return array<int, array<string, mixed>>
      */
-    private function extractMethodParameters(\ReflectionMethod $method): array
+    private function extractMethodParameters(ReflectionMethod $method): array
     {
         $parameters = [];
-        
+
         foreach ($method->getParameters() as $param) {
             $parameters[] = [
                 'name' => $param->getName(),
-                'type' => $param->getType() ? $param->getType()->__toString() : null,
+                'type' => $param->getType() instanceof ReflectionType ? $param->getType()->__toString() : null,
                 'default' => $param->isDefaultValueAvailable() ? $param->getDefaultValue() : null,
-                'required' => !$param->isOptional(),
+                'required' => ! $param->isOptional(),
             ];
         }
 
@@ -265,7 +263,7 @@ class ListenerMapper extends BaseMapper
     /**
      * Extract dependencies from constructor
      *
-     * @return array<string, mixed>
+     * @return array<int, string>
      */
     private function extractDependencies(ReflectionClass $reflection): array
     {
@@ -275,7 +273,7 @@ class ListenerMapper extends BaseMapper
         if ($constructor) {
             foreach ($constructor->getParameters() as $param) {
                 $type = $param->getType();
-                if ($type instanceof \ReflectionNamedType && !$type->isBuiltin()) {
+                if ($type instanceof ReflectionNamedType && ! $type->isBuiltin()) {
                     $dependencies[] = $type->getName();
                 }
             }
@@ -287,12 +285,12 @@ class ListenerMapper extends BaseMapper
     /**
      * Extract jobs dispatched by analyzing the file content
      *
-     * @return array<string, mixed>
+     * @return array<int, string>
      */
-    private function extractDispatchedJobs(ReflectionClass $reflection, string $filePath): array
+    private function extractDispatchedJobs(string $filePath): array
     {
         $jobs = [];
-        
+
         if (file_exists($filePath)) {
             $content = file_get_contents($filePath);
             if ($content !== false) {

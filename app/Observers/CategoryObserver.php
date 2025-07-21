@@ -2,8 +2,8 @@
 
 namespace App\Observers;
 
-use App\Models\Category;
 use App\Events\CategoryCreated;
+use App\Models\Category;
 
 class CategoryObserver
 {

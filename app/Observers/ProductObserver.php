@@ -2,9 +2,9 @@
 
 namespace App\Observers;
 
-use App\Models\Product;
 use App\Events\ProductCreated;
 use App\Events\ProductUpdated;
+use App\Models\Product;
 
 class ProductObserver
 {

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Mappers;
 
+use ReflectionMethod;
+use ReflectionType;
+use ReflectionNamedType;
 use Illuminate\Support\Collection;
 use ReflectionClass;
 use ReflectionException;
@@ -37,7 +40,7 @@ class ActionMapper extends BaseMapper
     protected function performScan(): Collection
     {
         $basePath = app_path();
-        
+
         // Standard action paths
         $actionPaths = [
             $basePath . '/Actions',
@@ -99,14 +102,13 @@ class ActionMapper extends BaseMapper
         }
 
         try {
+            /** @var class-string $className */
             $reflection = new ReflectionClass($className);
-            
+
             // Check if it's in an Actions namespace or directory
             if (str_contains($className, '\\Actions\\')) {
                 return true;
-            }
-
-            // Check if it has an __invoke method (common pattern for actions)
+            }            // Check if it has an __invoke method (common pattern for actions)
             if ($reflection->hasMethod('__invoke')) {
                 return true;
             }
@@ -115,7 +117,6 @@ class ActionMapper extends BaseMapper
             if ($reflection->hasMethod('handle')) {
                 return true;
             }
-
         } catch (ReflectionException) {
             return false;
         }
@@ -131,13 +132,12 @@ class ActionMapper extends BaseMapper
     private function analyzeAction(string $className, string $filePath): ?array
     {
         try {
+            /** @var class-string $className */
             $reflection = new ReflectionClass($className);
-            
+
             if ($reflection->isAbstract() || $reflection->isInterface() || $reflection->isTrait()) {
                 return null;
-            }
-
-            $actionData = [
+            }            $actionData = [
                 'class_name' => $className,
                 'file_path' => $filePath,
                 'type' => $this->getActionType($reflection),
@@ -155,7 +155,7 @@ class ActionMapper extends BaseMapper
 
             // Extract events dispatched
             if ($this->config('include_events')) {
-                $actionData['events'] = $this->extractEvents($reflection, $filePath);
+                $actionData['events'] = $this->extractEvents($filePath);
             }
 
             // Check if it's invokable
@@ -164,7 +164,6 @@ class ActionMapper extends BaseMapper
             }
 
             return $actionData;
-
         } catch (ReflectionException $e) {
             return [
                 'class_name' => $className,
@@ -182,15 +181,15 @@ class ActionMapper extends BaseMapper
         if ($reflection->hasMethod('__invoke')) {
             return 'invokable';
         }
-        
+
         if ($reflection->hasMethod('handle')) {
             return 'handle';
         }
 
         // Check for CRUD patterns
         $methods = $reflection->getMethods();
-        $methodNames = array_map(fn($method) => $method->getName(), $methods);
-        
+        $methodNames = array_map(fn ($method): string => $method->getName(), $methods);
+
         if (in_array('execute', $methodNames)) {
             return 'execute';
         }
@@ -206,21 +205,24 @@ class ActionMapper extends BaseMapper
     private function extractMethods(ReflectionClass $reflection): array
     {
         $methods = [];
-        $publicMethods = $reflection->getMethods(\ReflectionMethod::IS_PUBLIC);
+        $publicMethods = $reflection->getMethods(ReflectionMethod::IS_PUBLIC);
 
         foreach ($publicMethods as $method) {
             // Skip magic methods and inherited methods
-            if ($method->isConstructor() || 
-                $method->isDestructor() || 
-                $method->getDeclaringClass()->getName() !== $reflection->getName()) {
+            if ($method->isConstructor()) {
                 continue;
             }
-
+            if ($method->isDestructor()) {
+                continue;
+            }
+            if ($method->getDeclaringClass()->getName() !== $reflection->getName()) {
+                continue;
+            }
             $methodName = $method->getName();
             $methods[$methodName] = [
                 'name' => $methodName,
                 'parameters' => $this->extractMethodParameters($method),
-                'return_type' => $method->getReturnType() ? $method->getReturnType()->__toString() : null,
+                'return_type' => $method->getReturnType() instanceof ReflectionType ? $method->getReturnType()->__toString() : null,
             ];
         }
 
@@ -232,16 +234,16 @@ class ActionMapper extends BaseMapper
      *
      * @return array<int, array<string, mixed>>
      */
-    private function extractMethodParameters(\ReflectionMethod $method): array
+    private function extractMethodParameters(ReflectionMethod $method): array
     {
         $parameters = [];
-        
+
         foreach ($method->getParameters() as $param) {
             $parameters[] = [
                 'name' => $param->getName(),
-                'type' => $param->getType() ? $param->getType()->__toString() : null,
+                'type' => $param->getType() instanceof ReflectionType ? $param->getType()->__toString() : null,
                 'default' => $param->isDefaultValueAvailable() ? $param->getDefaultValue() : null,
-                'required' => !$param->isOptional(),
+                'required' => ! $param->isOptional(),
             ];
         }
 
@@ -251,7 +253,7 @@ class ActionMapper extends BaseMapper
     /**
      * Extract dependencies from constructor
      *
-     * @return array<string, mixed>
+     * @return array<int, string>
      */
     private function extractDependencies(ReflectionClass $reflection): array
     {
@@ -261,7 +263,7 @@ class ActionMapper extends BaseMapper
         if ($constructor) {
             foreach ($constructor->getParameters() as $param) {
                 $type = $param->getType();
-                if ($type instanceof \ReflectionNamedType && !$type->isBuiltin()) {
+                if ($type instanceof ReflectionNamedType && ! $type->isBuiltin()) {
                     $dependencies[] = $type->getName();
                 }
             }
@@ -273,12 +275,12 @@ class ActionMapper extends BaseMapper
     /**
      * Extract events dispatched by analyzing the file content
      *
-     * @return array<string, mixed>
+     * @return array<int, string>
      */
-    private function extractEvents(ReflectionClass $reflection, string $filePath): array
+    private function extractEvents(string $filePath): array
     {
         $events = [];
-        
+
         if (file_exists($filePath)) {
             $content = file_get_contents($filePath);
             if ($content !== false) {
