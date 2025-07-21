@@ -597,7 +597,14 @@
                     <div>👂 Listeners</div>
                     <div>🎮 Controllers</div>
                     <div>🛡️ Policies</div>
-                    <div>📖 Documentation</div>
+                    <div>� Middleware</div>
+                    <div>🎯 Resources</div>
+                    <div>📬 Notifications</div>
+                    <div>📝 Requests</div>
+                    <div>✅ Rules</div>
+                    <div>👀 Observers</div>
+                    <div>🎬 Actions</div>
+                    <div>�📖 Documentation</div>
                 </div>
             </div>
             
