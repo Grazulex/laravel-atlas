@@ -25,6 +25,7 @@
   "require": {
     "php": "^8.3",
     "illuminate/support": "^12.19",
+    "illuminate/view": "^12.19",
     "nesbot/carbon": "^3.10",
     "illuminate/contracts": "^12.0"
   },
@@ -35,16 +36,12 @@
     "larastan/larastan": "^3.4",
     "rector/rector": "^2.0",
     "doctrine/dbal": "^4.2",
-    "orchestra/testbench": "^10.0",
-    "dompdf/dompdf": "^3.1",
-    "league/html-to-markdown": "^5.1",
-    "twig/twig": "^3.14"
+    "orchestra/testbench": "^10.0"
   },
   "suggest": {
     "pestphp/pest": "Required to run and generate Atlas tests (version >=3.0)",
-    "dompdf/dompdf": "Required for PDF export functionality",
-    "league/html-to-markdown": "Required for advanced markdown formatting",
-    "twig/twig": "Required for custom export templates"
+    "dompdf/dompdf": "Required for PDF export functionality (^3.1)",
+    "league/html-to-markdown": "Required for advanced markdown formatting (^5.1)"
   },
   "minimum-stability": "stable",
   "prefer-stable": true,

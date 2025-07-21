@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Console\Commands;
 
+use RuntimeException;
+use Throwable;
 use Illuminate\Console\Command;
 use LaravelAtlas\Contracts\ExporterInterface;
 use LaravelAtlas\Contracts\MapperInterface;
@@ -25,6 +27,7 @@ use LaravelAtlas\Mappers\ResourceMapper;
 use LaravelAtlas\Mappers\RouteMapper;
 use LaravelAtlas\Mappers\RuleMapper;
 use LaravelAtlas\Mappers\ServiceMapper;
+use LaravelAtlas\Support\DependencyChecker;
 
 class AtlasGenerateCommand extends Command
 {
@@ -86,9 +89,18 @@ class AtlasGenerateCommand extends Command
             return self::FAILURE;
         }
 
-        // Validate format
+        // Validate format and check dependencies
         if (! isset($this->availableExporters[$format])) {
             $this->error("Invalid format: {$format}. Available formats: " . implode(', ', array_keys($this->availableExporters)));
+
+            return self::FAILURE;
+        }
+
+        // Check dependencies for the requested format
+        try {
+            $this->checkFormatDependencies($format);
+        } catch (RuntimeException $e) {
+            $this->error("❌ {$e->getMessage()}");
 
             return self::FAILURE;
         }
@@ -100,19 +112,30 @@ class AtlasGenerateCommand extends Command
         $results = [];
         $startTime = microtime(true);
 
-        // Run mappers
+        // Run mappers with error handling
         foreach ($mappersToRun as $mapperType => $mapperClass) {
             $this->line("📊 Mapping {$mapperType}...");
 
-            /** @var MapperInterface $mapper */
-            $mapper = new $mapperClass;
-            $options = $detailed ? ['include_detailed' => true] : [];
+            try {
+                /** @var MapperInterface $mapper */
+                $mapper = new $mapperClass;
+                $options = $detailed ? ['include_detailed' => true] : [];
 
-            $results[$mapperType] = $mapper->scan($options);
+                $results[$mapperType] = $mapper->scan($options);
 
-            $data = $results[$mapperType]['data'] ?? [];
-            $count = is_countable($data) ? count($data) : 0;
-            $this->info("   ✓ Found {$count} {$mapperType}");
+                $data = $results[$mapperType]['data'] ?? [];
+                $count = is_countable($data) ? count($data) : 0;
+                $this->info("   ✓ Found {$count} {$mapperType}");
+            } catch (Throwable $e) {
+                $this->error("   ❌ Error mapping {$mapperType}: {$e->getMessage()}");
+                $this->line("   Stack trace: {$e->getFile()}:{$e->getLine()}");
+
+                // Continue with other mappers instead of failing completely
+                $results[$mapperType] = [
+                    'error' => $e->getMessage(),
+                    'data' => [],
+                ];
+            }
         }
 
         $totalTime = round((microtime(true) - $startTime) * 1000, 2);
@@ -223,6 +246,22 @@ class AtlasGenerateCommand extends Command
             // Fallback to JSON
             $jsonContent = json_encode($output, JSON_PRETTY_PRINT);
             $this->line($jsonContent ?: 'JSON encoding failed');
+        }
+    }
+
+    /**
+     * Check if required dependencies are available for the specified format
+     */
+    protected function checkFormatDependencies(string $format): void
+    {
+        $missing = DependencyChecker::getMissingDependencies($format);
+
+        if ($missing !== []) {
+            $installCommand = DependencyChecker::getInstallCommand($missing);
+            throw new RuntimeException(
+                "Missing dependencies for {$format} format: " . implode(', ', $missing) . "\n" .
+                "Install them with: {$installCommand}"
+            );
         }
     }
 }

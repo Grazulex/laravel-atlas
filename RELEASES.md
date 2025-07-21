@@ -1,46 +1,86 @@
-# Release Notes for Laravel Atlas
+# Scripts de Release
 
-## [Unreleased]
+Ce dossier contient des scripts pour gérer les releases du package Laravel Atlas.
 
-### Added
-- Initial release
-- Laravel Atlas functionality
-- Comprehensive test suite
-- Documentation
+## Scripts disponibles
 
-### Changed
-- Nothing yet
+### `release.sh`
+Créer une nouvelle release et la publier sur GitHub et Packagist.
 
-### Deprecated
-- Nothing yet
+**Usage :**
+```bash
+./release.sh <version> [notes_de_release]
+```
 
-### Removed
-- Nothing yet
+**Exemples :**
+```bash
+# Release simple
+./release.sh 1.2.0
 
-### Fixed
-- Nothing yet
+# Release avec notes
+./release.sh 1.2.0 "Ajout des traits pour DTOs et amélioration des performances"
 
-### Security
-- Nothing yet
+# Release avec notes multilignes
+./release.sh 1.2.0 "
+- Ajout des traits ValidatesData, ConvertsData, DtoUtilities
+- Correction des erreurs PHPStan
+- Amélioration de la documentation
+"
+```
 
----
+### `check-releases.sh`
+Vérifier l'état des releases et des tags.
 
-## How to read this changelog
+**Usage :**
+```bash
+./check-releases.sh
+```
 
-This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) principles.
+## Prérequis
 
-### Types of changes
-- **Added** for new features
-- **Changed** for changes in existing functionality
-- **Deprecated** for soon-to-be removed features
-- **Removed** for now removed features
-- **Fixed** for any bug fixes
-- **Security** in case of vulnerabilities
+### GitHub CLI
+Pour utiliser les scripts, vous devez avoir GitHub CLI installé et configuré :
 
-### Version format
-This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+```bash
+# Ubuntu/Debian
+sudo apt install gh
 
-Given a version number MAJOR.MINOR.PATCH:
-- **MAJOR** version when you make incompatible API changes
-- **MINOR** version when you add functionality in a backwards compatible manner
-- **PATCH** version when you make backwards compatible bug fixes
+# macOS
+brew install gh
+
+# Connexion
+gh auth login
+```
+
+## Workflow de release
+
+1. **Développement** : Faites vos modifications et committez normalement
+2. **Vérification** : `./check-releases.sh` pour voir l'état actuel
+3. **Release** : `./release.sh X.Y.Z "Description"` quand prêt à publier
+4. **Suivi** : Le workflow GitHub Actions s'occupe du reste
+
+## Processus automatique
+
+Quand vous lancez `./release.sh` :
+
+1. ✅ **Vérifications** : Format version, état du repo, permissions
+2. 📤 **Push** : Pousse les derniers changements
+3. 🚀 **Déclenchement** : Lance le workflow GitHub Actions
+4. 🧪 **Tests** : Exécute la suite de tests complète (Pest + PHPStan)
+5. 🏷️ **Tag** : Crée et pousse le tag Git (seulement si tests OK)
+6. 📦 **Release** : Crée la release GitHub (seulement si tag OK)
+7. 🌐 **Packagist** : Mise à jour automatique via webhook
+
+## Versioning
+
+Utilisez le [Semantic Versioning](https://semver.org/) :
+- **Major** (X.0.0) : Changements incompatibles
+- **Minor** (X.Y.0) : Nouvelles fonctionnalités compatibles
+- **Patch** (X.Y.Z) : Corrections de bugs
+
+## Remarques
+
+- Seul `grazulex` peut déclencher des releases (configuré dans le workflow)
+- **Les tests doivent passer avant la création de la release** (obligatoire)
+- La release est annulée si les tests échouent
+- Packagist se met à jour automatiquement grâce au webhook GitHub

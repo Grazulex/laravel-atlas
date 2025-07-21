@@ -4,19 +4,25 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Exporters;
 
+use Throwable;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use LaravelAtlas\Support\BladeRenderer;
+use LaravelAtlas\Support\DependencyChecker;
 use RuntimeException;
-use Twig\Environment;
-use Twig\Loader\ArrayLoader;
 
 class PdfExporter extends BaseExporter
 {
     /**
      * {@inheritdoc}
+     *
+     * @param  array<string, mixed>  $data
      */
     public function export(array $data): string
     {
+        // Check if required dependencies are available
+        DependencyChecker::checkDompdf();
+
         $htmlContent = $this->generateHtmlContent($data);
 
         // Configure Dompdf
@@ -59,16 +65,134 @@ class PdfExporter extends BaseExporter
             throw new RuntimeException("PDF template not found at: {$templatePath}");
         }
 
+        // Use Blade renderer for .blade.php templates, simple renderer for others
+        if ($this->isBladeTemplate($templatePath)) {
+            return $this->renderWithBlade($templatePath, [
+                'data' => $data,
+                'config' => $this->config,
+                'title' => $this->config('title', 'Laravel Atlas Architecture Map'),
+            ]);
+        }
         $template = file_get_contents($templatePath);
-
-        $loader = new ArrayLoader(['pdf_template' => $template]);
-        $twig = new Environment($loader);
-
-        return $twig->render('pdf_template', [
+        if ($template === false) {
+            throw new RuntimeException("Failed to read PDF template at: {$templatePath}");
+        }
+        return $this->renderTemplate($template, [
             'data' => $data,
             'config' => $this->config,
             'title' => $this->config('title', 'Laravel Atlas Architecture Map'),
         ]);
+    }
+
+    /**
+     * Check if template is a Blade template
+     */
+    protected function isBladeTemplate(string $templatePath): bool
+    {
+        return str_ends_with($templatePath, '.blade.php') ||
+               str_ends_with($templatePath, '.blade.html') ||
+               $this->templateContainsBladeDirectives($templatePath);
+    }
+
+    /**
+     * Check if template contains Blade directives
+     */
+    protected function templateContainsBladeDirectives(string $templatePath): bool
+    {
+        $content = file_get_contents($templatePath);
+        if ($content === false) {
+            return false;
+        }
+
+        $result = preg_match('/@(if|foreach|for|while|switch|isset|empty|auth|guest|can|cannot|include|extends|section|yield|push|stack)\b/', $content);
+
+        return $result === 1;
+    }
+
+    /**
+     * Render template using Blade
+     *
+     * @param  array<string, mixed>  $variables
+     */
+    protected function renderWithBlade(string $templatePath, array $variables): string
+    {
+        try {
+            $renderer = new BladeRenderer;
+
+            return $renderer->renderFile($templatePath, $variables);
+        } catch (Throwable $e) {
+            throw new RuntimeException('Blade template rendering failed: ' . $e->getMessage(), 0, $e);
+        }
+    }
+
+    /**
+     * Simple template renderer using variable replacement
+     *
+     * @param  array<string, mixed>  $variables
+     */
+    protected function renderTemplate(string $template, array $variables): string
+    {
+        // Simple variable replacement for basic templating
+        foreach ($variables as $key => $value) {
+            if (is_string($value)) {
+                $template = str_replace('{{ $' . $key . ' }}', $value, $template);
+            } elseif (is_array($value)) {
+                $encodedValue = json_encode($value, JSON_PRETTY_PRINT);
+                if ($encodedValue !== false) {
+                    $template = str_replace('{{ $' . $key . ' }}', $encodedValue, $template);
+                }
+            } else {
+                $template = str_replace('{{ $' . $key . ' }}', (string) $value, $template);
+            }
+        }
+
+        // Handle data iteration for components
+        if (isset($variables['data']) && is_array($variables['data'])) {
+            return $this->renderDataSections($template, $variables['data']);
+        }
+
+        return $template;
+    }
+
+    /**
+     * Render data sections in the template
+     *
+     * @param  array<string, mixed>  $data
+     */
+    protected function renderDataSections(string $template, array $data): string
+    {
+        // Simple foreach rendering for each component type
+        foreach ($data as $componentType => $componentData) {
+            $sectionStart = "<!-- START:{$componentType} -->";
+            $sectionEnd = "<!-- END:{$componentType} -->";
+
+            $startPos = strpos($template, $sectionStart);
+            $endPos = strpos($template, $sectionEnd);
+
+            if ($startPos !== false && $endPos !== false) {
+                $sectionTemplate = substr($template, $startPos + strlen($sectionStart), $endPos - $startPos - strlen($sectionStart));
+                $renderedSection = '';
+
+                if (isset($componentData['data']) && is_array($componentData['data'])) {
+                    foreach ($componentData['data'] as $item) {
+                        $itemHtml = $sectionTemplate;
+                        if (is_array($item)) {
+                            foreach ($item as $key => $value) {
+                                $encodedValue = is_string($value) ? $value : json_encode($value);
+                                if ($encodedValue !== false) {
+                                    $itemHtml = str_replace('{{ $' . $key . ' }}', $encodedValue, $itemHtml);
+                                }
+                            }
+                        }
+                        $renderedSection .= $itemHtml;
+                    }
+                }
+
+                $template = str_replace($sectionStart . $sectionTemplate . $sectionEnd, $renderedSection, $template);
+            }
+        }
+
+        return $template;
     }
 
     /**

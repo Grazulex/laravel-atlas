@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }}</title>
+    <title>{{ $title }}</title>
     <style>
         * {
             margin: 0;
@@ -252,49 +252,50 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>{{ title }}</h1>
+            <h1>{{ $title }}</h1>
+            <p>Laravel Application Architecture Map</p>
         </div>
-        
+
         <div class="metadata">
             <h2>📊 Generation Information</h2>
             <div class="metadata-grid">
-                {% if data.generated_at %}
+                @if(isset($data['generated_at']))
                 <div class="metadata-item">
                     <strong>Generated At</strong>
-                    <span>{{ data.generated_at }}</span>
+                    <span>{{ $data['generated_at'] }}</span>
                 </div>
-                {% endif %}
+                @endif
                 
-                {% if data.generation_time_ms %}
+                @if(isset($data['generation_time_ms']))
                 <div class="metadata-item">
                     <strong>Generation Time</strong>
-                    <span>{{ data.generation_time_ms }}ms</span>
+                    <span>{{ $data['generation_time_ms'] }}ms</span>
                 </div>
-                {% endif %}
+                @endif
                 
-                {% if data.atlas_version %}
+                @if(isset($data['atlas_version']))
                 <div class="metadata-item">
                     <strong>Atlas Version</strong>
-                    <span>{{ data.atlas_version }}</span>
+                    <span>{{ $data['atlas_version'] }}</span>
                 </div>
-                {% endif %}
+                @endif
             </div>
         </div>
-        
-        {% if data.summary %}
+
+        @if(isset($data['summary']))
         <div class="summary">
             <h2>📈 Summary</h2>
             
-            {% if data.summary.total_components %}
+            @if(isset($data['summary']['total_components']))
             <div class="summary-stats">
                 <div class="stat-card">
-                    <div class="number">{{ data.summary.total_components }}</div>
+                    <div class="number">{{ $data['summary']['total_components'] }}</div>
                     <div class="label">Total Components</div>
                 </div>
             </div>
-            {% endif %}
+            @endif
             
-            {% if data.summary.by_type %}
+            @if(isset($data['summary']['by_type']))
             <table class="summary-table">
                 <thead>
                     <tr>
@@ -304,118 +305,141 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for type, count in data.summary.by_type %}
+                    @foreach($data['summary']['by_type'] as $type => $count)
                     <tr>
-                        <td>{{ type|title }}</td>
-                        <td>{{ count }}</td>
-                        <td>{{ ((count / data.summary.total_components) * 100)|round(1) }}%</td>
+                        <td>{{ ucfirst($type) }}</td>
+                        <td>{{ $count }}</td>
+                        <td>{{ round(($count / $data['summary']['total_components']) * 100, 1) }}%</td>
                     </tr>
-                    {% endfor %}
+                    @endforeach
                 </tbody>
             </table>
-            {% endif %}
+            @endif
         </div>
-        {% endif %}
-        
-        {% if data.data %}
-        {% for type, typeData in data.data %}
+        @endif
+
+        @if(isset($data['data']))
+        @foreach($data['data'] as $type => $typeData)
         <div class="type-section">
             <div class="type-header">
-                {{ type|title }} ({{ typeData.data|length }})
+                {{ ucfirst($type) }} ({{ count($typeData['data'] ?? []) }})
             </div>
-            
             <div class="components">
-                {% for key, item in typeData.data %}
+                @foreach($typeData['data'] ?? [] as $key => $item)
                 <div class="component">
                     <div class="component-header">
-                        {{ item.short_name|default(key|split("\\\\")|last) }}
+                        {{ $item['short_name'] ?? last(explode('\\', $key)) }}
                     </div>
                     
                     <div class="component-details">
                         <div class="detail-item">
                             <strong>Full Name:</strong>
-                            <code>{{ key }}</code>
+                            <code>{{ $key }}</code>
                         </div>
                         
-                        {% if item.namespace %}
+                        @if(isset($item['namespace']))
                         <div class="detail-item">
                             <strong>Namespace:</strong>
-                            <code>{{ item.namespace }}</code>
+                            <code>{{ $item['namespace'] }}</code>
                         </div>
-                        {% endif %}
+                        @endif
                         
-                        {% if item.file_path %}
+                        @if(isset($item['file_path']))
                         <div class="detail-item">
                             <strong>File:</strong>
-                            <code>{{ item.file_path }}</code>
+                            <code>{{ $item['file_path'] }}</code>
                         </div>
-                        {% endif %}
+                        @endif
                         
-                        {# Model specific details #}
-                        {% if type == "models" %}
-                            {% if item.relationships %}
-                            <div class="relationships">
-                                <h4>Relationships</h4>
-                                {% for relationName, relation in item.relationships %}
-                                <div class="relationship-item">
-                                    {{ relationName }} ({{ relation.type }})
-                                </div>
-                                {% endfor %}
-                            </div>
-                            {% endif %}
-                            
-                            {% if item.attributes and item.attributes.table %}
+                        @if(isset($item['parent_class']))
+                        <div class="detail-item">
+                            <strong>Extends:</strong>
+                            <code>{{ $item['parent_class'] }}</code>
+                        </div>
+                        @endif
+                        
+                        {{-- Model specific details --}}
+                        @if($type === 'models')
+                            @if(isset($item['attributes']['table']))
                             <div class="detail-item">
                                 <strong>Table:</strong>
-                                <code>{{ item.attributes.table }}</code>
+                                <code>{{ $item['attributes']['table'] }}</code>
                             </div>
-                            {% endif %}
-                        {% endif %}
+                            @endif
+                            
+                            @if(isset($item['relationships']) && count($item['relationships']) > 0)
+                            <div class="relationships">
+                                <h4>Relationships</h4>
+                                @foreach($item['relationships'] as $relationName => $relation)
+                                <div class="relationship-item">
+                                    {{ $relationName }} ({{ $relation['type'] ?? 'unknown' }})
+                                    @if(isset($relation['related']))
+                                    → {{ $relation['related'] }}
+                                    @endif
+                                </div>
+                                @endforeach
+                            </div>
+                            @endif
+                        @endif
                         
-                        {# Route specific details #}
-                        {% if type == "routes" %}
-                            {% if item.uri %}
+                        {{-- Route specific details --}}
+                        @if($type === 'routes')
+                            @if(isset($item['uri']))
                             <div class="detail-item">
                                 <strong>URI:</strong>
-                                <code>{{ item.uri }}</code>
+                                <code>{{ $item['uri'] }}</code>
                             </div>
-                            {% endif %}
+                            @endif
                             
-                            {% if item.methods %}
+                            @if(isset($item['methods']))
                             <div class="detail-item">
                                 <strong>Methods:</strong>
-                                <code>{{ item.methods|join(", ") }}</code>
+                                <code>{{ implode(', ', $item['methods']) }}</code>
                             </div>
-                            {% endif %}
+                            @endif
                             
-                            {% if item.controller %}
+                            @if(isset($item['controller']))
                             <div class="detail-item">
                                 <strong>Controller:</strong>
-                                <code>{{ item.controller.class }}@{{ item.controller.method }}</code>
+                                <code>{{ $item['controller']['class'] ?? '' }}@{{ $item['controller']['method'] ?? '' }}</code>
                             </div>
-                            {% endif %}
-                        {% endif %}
+                            @endif
+                        @endif
                         
-                        {# Job specific details #}
-                        {% if type == "jobs" %}
+                        {{-- Job specific details --}}
+                        @if($type === 'jobs')
+                            @if(isset($item['implements_should_queue']))
                             <div class="detail-item">
                                 <strong>Type:</strong>
-                                <span>
-                                    {% if item.implements_should_queue %}
-                                        Queued Job ⚡
-                                    {% else %}
-                                        Synchronous Job 🔄
-                                    {% endif %}
-                                </span>
+                                @if($item['implements_should_queue'])
+                                    <span>Queued Job ⚡</span>
+                                @else
+                                    <span>Synchronous Job 🔄</span>
+                                @endif
                             </div>
-                        {% endif %}
+                            @endif
+                        @endif
+                        
+                        {{-- Controller specific details --}}
+                        @if($type === 'controllers')
+                            @if(isset($item['is_api_controller']))
+                            <div class="detail-item">
+                                <strong>Type:</strong>
+                                @if($item['is_api_controller'])
+                                    <span>API Controller 🌐</span>
+                                @else
+                                    <span>Web Controller 🖥️</span>
+                                @endif
+                            </div>
+                            @endif
+                        @endif
                     </div>
                 </div>
-                {% endfor %}
+                @endforeach
             </div>
         </div>
-        {% endfor %}
-        {% endif %}
+        @endforeach
+        @endif
     </div>
 </body>
 </html>
