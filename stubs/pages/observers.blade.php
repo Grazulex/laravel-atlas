@@ -1,5 +1,7 @@
 <!-- Observers Page -->
 <div id="observers" class="page">
+    @include('partials.helpers')
+    @include('partials.component-links')
     <div class="card">
         <div class="card-header">
             <h2>👁️ Model Observers</h2>
@@ -10,7 +12,7 @@
                 <div class="card" style="margin-bottom: 20px;">
                     <div class="card-header">
                         <h3>{{ class_basename($observer['class_name']) }}</h3>
-                        <small>Observes: {{ class_basename($observer['model']) }}</small>
+                        <small>Observes: {!! componentLink($observer['model'], 'models', $data, class_basename($observer['model'])) !!}</small>
                     </div>
                     <div class="card-body">
                         @if(isset($observer['methods']) && is_array($observer['methods']))
