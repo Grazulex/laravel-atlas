@@ -20,7 +20,7 @@ class PdfExporter extends BaseExporter
     public function export(array $data): string
     {
         // Check if required dependencies are available
-        if (! class_exists(Dompdf::class) || ! class_exists(Options::class)) {
+        if (! class_exists('Dompdf\\Dompdf') || ! class_exists('Dompdf\\Options')) {
             throw new RuntimeException(
                 'Dompdf is required for PDF export. Install it with: composer require dompdf/dompdf'
             );
@@ -71,6 +71,16 @@ class PdfExporter extends BaseExporter
             throw new RuntimeException("PDF template not found at: {$templatePath}");
         }
 
+        // Generate Mermaid diagram for architecture visualization
+        // We don't include the actual Mermaid diagram in PDF, but we prepare component relationships
+        // for the relationship section in the PDF template
+
+        // Generate static diagram image for PDF if enabled
+        $diagramImageBase64 = '';
+        if ($this->config('use_static_diagram', true)) {
+            $diagramImageBase64 = $this->generateStaticDiagramImage($data);
+        }
+
         // Prepare data structure specifically for Blade template
         $templateData = [
             'data' => $data,
@@ -80,6 +90,8 @@ class PdfExporter extends BaseExporter
             'generation_time_ms' => round(microtime(true) * 1000 - $_SERVER['REQUEST_TIME_FLOAT'] * 1000),
             'atlas_version' => '1.0.0',
             'total_components' => $this->countTotalComponents($data),
+            'diagram_image_base64' => $diagramImageBase64,
+            'use_static_diagram' => $this->config('use_static_diagram', true),
         ];
 
         // Always use Blade renderer for PDF templates
@@ -276,6 +288,33 @@ class PdfExporter extends BaseExporter
     }
 
     /**
+     * Generate a static diagram image in base64 format
+     * 
+     * @param array<string, mixed> $data Analysis data
+     * @return string Base64 encoded image data
+     */
+    protected function generateStaticDiagramImage(array $data): string
+    {
+        $imageData = $this->generateDiagramImage(
+            $data,
+            $this->config('diagram_image_format', 'png'),
+            $this->config('diagram_image_width', 1200),
+            $this->config('diagram_image_height', 800)
+        );
+        
+        // Convertir en base64 pour intégration dans le PDF
+        $base64Image = base64_encode($imageData);
+        $mimeType = match ($this->config('diagram_image_format', 'png')) {
+            'png' => 'image/png',
+            'jpg', 'jpeg' => 'image/jpeg',
+            'gif' => 'image/gif',
+            default => 'image/png',
+        };
+        
+        return "data:{$mimeType};base64,{$base64Image}";
+    }
+
+    /**
      * {@inheritdoc}
      *
      * @return array<string, mixed>
@@ -289,6 +328,10 @@ class PdfExporter extends BaseExporter
             'orientation' => 'portrait',
             'remote_enabled' => false,
             'template_path' => null, // Custom template path
+            'use_static_diagram' => true, // Utiliser une image statique pour le diagramme
+            'diagram_image_format' => 'png', // Format de l'image du diagramme
+            'diagram_image_width' => 1200, // Largeur de l'image du diagramme
+            'diagram_image_height' => 800, // Hauteur de l'image du diagramme
         ];
     }
 
@@ -301,7 +344,7 @@ class PdfExporter extends BaseExporter
     {
         $total = 0;
 
-        foreach ($data as $components) {
+        foreach ($data as $componentType => $components) {
             if (is_array($components)) {
                 // If it's a direct array of items
                 if (isset($components[0])) {

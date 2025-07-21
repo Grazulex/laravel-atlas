@@ -24,6 +24,7 @@
   "homepage": "https://github.com/grazulex/laravel-atlas",
   "require": {
     "php": "^8.3",
+    "ext-gd": "*",
     "illuminate/support": "^12.19",
     "illuminate/view": "^12.19",
     "nesbot/carbon": "^3.10",
@@ -43,7 +44,8 @@
   "suggest": {
     "pestphp/pest": "Required to run and generate Atlas tests (version >=3.0)",
     "dompdf/dompdf": "Required for PDF export functionality (^3.1)",
-    "league/html-to-markdown": "Required for advanced markdown formatting (^5.1)"
+    "league/html-to-markdown": "Required for advanced markdown formatting (^5.1)",
+    "ext-gd": "Required for image export functionality"
   },
   "minimum-stability": "stable",
   "prefer-stable": true,

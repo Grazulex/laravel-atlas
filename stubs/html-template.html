@@ -236,6 +236,31 @@
             font-weight: bold;
         }
         
+        .diagram-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .diagram-section h2 {
+            color: #495057;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+        }
+        
+        .diagram-image {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
         @media print {
             .container {
                 max-width: none;
@@ -281,6 +306,14 @@
                 @endif
             </div>
         </div>
+
+        @if(isset($diagram_image_base64) && !empty($diagram_image_base64))
+        <div class="diagram-section">
+            <h2>🗺️ Architecture Diagram</h2>
+            <p style="margin-bottom: 20px; color: #6c757d;">Visual representation of your Laravel application's architecture and component relationships.</p>
+            <img src="{{ $diagram_image_base64 }}" alt="Laravel Application Architecture Diagram" class="diagram-image" />
+        </div>
+        @endif
 
         @if(isset($data['summary']))
         <div class="summary">

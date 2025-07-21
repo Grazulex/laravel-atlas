@@ -167,7 +167,59 @@ class AnalysisEngine
      */
     private function mapComponentRelationships(): array
     {
-        return [];
+        $relationships = [];
+
+        // Map models and their relationships
+        if (isset($this->componentData['models'])) {
+            foreach ($this->componentData['models'] as $modelName => $model) {
+                if (isset($model['relationships'])) {
+                    $relationships[$modelName] = [
+                        'type' => 'model',
+                        'relates_to' => $model['relationships'],
+                    ];
+                }
+            }
+        }
+
+        // Map controllers and their actions
+        if (isset($this->componentData['controllers'])) {
+            foreach ($this->componentData['controllers'] as $controllerName => $controller) {
+                $relatesTo = [];
+
+                // Map controller to routes
+                if (isset($this->componentData['routes'])) {
+                    foreach ($this->componentData['routes'] as $route) {
+                        if (isset($route['action']) && strpos($route['action'], $controllerName) === 0) {
+                            $relatesTo[] = [
+                                'name' => $route['name'] ?? $route['uri'] ?? 'unknown-route',
+                                'type' => 'route',
+                            ];
+                        }
+                    }
+                }
+
+                // Map controller to models (based on dependencies)
+                if (isset($controller['dependencies'])) {
+                    foreach ($controller['dependencies'] as $dependency) {
+                        if (isset($this->componentData['models'][$dependency])) {
+                            $relatesTo[] = [
+                                'name' => $dependency,
+                                'type' => 'model',
+                            ];
+                        }
+                    }
+                }
+
+                if (! empty($relatesTo)) {
+                    $relationships[$controllerName] = [
+                        'type' => 'controller',
+                        'relates_to' => $relatesTo,
+                    ];
+                }
+            }
+        }
+
+        return $relationships;
     }
 
     /**

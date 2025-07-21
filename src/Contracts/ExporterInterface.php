@@ -22,4 +22,11 @@ interface ExporterInterface
      * Get the MIME type for this export format
      */
     public function getMimeType(): string;
+
+    /**
+     * Set configuration options
+     *
+     * @param array<string, mixed> $config
+     */
+    public function setConfig(array $config): self;
 }

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ $title }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 0;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+        
+        .metadata {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .metadata h2 {
+            color: #444;
+            font-size: 1.6em;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        
+        .metadata table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .metadata table th,
+        .metadata table td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .metadata table th {
+            text-align: left;
+            width: 30%;
+            color: #666;
+        }
+        
+        .component-section {
+            margin-bottom: 40px;
+        }
+        
+        .component-section h2 {
+            margin-bottom: 20px;
+            color: #444;
+            font-size: 1.8em;
+            font-weight: 500;
+        }
+        
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+        
+        .component-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .component-card h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+            font-weight: 500;
+        }
+        
+        .component-info {
+            margin-top: 10px;
+        }
+        
+        .component-info p {
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .component-info code {
+            background-color: #f1f1f1;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e83e8c;
+        }
+        
+        .relationships {
+            margin-top: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        /* Visual map section */
+        .visual-map {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .visual-map h2 {
+            color: #444;
+            font-size: 1.6em;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>{{ $title }}</h1>
+            <p>Interactive architecture map for your Laravel application</p>
+        </div>
+        
+        <div class="metadata">
+            <h2>Project Overview</h2>
+            <table>
+                <tr>
+                    <th>Generated at</th>
+                    <td>{{ $generated_at }}</td>
+                </tr>
+                <tr>
+                    <th>Generation time</th>
+                    <td>{{ $generation_time_ms }}ms</td>
+                </tr>
+                <tr>
+                    <th>Atlas version</th>
+                    <td>{{ $atlas_version }}</td>
+                </tr>
+                <tr>
+                    <th>Total components</th>
+                    <td>{{ $total_components }}</td>
+                </tr>
+            </table>
+        </div>
+        
+        <!-- Visual Architecture Map -->
+        <div class="visual-map">
+            <h2>Visual Architecture Map</h2>
+            <p>This diagram shows the relationships between components in your application.</p>
+            
+            @if(isset($diagram_image_base64) && !empty($diagram_image_base64))
+            <!-- Static Image Diagram -->
+            <div class="static-diagram-container">
+                <img src="{{ $diagram_image_base64 }}" alt="Laravel Application Architecture Diagram" style="max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 5px; margin: 20px 0;" />
+                <p style="font-size: 0.9em; color: #666; margin-top: 10px;">Static architecture diagram showing component relationships</p>
+            </div>
+            @else
+            <!-- No diagram available -->
+            <div class="no-diagram-container" style="text-align: center; padding: 40px; background: #f8f9fa; border-radius: 5px;">
+                <p style="color: #666; font-style: italic;">No architecture diagram available</p>
+            </div>
+            @endif
+        </div>
+        
+        <!-- Components by Type -->
+        @if(isset($data) && is_array($data))
+        @foreach($data as $componentType => $components)
+        @if(is_array($components) && count($components) > 0)
+        <div class="component-section">
+            <h2>{{ ucfirst($componentType) }} ({{ count($components) }})</h2>
+            <div class="component-grid">
+                @foreach($components as $component)
+                <div class="component-card">
+                    <h3>{{ $component['class_name'] ?? $component['name'] ?? 'Unknown' }}</h3>
+                    <div class="component-info">
+                        @if(isset($component['namespace']))
+                        <p><strong>Namespace:</strong> <code>{{ $component['namespace'] }}</code></p>
+                        @endif
+                        
+                        @if(isset($component['file_path']))
+                        <p><strong>Path:</strong> <code>{{ $component['file_path'] }}</code></p>
+                        @endif
+                        
+                        @if($componentType == 'models' && isset($component['relationships']))
+                        <div class="relationships">
+                            <p><strong>Relationships:</strong></p>
+                            <ul>
+                                @foreach($component['relationships'] as $relationName => $relation)
+                                <li>{{ $relationName }} ({{ $relation['type'] ?? 'unknown' }})</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                        @endif
+                        
+                        @if($componentType == 'routes')
+                            @if(isset($component['uri']))
+                            <p><strong>URI:</strong> <code>{{ $component['uri'] }}</code></p>
+                            @endif
+                            
+                            @if(isset($component['method']))
+                            <p><strong>Method:</strong> <code>{{ $component['method'] }}</code></p>
+                            @endif
+                            
+                            @if(isset($component['action']))
+                            <p><strong>Action:</strong> <code>{{ $component['action'] }}</code></p>
+                            @endif
+                        @endif
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
+        @endforeach
+        @endif
+        
+        <div class="footer">
+            <p>Generated with Laravel Atlas on {{ $generated_at }}</p>
+        </div>
+    </div>
+</body>
+</html>

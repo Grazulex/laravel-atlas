@@ -25,10 +25,18 @@ class HtmlExporter extends BaseExporter
 
         // Use Blade renderer for .blade.php templates, simple renderer for others
         if ($this->isBladeTemplate($templatePath)) {
+            // Generate static image if enabled
+            $diagramImageBase64 = '';
+            if ($this->config('use_static_diagram', true)) {
+                $diagramImageBase64 = $this->generateStaticDiagramImage($data);
+            }
+
             return $this->renderWithBlade($templatePath, [
                 'data' => $data,
                 'config' => $this->config,
                 'title' => $this->config('title', 'Laravel Atlas Architecture Map'),
+                'diagram_image_base64' => $diagramImageBase64,
+                'use_static_diagram' => $this->config('use_static_diagram', true),
             ]);
         }
         $template = file_get_contents($templatePath);
@@ -77,8 +85,19 @@ class HtmlExporter extends BaseExporter
     {
         try {
             $renderer = new BladeRenderer;
+            
+            // Add global variables that should be available in the template
+            $globalVars = [
+                'generated_at' => date('Y-m-d H:i:s'),
+                'generation_time_ms' => round(microtime(true) * 1000 - $_SERVER['REQUEST_TIME_FLOAT'] * 1000),
+                'atlas_version' => '1.0.0',
+                'total_components' => $this->countTotalComponents($variables['data'] ?? []),
+            ];
+            
+            // Merge with variables
+            $allVariables = array_merge($variables, $globalVars);
 
-            return $renderer->renderFile($templatePath, $variables);
+            return $renderer->renderFile($templatePath, $allVariables);
         } catch (Throwable $e) {
             throw new RuntimeException('Blade template rendering failed: ' . $e->getMessage(), 0, $e);
         }
@@ -96,6 +115,14 @@ class HtmlExporter extends BaseExporter
             if (is_string($value)) {
                 $template = str_replace('{{ $' . $key . ' }}', $value, $template);
             } elseif (is_array($value)) {
+                // Handle metadata array specially
+                if ($key === 'data' && isset($value['metadata'])) {
+                    foreach ($value['metadata'] as $metaKey => $metaValue) {
+                        $stringValue = is_string($metaValue) ? $metaValue : (string) $metaValue;
+                        $template = str_replace('{{ $' . $metaKey . ' }}', $stringValue, $template);
+                    }
+                }
+                
                 $encodedValue = json_encode($value, JSON_PRETTY_PRINT);
                 if ($encodedValue !== false) {
                     $template = str_replace('{{ $' . $key . ' }}', $encodedValue, $template);
@@ -239,6 +266,33 @@ class HtmlExporter extends BaseExporter
     }
 
     /**
+     * Generate a static diagram image in base64 format
+     * 
+     * @param array<string, mixed> $data Analysis data
+     * @return string Base64 encoded image data
+     */
+    protected function generateStaticDiagramImage(array $data): string
+    {
+        $imageData = $this->generateDiagramImage(
+            $data,
+            $this->config('diagram_image_format', 'png'),
+            $this->config('diagram_image_width', 1200),
+            $this->config('diagram_image_height', 800)
+        );
+        
+        // Convertir en base64 pour intégration dans le HTML
+        $base64Image = base64_encode($imageData);
+        $mimeType = match ($this->config('diagram_image_format', 'png')) {
+            'png' => 'image/png',
+            'jpg', 'jpeg' => 'image/jpeg',
+            'gif' => 'image/gif',
+            default => 'image/png',
+        };
+        
+        return "data:{$mimeType};base64,{$base64Image}";
+    }
+    
+    /**
      * {@inheritdoc}
      */
     public function getMimeType(): string
@@ -256,6 +310,10 @@ class HtmlExporter extends BaseExporter
         return [
             'title' => 'Laravel Atlas Architecture Map',
             'template_path' => null, // Custom template path
+            'use_static_diagram' => true, // Utiliser une image statique pour le diagramme
+            'diagram_image_format' => 'png', // Format de l'image du diagramme
+            'diagram_image_width' => 1200, // Largeur de l'image du diagramme
+            'diagram_image_height' => 800, // Hauteur de l'image du diagramme
         ];
     }
 

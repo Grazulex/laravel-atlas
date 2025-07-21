@@ -8,9 +8,9 @@ use Illuminate\Console\Command;
 use LaravelAtlas\Contracts\ExporterInterface;
 use LaravelAtlas\Contracts\MapperInterface;
 use LaravelAtlas\Exporters\HtmlExporter;
+use LaravelAtlas\Exporters\ImageExporter;
 use LaravelAtlas\Exporters\JsonExporter;
 use LaravelAtlas\Exporters\MarkdownExporter;
-use LaravelAtlas\Exporters\MermaidExporter;
 use LaravelAtlas\Exporters\PdfExporter;
 use LaravelAtlas\Mappers\CommandMapper;
 use LaravelAtlas\Mappers\ControllerMapper;
@@ -33,7 +33,7 @@ class AtlasGenerateCommand extends Command
 {
     protected $signature = 'atlas:generate 
                             {--type=all : Type of component to map (models, routes, jobs, services, controllers, events, commands, middleware, policies, resources, notifications, requests, rules, all)}
-                            {--format=json : Output format (json, mermaid, markdown, pdf, html)}
+                            {--format=json : Output format (json, image, markdown, pdf, html)}
                             {--output= : Output file path}
                             {--detailed : Include detailed information}';
 
@@ -63,7 +63,7 @@ class AtlasGenerateCommand extends Command
      */
     protected array $availableExporters = [
         'json' => JsonExporter::class,
-        'mermaid' => MermaidExporter::class,
+        'image' => ImageExporter::class,
         'markdown' => MarkdownExporter::class,
         'pdf' => PdfExporter::class,
         'html' => HtmlExporter::class,

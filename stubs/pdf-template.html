@@ -76,13 +76,6 @@
             color: #7f8c8d;
         }
         
-        .relationships {
-            margin-top: 10px;
-            padding: 8px;
-            background: #f8f9fa;
-            border-radius: 3px;
-        }
-        
         .page-break {
             page-break-before: always;
         }
@@ -93,46 +86,69 @@
             border-radius: 2px;
             font-size: 10px;
         }
+        
+        .diagram-section {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+        }
+        
+        .diagram-section img {
+            max-width: 100%;
+            height: auto;
+        }
     </style>
 </head>
 <body>
     <h1>{{ $title }}</h1>
     
     <div class="metadata">
-        <strong>Generated:</strong> {{ $generated_at }}<br>
-        <strong>Generation Time:</strong> {{ $generation_time_ms }}ms<br>
-        <strong>Atlas Version:</strong> {{ $atlas_version }}<br>
-        <strong>Total Components:</strong> {{ $total_components }}
+        <h2>📊 Generation Information</h2>
+        <table class="summary-table">
+            <tr>
+                <th>Generated At</th>
+                <td>{{ $generated_at }}</td>
+            </tr>
+            <tr>
+                <th>Generation Time</th>
+                <td>{{ $generation_time_ms }}ms</td>
+            </tr>
+            <tr>
+                <th>Atlas Version</th>
+                <td>{{ $atlas_version }}</td>
+            </tr>
+            <tr>
+                <th>Total Components</th>
+                <td>{{ $total_components }}</td>
+            </tr>
+        </table>
     </div>
+
+    <h2>🗺️ Architecture Overview</h2>
+    <p>This section shows how different components in your application are connected.</p>
     
-    <h2>📈 Summary</h2>
+    @if(isset($diagram_image_base64) && !empty($diagram_image_base64))
+    <div class="diagram-section">
+        <img src="{{ $diagram_image_base64 }}" alt="Laravel Application Architecture Diagram" />
+        <p style="font-size: 10px; color: #666; margin-top: 10px;">Architecture diagram showing component relationships</p>
+    </div>
+    @else
+    <div class="diagram-section">
+        <p style="font-style: italic; color: #666;">No architecture diagram available</p>
+    </div>
+    @endif
     
-    <table class="summary-table">
-        <thead>
-            <tr>
-                <th>Component Type</th>
-                <th>Count</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($data as $type => $items)
-            <tr>
-                <td>{{ ucfirst($type) }}</td>
-                <td>{{ is_array($items) ? count($items) : 0 }}</td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-    
+    <!-- Individual Component Sections -->
     @foreach($data as $type => $items)
     @if(is_array($items) && count($items) > 0)
     <div class="page-break">
         <h2>{{ ucfirst($type) }} ({{ count($items) }})</h2>
         
-        @foreach($items as $item)
+        @foreach($items as $key => $item)
         <div class="component">
             <div class="component-header">
-                {{ $item['class_name'] ?? $item['name'] ?? 'Unknown' }}
+                {{ $item['class_name'] ?? $item['name'] ?? $key }}
             </div>
             
             <div class="component-details">
@@ -144,48 +160,16 @@
                 <strong>File:</strong> <code>{{ $item['file_path'] }}</code><br>
                 @endif
                 
-                {{-- Model specific details --}}
-                @if($type == "models")
-                    @if(isset($item['relationships']))
-                    <div class="relationships">
-                        <strong>Relationships:</strong><br>
-                        @foreach($item['relationships'] as $relationName => $relation)
-                        • {{ $relationName }} ({{ $relation['type'] ?? 'unknown' }})<br>
-                        @endforeach
-                    </div>
-                    @endif
-                    
-                    @if(isset($item['table']))
-                    <strong>Table:</strong> <code>{{ $item['table'] }}</code><br>
-                    @endif
+                @if(isset($item['uri']))
+                <strong>URI:</strong> <code>{{ $item['uri'] }}</code><br>
                 @endif
                 
-                {{-- Route specific details --}}
-                @if($type == "routes")
-                    @if(isset($item['uri']))
-                    <strong>URI:</strong> <code>{{ $item['uri'] }}</code><br>
-                    @endif
-                    
-                    @if(isset($item['method']))
-                    <strong>Method:</strong> <code>{{ $item['method'] }}</code><br>
-                    @endif
-                    
-                    @if(isset($item['action']))
-                    <strong>Action:</strong> <code>{{ $item['action'] }}</code><br>
-                    @endif
-                    
-                    @if(isset($item['name']))
-                    <strong>Name:</strong> <code>{{ $item['name'] }}</code><br>
-                    @endif
+                @if(isset($item['method']))
+                <strong>Method:</strong> <code>{{ $item['method'] }}</code><br>
                 @endif
                 
-                {{-- Job specific details --}}
-                @if($type == "jobs")
-                    @if(isset($item['implements_should_queue']) && $item['implements_should_queue'])
-                    <strong>Type:</strong> Queued Job ⚡<br>
-                    @else
-                    <strong>Type:</strong> Synchronous Job 🔄<br>
-                    @endif
+                @if(isset($item['action']))
+                <strong>Action:</strong> <code>{{ $item['action'] }}</code><br>
                 @endif
             </div>
         </div>

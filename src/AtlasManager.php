@@ -8,9 +8,9 @@ use InvalidArgumentException;
 use LaravelAtlas\Contracts\ExporterInterface;
 use LaravelAtlas\Contracts\MapperInterface;
 use LaravelAtlas\Exporters\HtmlExporter;
+use LaravelAtlas\Exporters\ImageExporter;
 use LaravelAtlas\Exporters\JsonExporter;
 use LaravelAtlas\Exporters\MarkdownExporter;
-use LaravelAtlas\Exporters\MermaidExporter;
 use LaravelAtlas\Exporters\PdfExporter;
 use LaravelAtlas\Mappers\CommandMapper;
 use LaravelAtlas\Mappers\ControllerMapper;
@@ -50,7 +50,7 @@ class AtlasManager
         'json' => JsonExporter::class,
         'html' => HtmlExporter::class,
         'markdown' => MarkdownExporter::class,
-        'mermaid' => MermaidExporter::class,
+        'image' => ImageExporter::class,
         'pdf' => PdfExporter::class,
     ];
 
@@ -79,8 +79,8 @@ class AtlasManager
         $exporter = $this->exporter($format);
 
         // Set options if the exporter supports it
-        if (method_exists($exporter, 'setOptions')) {
-            $exporter->setOptions($options);
+        if (method_exists($exporter, 'setConfig')) {
+            $exporter->setConfig($options);
         }
 
         return $exporter->export($data);
@@ -106,8 +106,8 @@ class AtlasManager
         $exporter = $this->exporter($format);
 
         // Set options if the exporter supports it
-        if (method_exists($exporter, 'setOptions')) {
-            $exporter->setOptions(array_merge($options, ['multi_type' => true]));
+        if (method_exists($exporter, 'setConfig')) {
+            $exporter->setConfig(array_merge($options, ['multi_type' => true]));
         }
 
         return $exporter->export($allData);
