@@ -78,10 +78,8 @@ class AtlasManager
         $data = $this->scan($type, $options);
         $exporter = $this->exporter($format);
 
-        // Set options if the exporter supports it
-        if (method_exists($exporter, 'setConfig')) {
-            $exporter->setConfig($options);
-        }
+        // Set configuration options
+        $exporter->setConfig($options);
 
         return $exporter->export($data);
     }
@@ -105,10 +103,8 @@ class AtlasManager
 
         $exporter = $this->exporter($format);
 
-        // Set options if the exporter supports it
-        if (method_exists($exporter, 'setConfig')) {
-            $exporter->setConfig(array_merge($options, ['multi_type' => true]));
-        }
+        // Set configuration options
+        $exporter->setConfig(array_merge($options, ['multi_type' => true]));
 
         return $exporter->export($allData);
     }

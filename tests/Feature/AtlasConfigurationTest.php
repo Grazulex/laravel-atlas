@@ -32,12 +32,12 @@ class AtlasConfigurationTest extends TestCase
     public function test_atlas_generation_formats_can_be_configured(): void
     {
         config([
-            'atlas.generation.formats.mermaid' => false,
+            'atlas.generation.formats.image' => false,
             'atlas.generation.formats.json' => true,
             'atlas.generation.formats.markdown' => true,
         ]);
 
-        $this->assertFalse(config('atlas.generation.formats.mermaid'));
+        $this->assertFalse(config('atlas.generation.formats.image'));
         $this->assertTrue(config('atlas.generation.formats.json'));
         $this->assertTrue(config('atlas.generation.formats.markdown'));
     }
@@ -61,7 +61,7 @@ class AtlasConfigurationTest extends TestCase
         $this->assertTrue(config('atlas.status_tracking.track_history'));
         $this->assertSame(1000, config('atlas.status_tracking.max_entries'));
 
-        $this->assertTrue(config('atlas.generation.formats.mermaid'));
+        $this->assertTrue(config('atlas.generation.formats.image'));
         $this->assertTrue(config('atlas.generation.formats.json'));
         $this->assertTrue(config('atlas.generation.formats.markdown'));
 

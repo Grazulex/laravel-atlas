@@ -189,7 +189,7 @@ class AnalysisEngine
                 // Map controller to routes
                 if (isset($this->componentData['routes'])) {
                     foreach ($this->componentData['routes'] as $route) {
-                        if (isset($route['action']) && strpos($route['action'], $controllerName) === 0) {
+                        if (isset($route['action']) && str_starts_with($route['action'], (string) $controllerName)) {
                             $relatesTo[] = [
                                 'name' => $route['name'] ?? $route['uri'] ?? 'unknown-route',
                                 'type' => 'route',
@@ -210,7 +210,7 @@ class AnalysisEngine
                     }
                 }
 
-                if (! empty($relatesTo)) {
+                if ($relatesTo !== []) {
                     $relationships[$controllerName] = [
                         'type' => 'controller',
                         'relates_to' => $relatesTo,

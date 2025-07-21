@@ -26,7 +26,7 @@ interface ExporterInterface
     /**
      * Set configuration options
      *
-     * @param array<string, mixed> $config
+     * @param  array<string, mixed>  $config
      */
     public function setConfig(array $config): self;
 }

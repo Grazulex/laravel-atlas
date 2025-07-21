@@ -85,7 +85,7 @@ class HtmlExporter extends BaseExporter
     {
         try {
             $renderer = new BladeRenderer;
-            
+
             // Add global variables that should be available in the template
             $globalVars = [
                 'generated_at' => date('Y-m-d H:i:s'),
@@ -93,7 +93,7 @@ class HtmlExporter extends BaseExporter
                 'atlas_version' => '1.0.0',
                 'total_components' => $this->countTotalComponents($variables['data'] ?? []),
             ];
-            
+
             // Merge with variables
             $allVariables = array_merge($variables, $globalVars);
 
@@ -122,7 +122,7 @@ class HtmlExporter extends BaseExporter
                         $template = str_replace('{{ $' . $metaKey . ' }}', $stringValue, $template);
                     }
                 }
-                
+
                 $encodedValue = json_encode($value, JSON_PRETTY_PRINT);
                 if ($encodedValue !== false) {
                     $template = str_replace('{{ $' . $key . ' }}', $encodedValue, $template);
@@ -267,8 +267,9 @@ class HtmlExporter extends BaseExporter
 
     /**
      * Generate a static diagram image in base64 format
-     * 
-     * @param array<string, mixed> $data Analysis data
+     *
+     * @param  array<string, mixed>  $data  Analysis data
+     *
      * @return string Base64 encoded image data
      */
     protected function generateStaticDiagramImage(array $data): string
@@ -279,7 +280,7 @@ class HtmlExporter extends BaseExporter
             $this->config('diagram_image_width', 1200),
             $this->config('diagram_image_height', 800)
         );
-        
+
         // Convertir en base64 pour intégration dans le HTML
         $base64Image = base64_encode($imageData);
         $mimeType = match ($this->config('diagram_image_format', 'png')) {
@@ -288,10 +289,10 @@ class HtmlExporter extends BaseExporter
             'gif' => 'image/gif',
             default => 'image/png',
         };
-        
+
         return "data:{$mimeType};base64,{$base64Image}";
     }
-    
+
     /**
      * {@inheritdoc}
      */

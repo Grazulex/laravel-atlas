@@ -20,7 +20,7 @@ class PdfExporter extends BaseExporter
     public function export(array $data): string
     {
         // Check if required dependencies are available
-        if (! class_exists('Dompdf\\Dompdf') || ! class_exists('Dompdf\\Options')) {
+        if (! class_exists(Dompdf::class) || ! class_exists(Options::class)) {
             throw new RuntimeException(
                 'Dompdf is required for PDF export. Install it with: composer require dompdf/dompdf'
             );
@@ -289,8 +289,9 @@ class PdfExporter extends BaseExporter
 
     /**
      * Generate a static diagram image in base64 format
-     * 
-     * @param array<string, mixed> $data Analysis data
+     *
+     * @param  array<string, mixed>  $data  Analysis data
+     *
      * @return string Base64 encoded image data
      */
     protected function generateStaticDiagramImage(array $data): string
@@ -301,7 +302,7 @@ class PdfExporter extends BaseExporter
             $this->config('diagram_image_width', 1200),
             $this->config('diagram_image_height', 800)
         );
-        
+
         // Convertir en base64 pour intégration dans le PDF
         $base64Image = base64_encode($imageData);
         $mimeType = match ($this->config('diagram_image_format', 'png')) {
@@ -310,7 +311,7 @@ class PdfExporter extends BaseExporter
             'gif' => 'image/gif',
             default => 'image/png',
         };
-        
+
         return "data:{$mimeType};base64,{$base64Image}";
     }
 
@@ -344,7 +345,7 @@ class PdfExporter extends BaseExporter
     {
         $total = 0;
 
-        foreach ($data as $componentType => $components) {
+        foreach ($data as $components) {
             if (is_array($components)) {
                 // If it's a direct array of items
                 if (isset($components[0])) {

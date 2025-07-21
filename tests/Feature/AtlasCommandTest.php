@@ -35,7 +35,7 @@ class AtlasCommandTest extends TestCase
 
     public function test_atlas_generate_command_with_format_option(): void
     {
-        $result = $this->artisan('atlas:generate --format=mermaid');
+        $result = $this->artisan('atlas:generate --format=image');
         $this->assertInstanceOf(PendingCommand::class, $result);
         $result->expectsOutput('🗺️  Generating Laravel Atlas map...')
             ->expectsOutput('✔ Map generated successfully!')
@@ -45,7 +45,7 @@ class AtlasCommandTest extends TestCase
     public function test_atlas_generate_command_with_multiple_formats(): void
     {
         // Test avec différents formats un par un
-        $formats = ['json', 'mermaid', 'markdown'];
+        $formats = ['json', 'image', 'markdown'];
 
         foreach ($formats as $format) {
             $result = $this->artisan("atlas:generate --format={$format}");

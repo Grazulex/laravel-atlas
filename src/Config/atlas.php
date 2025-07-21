@@ -34,7 +34,7 @@ return [
     'generation' => [
         'output_path' => env('ATLAS_OUTPUT_PATH', base_path('atlas')),
         'formats' => [
-            'mermaid' => env('ATLAS_FORMAT_MERMAID', true),
+            'image' => env('ATLAS_FORMAT_IMAGE', true),
             'json' => env('ATLAS_FORMAT_JSON', true),
             'markdown' => env('ATLAS_FORMAT_MARKDOWN', true),
         ],
