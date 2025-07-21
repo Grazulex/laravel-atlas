@@ -391,8 +391,8 @@ class HtmlExporter extends BaseExporter
             return $customPath;
         }
 
-        // Default intelligent template
-        return __DIR__ . '/../../stubs/intelligent-html-template.blade.php';
+        // Default intelligent template (modular version)
+        return __DIR__ . '/../../stubs/intelligent-html-template-modular.blade.php';
     }
 
     /**
