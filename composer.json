@@ -36,7 +36,9 @@
     "larastan/larastan": "^3.4",
     "rector/rector": "^2.0",
     "doctrine/dbal": "^4.2",
-    "orchestra/testbench": "^10.0"
+    "orchestra/testbench": "^10.0",
+    "dompdf/dompdf": "^2.0",
+    "league/html-to-markdown": "^5.1"
   },
   "suggest": {
     "pestphp/pest": "Required to run and generate Atlas tests (version >=3.0)",

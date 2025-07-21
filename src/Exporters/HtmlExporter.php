@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Exporters;
 
-use Throwable;
 use LaravelAtlas\Support\BladeRenderer;
 use RuntimeException;
+use Throwable;
 
 class HtmlExporter extends BaseExporter
 {
@@ -35,6 +35,7 @@ class HtmlExporter extends BaseExporter
         if ($template === false) {
             throw new RuntimeException("Failed to read HTML template at: {$templatePath}");
         }
+
         return $this->renderTemplate($template, [
             'data' => $data,
             'config' => $this->config,

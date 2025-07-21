@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Console\Commands;
 
-use RuntimeException;
-use Throwable;
 use Illuminate\Console\Command;
 use LaravelAtlas\Contracts\ExporterInterface;
 use LaravelAtlas\Contracts\MapperInterface;
@@ -28,6 +26,8 @@ use LaravelAtlas\Mappers\RouteMapper;
 use LaravelAtlas\Mappers\RuleMapper;
 use LaravelAtlas\Mappers\ServiceMapper;
 use LaravelAtlas\Support\DependencyChecker;
+use RuntimeException;
+use Throwable;
 
 class AtlasGenerateCommand extends Command
 {

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Support;
 
-use Throwable;
-use RuntimeException;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\View\Compilers\BladeCompiler;
@@ -14,6 +12,8 @@ use Illuminate\View\Engines\EngineResolver;
 use Illuminate\View\Engines\PhpEngine;
 use Illuminate\View\Factory;
 use Illuminate\View\FileViewFinder;
+use RuntimeException;
+use Throwable;
 
 class BladeRenderer
 {
@@ -99,7 +99,7 @@ class BladeRenderer
         $resolver = new EngineResolver;
 
         // PHP Engine
-        $resolver->register('php', fn(): PhpEngine => new PhpEngine($filesystem));
+        $resolver->register('php', fn (): PhpEngine => new PhpEngine($filesystem));
 
         // Blade Engine
         $resolver->register('blade', function () use ($filesystem): CompilerEngine {

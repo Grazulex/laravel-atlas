@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Exporters;
 
-use Throwable;
-use Dompdf\Dompdf;
-use Dompdf\Options;
 use LaravelAtlas\Support\BladeRenderer;
-use LaravelAtlas\Support\DependencyChecker;
 use RuntimeException;
+use Throwable;
 
 class PdfExporter extends BaseExporter
 {
@@ -21,17 +18,24 @@ class PdfExporter extends BaseExporter
     public function export(array $data): string
     {
         // Check if required dependencies are available
-        DependencyChecker::checkDompdf();
+        if (! class_exists('Dompdf\Dompdf') || ! class_exists('Dompdf\Options')) {
+            throw new RuntimeException(
+                'Dompdf is required for PDF export. Install it with: composer require dompdf/dompdf'
+            );
+        }
 
         $htmlContent = $this->generateHtmlContent($data);
 
+        // Using fully qualified class names for better IDE support and to avoid PHPStan errors
         // Configure Dompdf
-        $options = new Options;
+        /** @var \Dompdf\Options $options */
+        $options = new \Dompdf\Options;
         $options->set('defaultFont', $this->config('font', 'DejaVu Sans'));
         $options->set('isRemoteEnabled', $this->config('remote_enabled', false));
         $options->set('isHtml5ParserEnabled', true);
 
-        $dompdf = new Dompdf($options);
+        /** @var \Dompdf\Dompdf $dompdf */
+        $dompdf = new \Dompdf\Dompdf($options);
         $dompdf->loadHtml($htmlContent);
 
         // Set paper size and orientation
@@ -77,6 +81,7 @@ class PdfExporter extends BaseExporter
         if ($template === false) {
             throw new RuntimeException("Failed to read PDF template at: {$templatePath}");
         }
+
         return $this->renderTemplate($template, [
             'data' => $data,
             'config' => $this->config,

@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Support;
 
-use Illuminate\View\Factory;
-use Dompdf\Dompdf;
-use League\HTMLToMarkdown\HtmlConverter;
 use RuntimeException;
 
 class DependencyChecker
@@ -16,7 +13,7 @@ class DependencyChecker
      */
     public static function checkBlade(string $context = 'export'): void
     {
-        if (! class_exists(Factory::class)) {
+        if (! class_exists('Illuminate\View\Factory')) {
             throw new RuntimeException(
                 "Laravel Blade view engine is required for {$context}. Install it with: composer require illuminate/view"
             );
@@ -25,14 +22,12 @@ class DependencyChecker
 
     /**
      * Check if Dompdf is available for PDF exports
+     *
+     * @return bool Returns true if Dompdf is available, false otherwise
      */
-    public static function checkDompdf(): void
+    public static function checkDompdf(): bool
     {
-        if (! class_exists(Dompdf::class)) {
-            throw new RuntimeException(
-                'Dompdf is required for PDF export. Install it with: composer require dompdf/dompdf'
-            );
-        }
+        return class_exists('Dompdf\Dompdf') && class_exists('Dompdf\Options');
     }
 
     /**
@@ -40,7 +35,7 @@ class DependencyChecker
      */
     public static function checkHtmlToMarkdown(): void
     {
-        if (! class_exists(HtmlConverter::class)) {
+        if (! class_exists('League\HTMLToMarkdown\HtmlConverter')) {
             throw new RuntimeException(
                 'HTML to Markdown converter is required. Install it with: composer require league/html-to-markdown'
             );
@@ -59,7 +54,7 @@ class DependencyChecker
         // Blade is included by default in Laravel, so HTML should always be available
         $formats[] = 'html';
 
-        if (class_exists(Dompdf::class)) {
+        if (class_exists('Dompdf\Dompdf')) {
             $formats[] = 'pdf';
         }
 
@@ -81,7 +76,7 @@ class DependencyChecker
                 break;
 
             case 'pdf':
-                if (! class_exists(Dompdf::class)) {
+                if (! class_exists('Dompdf\Dompdf')) {
                     $missing[] = 'dompdf/dompdf';
                 }
                 break;
@@ -97,7 +92,7 @@ class DependencyChecker
      */
     public static function getInstallCommand(array $dependencies): string
     {
-        if ($dependencies === []) {
+        if (empty($dependencies)) {
             return '';
         }
 
