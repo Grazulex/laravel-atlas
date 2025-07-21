@@ -406,11 +406,24 @@
                                         @endif
                                     </div>
                                     <div class="entry-point-details">
-                                        <strong>Controller:</strong> {{ is_array($route['controller'] ?? 'Closure') ? 'Mixed' : class_basename($route['controller'] ?? 'Closure') }}<br>
+                                        <strong>Controller:</strong> 
+                                        @if(is_array($route['controller'] ?? ''))
+                                            @if(isset($route['controller']['short_name']))
+                                                {{ $route['controller']['short_name'] }}
+                                            @elseif(isset($route['controller']['class']))
+                                                {{ class_basename($route['controller']['class']) }}
+                                            @else
+                                                [Complex Controller]
+                                            @endif
+                                        @else
+                                            {{ $route['controller'] ? class_basename($route['controller']) : 'Closure' }}
+                                        @endif<br>
                                         <strong>Action:</strong> 
                                         @if(is_array($route['action'] ?? 'handle'))
-                                            @if(isset($route['action']['uses']))
-                                                {{ $route['action']['uses'] }}
+                                            @if(isset($route['action']['uses']) && strpos($route['action']['uses'], '@') !== false)
+                                                {{ explode('@', $route['action']['uses'])[1] ?? 'handle' }}
+                                            @elseif(isset($route['controller']['method']))
+                                                {{ $route['controller']['method'] }}
                                             @else
                                                 [Complex Action]
                                             @endif
@@ -434,13 +447,13 @@
                             
                             @if(isset($data['commands']))
                                 @foreach($data['commands'] as $command)
-                                <div class="entry-point command" onclick="showCommandDetails('{{ $command['name'] }}')">
+                                <div class="entry-point command" onclick="showCommandDetails('{{ $command['name'] ?: $command['class_name'] }}')">
                                     <div class="entry-point-title">
                                         <span class="badge badge-warning">CMD</span>
-                                        {{ $command['signature'] }}
+                                        {{ $command['signature'] ?: class_basename($command['class_name'] ?? 'Unknown Command') }}
                                     </div>
                                     <div class="entry-point-details">
-                                        {{ $command['description'] ?? 'No description' }}
+                                        {{ $command['description'] ?: ($command['class_name'] ?? 'No description') }}
                                     </div>
                                 </div>
                                 @endforeach
@@ -772,11 +785,25 @@
                                         <td><span class="badge badge-success">{{ is_array($route['method'] ?? '') ? implode('|', $route['method']) : ($route['method'] ?? 'GET') }}</span></td>
                                         <td><code>{{ $route['uri'] }}</code></td>
                                         <td>{{ $route['name'] ?? '-' }}</td>
-                                        <td>{{ is_array($route['controller'] ?? 'Closure') ? 'Mixed' : class_basename($route['controller'] ?? 'Closure') }}</td>
+                                        <td>
+                                            @if(is_array($route['controller'] ?? ''))
+                                                @if(isset($route['controller']['short_name']))
+                                                    {{ $route['controller']['short_name'] }}
+                                                @elseif(isset($route['controller']['class']))
+                                                    {{ class_basename($route['controller']['class']) }}
+                                                @else
+                                                    [Complex Controller]
+                                                @endif
+                                            @else
+                                                {{ $route['controller'] ? class_basename($route['controller']) : 'Closure' }}
+                                            @endif
+                                        </td>
                                         <td>
                                             @if(is_array($route['action'] ?? 'handle'))
-                                                @if(isset($route['action']['uses']))
-                                                    {{ $route['action']['uses'] }}
+                                                @if(isset($route['action']['uses']) && strpos($route['action']['uses'], '@') !== false)
+                                                    {{ explode('@', $route['action']['uses'])[1] ?? 'handle' }}
+                                                @elseif(isset($route['controller']['method']))
+                                                    {{ $route['controller']['method'] }}
                                                 @else
                                                     [Complex Action]
                                                 @endif
@@ -819,8 +846,12 @@
                             @foreach($data['commands'] as $command)
                             <div class="card" style="margin-bottom: 20px;">
                                 <div class="card-header">
-                                    <h3>{{ $command['name'] }}</h3>
-                                    <code>{{ $command['signature'] }}</code>
+                                    <h3>{{ $command['name'] ?: class_basename($command['class_name'] ?? 'Unknown Command') }}</h3>
+                                    @if($command['signature'])
+                                        <code>{{ $command['signature'] }}</code>
+                                    @else
+                                        <small>{{ $command['class_name'] ?? '' }}</small>
+                                    @endif
                                 </div>
                                 <div class="card-body">
                                     <p>{{ $command['description'] ?? 'No description available' }}</p>
@@ -987,7 +1018,18 @@
                                     <small>{{ $event['class_name'] }}</small>
                                 </div>
                                 <div class="card-body">
-                                    @if(isset($event['properties']))
+                                    @if(isset($event['properties']) && is_array($event['properties']))
+                                    <p><strong>Properties:</strong></p>
+                                    <ul>
+                                        @foreach($event['properties'] as $property)
+                                            @if(is_array($property) && isset($property['name']))
+                                                <li>{{ $property['name'] }} ({{ $property['type'] ?? 'mixed' }})</li>
+                                            @else
+                                                <li>{{ is_array($property) ? implode(', ', $property) : $property }}</li>
+                                            @endif
+                                        @endforeach
+                                    </ul>
+                                    @elseif(isset($event['properties']))
                                     <p><strong>Properties:</strong> {{ implode(', ', $event['properties']) }}</p>
                                     @endif
                                     
