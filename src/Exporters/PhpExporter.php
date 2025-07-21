@@ -175,6 +175,16 @@ class PhpExporter extends BaseExporter
             $php .= "    ],\n\n";
         }
 
+        // Actions
+        if (! empty($data['actions'])) {
+            $php .= "    // === ACTIONS ===\n";
+            $php .= "    'actions' => [\n";
+            foreach ($data['actions'] as $action) {
+                $php .= $this->generateActionEntry($action);
+            }
+            $php .= "    ],\n\n";
+        }
+
         // Flows intelligents
         $php .= "    // === FLOWS & INTERCONNECTIONS ===\n";
         $php .= "    'flows' => [\n";
@@ -510,6 +520,34 @@ class PhpExporter extends BaseExporter
 
         if (! empty($observer['events'])) {
             $php .= "            'events' => " . $this->exportArray($observer['events']) . ",\n";
+        }
+
+        return $php . "        ],\n";
+    }
+
+    /**
+     * @param  array<string, mixed>  $action
+     */
+    private function generateActionEntry(array $action): string
+    {
+        $php = "        [\n";
+        $php .= "            'class_name' => " . $this->exportValue($action['class_name'] ?? '') . ",\n";
+        $php .= "            'type' => " . $this->exportValue($action['type'] ?? 'custom') . ",\n";
+
+        if (! empty($action['is_invokable'])) {
+            $php .= "            'is_invokable' => " . $this->exportValue($action['is_invokable']) . ",\n";
+        }
+
+        if (! empty($action['methods'])) {
+            $php .= "            'methods' => " . $this->exportArray($action['methods']) . ",\n";
+        }
+
+        if (! empty($action['dependencies'])) {
+            $php .= "            'dependencies' => " . $this->exportArray($action['dependencies']) . ",\n";
+        }
+
+        if (! empty($action['events'])) {
+            $php .= "            'events' => " . $this->exportArray($action['events']) . ",\n";
         }
 
         return $php . "        ],\n";

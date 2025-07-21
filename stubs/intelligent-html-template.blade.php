@@ -370,6 +370,12 @@
                 <a href="#listeners" class="nav-item" onclick="showPage('listeners')">
                     Listeners <span class="nav-badge">{{ count($data['listeners'] ?? []) }}</span>
                 </a>
+                <a href="#observers" class="nav-item" onclick="showPage('observers')">
+                    Observers <span class="nav-badge">{{ count($data['observers'] ?? []) }}</span>
+                </a>
+                <a href="#actions" class="nav-item" onclick="showPage('actions')">
+                    Actions <span class="nav-badge">{{ count($data['actions'] ?? []) }}</span>
+                </a>
             </div>
             
             <div class="nav-section">
@@ -1102,6 +1108,124 @@
                             </table>
                         @else
                             <p>No listeners found.</p>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <!-- Observers Page -->
+            <div id="observers" class="page">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>👁️ Model Observers</h2>
+                    </div>
+                    <div class="card-body">
+                        @if(isset($data['observers']) && !empty($data['observers']))
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Observer</th>
+                                        <th>Model</th>
+                                        <th>Lifecycle Methods</th>
+                                        <th>Events Dispatched</th>
+                                        <th>Dependencies</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($data['observers'] as $observer)
+                                    <tr>
+                                        <td>{{ class_basename($observer['class_name']) }}</td>
+                                        <td>{{ class_basename($observer['model'] ?? '') }}</td>
+                                        <td>
+                                            @if(isset($observer['methods']) && !empty($observer['methods']))
+                                                <span class="badge">{{ implode('</span> <span class="badge">', $observer['methods']) }}</span>
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if(isset($observer['events']) && !empty($observer['events']))
+                                                {{ implode(', ', array_map('class_basename', $observer['events'])) }}
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if(isset($observer['dependencies']) && !empty($observer['dependencies']))
+                                                {{ implode(', ', array_map('class_basename', $observer['dependencies'])) }}
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @else
+                            <p>No observers found.</p>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions Page -->
+            <div id="actions" class="page">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>⚡ Business Actions</h2>
+                    </div>
+                    <div class="card-body">
+                        @if(isset($data['actions']) && !empty($data['actions']))
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Action</th>
+                                        <th>Type</th>
+                                        <th>Invokable</th>
+                                        <th>Methods</th>
+                                        <th>Events Dispatched</th>
+                                        <th>Dependencies</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($data['actions'] as $action)
+                                    <tr>
+                                        <td>{{ class_basename($action['class_name']) }}</td>
+                                        <td><span class="badge badge-{{ $action['type'] ?? 'custom' }}">{{ ucfirst($action['type'] ?? 'custom') }}</span></td>
+                                        <td>
+                                            @if(isset($action['is_invokable']) && $action['is_invokable'])
+                                                <span class="badge badge-success">Yes</span>
+                                            @else
+                                                <span class="badge badge-secondary">No</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if(isset($action['methods']) && !empty($action['methods']))
+                                                {{ implode(', ', array_keys($action['methods'])) }}
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if(isset($action['events']) && !empty($action['events']))
+                                                {{ implode(', ', array_map('class_basename', $action['events'])) }}
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if(isset($action['dependencies']) && !empty($action['dependencies']))
+                                                {{ implode(', ', array_map('class_basename', $action['dependencies'])) }}
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @else
+                            <p>No actions found.</p>
                         @endif
                     </div>
                 </div>
