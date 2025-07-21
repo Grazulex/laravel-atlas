@@ -70,7 +70,7 @@ class AtlasCommandTest extends TestCase
     {
         $result = $this->artisan('atlas:generate --type=invalid');
         $this->assertInstanceOf(PendingCommand::class, $result);
-        $result->expectsOutput('Invalid type: invalid. Available types: models, routes, jobs, services, controllers, events, commands, middleware, policies, resources, notifications, requests, rules, all')
+        $result->expectsOutput('Invalid type: invalid. Available types: models, routes, jobs, services, controllers, events, commands, middleware, policies, resources, notifications, requests, rules, observers, listeners, actions, all')
             ->assertExitCode(1);
     }
 
