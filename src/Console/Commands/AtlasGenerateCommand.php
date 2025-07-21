@@ -208,18 +208,19 @@ class AtlasGenerateCommand extends Command
 
         // For HTML format with multiple types, use intelligent workflow
         if ($format === 'html' && $this->shouldUseIntelligentHtml($output)) {
-            $atlasManager = new AtlasManager();
-            
+            $atlasManager = new AtlasManager;
+
             // Transform command data format to AtlasManager expected format
             $transformedData = [];
             foreach ($output['data'] ?? [] as $type => $typeData) {
                 // Extract just the 'data' portion, skip errors
                 $transformedData[$type] = $typeData['data'] ?? $typeData;
             }
-            
+
             $content = $atlasManager->exportIntelligentHtml($transformedData);
             file_put_contents($path, $content);
             $this->info("💾 Output saved to: {$path} (using intelligent HTML template)");
+
             return;
         }
 
@@ -249,17 +250,17 @@ class AtlasGenerateCommand extends Command
     protected function shouldUseIntelligentHtml(array $output): bool
     {
         $data = $output['data'] ?? [];
-        
+
         // Use intelligent HTML if we have multiple component types
         // or if we have rich data that benefits from the intelligent template
         $componentTypes = array_keys($data);
         $hasMultipleTypes = count($componentTypes) > 1;
-        
+
         // Also use intelligent template if we have models, controllers, or services
         // as these create meaningful relationships and flows
         $richTypes = ['models', 'controllers', 'services', 'jobs', 'events'];
-        $hasRichTypes = !empty(array_intersect($componentTypes, $richTypes));
-        
+        $hasRichTypes = array_intersect($componentTypes, $richTypes) !== [];
+
         return $hasMultipleTypes || $hasRichTypes;
     }
 

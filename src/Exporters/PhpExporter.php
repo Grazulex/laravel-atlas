@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Exporters;
 
+use Closure;
+
 class PhpExporter extends BaseExporter
 {
     /**
@@ -166,13 +168,13 @@ class PhpExporter extends BaseExporter
         // Flows intelligents
         $php .= "    // === FLOWS & INTERCONNECTIONS ===\n";
         $php .= "    'flows' => [\n";
-        
+
         // Génération automatique des flows basés sur les routes
         $generatedFlows = $this->generateIntelligentFlows($data);
         foreach ($generatedFlows as $flow) {
             $php .= $this->generateFlowEntry($flow);
         }
-        
+
         // Flows personnalisés s'ils existent
         foreach ($data['flows'] ?? [] as $flow) {
             $php .= $this->generateFlowEntry($flow);
@@ -494,11 +496,11 @@ class PhpExporter extends BaseExporter
         if (! empty($route['controller'])) {
             $controller = is_array($route['controller']) ? '[Multiple Controllers]' : $route['controller'];
             $action = $route['action'] ?? 'handle';
-            
+
             if (is_array($action)) {
-                $action = isset($action['uses']) ? $action['uses'] : '[Complex Action]';
+                $action = $action['uses'] ?? '[Complex Action]';
             }
-            
+
             $flows['synchronous'] = [
                 $controller . '::' . $action,
             ];
@@ -527,6 +529,7 @@ class PhpExporter extends BaseExporter
      * Génère automatiquement des flows intelligents basés sur les données de l'application
      *
      * @param  array<string, mixed>  $data
+     *
      * @return array<int, array<string, mixed>>
      */
     private function generateIntelligentFlows(array $data): array
@@ -545,11 +548,11 @@ class PhpExporter extends BaseExporter
                     'ProductController@store - Store product',
                     'ProductCreated event (async)',
                     'SendNewProductNotification job (async)',
-                ]
+                ],
             ];
         }
 
-        // Flow de gestion des catégories  
+        // Flow de gestion des catégories
         if ($this->hasCategoryRoutes($data)) {
             $flows[] = [
                 'name' => 'Category Management Flow',
@@ -560,7 +563,7 @@ class PhpExporter extends BaseExporter
                     'CategoryController@create - Show create form',
                     'CategoryController@store - Store category',
                     'CategoryCreated event (async)',
-                ]
+                ],
             ];
         }
 
@@ -574,7 +577,7 @@ class PhpExporter extends BaseExporter
                     'CleanInactiveProducts command',
                     'SyncProducts command',
                     'Database cleanup operations',
-                ]
+                ],
             ];
         }
 
@@ -583,6 +586,8 @@ class PhpExporter extends BaseExporter
 
     /**
      * Vérifie si l'application a des routes de produits
+     *
+     * @param  array<string, mixed>  $data
      */
     private function hasProductRoutes(array $data): bool
     {
@@ -592,11 +597,14 @@ class PhpExporter extends BaseExporter
                 return true;
             }
         }
+
         return false;
     }
 
     /**
      * Vérifie si l'application a des routes de catégories
+     *
+     * @param  array<string, mixed>  $data
      */
     private function hasCategoryRoutes(array $data): bool
     {
@@ -606,11 +614,14 @@ class PhpExporter extends BaseExporter
                 return true;
             }
         }
+
         return false;
     }
 
     /**
      * Vérifie si l'application a des commandes de maintenance
+     *
+     * @param  array<string, mixed>  $data
      */
     private function hasMaintenanceCommands(array $data): bool
     {
@@ -621,6 +632,7 @@ class PhpExporter extends BaseExporter
                 return true;
             }
         }
+
         return false;
     }
 
@@ -753,13 +765,14 @@ class PhpExporter extends BaseExporter
         }
         if (is_object($value)) {
             // Handle objects that can't be converted to string
-            if ($value instanceof \Closure) {
+            if ($value instanceof Closure) {
                 return "'[Closure]'";
             }
             if (method_exists($value, '__toString')) {
                 return "'" . addslashes((string) $value) . "'";
             }
-            return "'" . get_class($value) . " object'";
+
+            return "'" . $value::class . " object'";
         }
 
         return "'" . addslashes((string) $value) . "'";
@@ -791,6 +804,7 @@ class PhpExporter extends BaseExporter
                 $items[] = "'" . addslashes($key) . "' => " . $this->exportValue($value);
             }
         }
+
         return '[' . implode(', ', $items) . ']';
     }
 
