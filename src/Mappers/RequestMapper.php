@@ -25,14 +25,14 @@ class RequestMapper extends BaseMapper
             'include_custom_messages' => true,
             'include_custom_attributes' => true,
             'include_dependencies' => true,
-            'scan_path' => base_path('app/Http/Requests'),
+            'scan_path' => app_path('Http/Requests'),
         ];
     }
 
     public function performScan(): Collection
     {
         $requests = collect();
-        $scanPath = $this->config('scan_path', base_path('app/Http/Requests'));
+        $scanPath = $this->config('scan_path', app_path('Http/Requests'));
 
         if (! File::exists($scanPath)) {
             return $requests;

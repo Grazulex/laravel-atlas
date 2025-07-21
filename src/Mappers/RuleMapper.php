@@ -24,14 +24,14 @@ class RuleMapper extends BaseMapper
             'include_message_method' => true,
             'include_parameters' => true,
             'include_dependencies' => true,
-            'scan_path' => base_path('app/Rules'),
+            'scan_path' => app_path('Rules'),
         ];
     }
 
     public function performScan(): Collection
     {
         $rules = collect();
-        $scanPath = $this->config('scan_path', base_path('app/Rules'));
+        $scanPath = $this->config('scan_path', app_path('Rules'));
 
         if (! File::exists($scanPath)) {
             return $rules;

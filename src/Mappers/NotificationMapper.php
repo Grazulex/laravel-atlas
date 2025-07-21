@@ -24,14 +24,14 @@ class NotificationMapper extends BaseMapper
             'include_queue_config' => true,
             'include_data_structure' => true,
             'include_dependencies' => true,
-            'scan_path' => base_path('app/Notifications'),
+            'scan_path' => app_path('Notifications'),
         ];
     }
 
     public function performScan(): Collection
     {
         $notifications = collect();
-        $scanPath = $this->config('scan_path', base_path('app/Notifications'));
+        $scanPath = $this->config('scan_path', app_path('Notifications'));
 
         if (! File::exists($scanPath)) {
             return $notifications;
