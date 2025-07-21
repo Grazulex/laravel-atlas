@@ -662,7 +662,7 @@
                                             <h4>Relationships</h4>
                                             @if(isset($model['relationships']))
                                                 @foreach($model['relationships'] as $type => $relations)
-                                                <p><strong>{{ ucfirst($type) }}:</strong></p>
+                                                <p><strong>{{ is_array($type) ? 'Mixed' : ucfirst($type) }}:</strong></p>
                                                 <ul>
                                                     @foreach($relations as $relation)
                                                     <li>{{ is_array($relation) ? implode(', ', $relation) : $relation }}</li>
@@ -677,7 +677,7 @@
                                     <div class="component-connections">
                                         @foreach($model['connected_to'] as $type => $components)
                                         <div class="connection-group">
-                                            <h4>{{ ucfirst($type) }}</h4>
+                                            <h4>{{ is_array($type) ? 'Mixed' : ucfirst($type) }}</h4>
                                             @foreach($components as $component)
                                             <span class="connection-item">{{ class_basename($component) }}</span>
                                             @endforeach
@@ -828,7 +828,7 @@
                                     <div class="component-connections">
                                         @foreach($service['connected_to'] as $type => $components)
                                         <div class="connection-group">
-                                            <h4>{{ ucfirst($type) }}</h4>
+                                            <h4>{{ is_array($type) ? 'Mixed' : ucfirst($type) }}</h4>
                                             @foreach($components as $component)
                                             <span class="connection-item">{{ class_basename($component) }}</span>
                                             @endforeach
@@ -1026,7 +1026,7 @@
                                     <div class="component-connections">
                                         @foreach($controller['connected_to'] as $type => $components)
                                         <div class="connection-group">
-                                            <h4>{{ ucfirst($type) }}</h4>
+                                            <h4>{{ is_array($type) ? 'Mixed' : ucfirst($type) }}</h4>
                                             @foreach($components as $component)
                                             <span class="connection-item">{{ class_basename($component) }}</span>
                                             @endforeach
@@ -1067,7 +1067,7 @@
                                     <div class="component-connections">
                                         @foreach($policy['connected_to'] as $type => $components)
                                         <div class="connection-group">
-                                            <h4>{{ ucfirst($type) }}</h4>
+                                            <h4>{{ is_array($type) ? 'Mixed' : ucfirst($type) }}</h4>
                                             @foreach($components as $component)
                                             <span class="connection-item">{{ class_basename($component) }}</span>
                                             @endforeach
