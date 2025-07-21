@@ -409,7 +409,10 @@
                                         <strong>Controller:</strong> {{ is_array($route['controller'] ?? 'Closure') ? 'Mixed' : class_basename($route['controller'] ?? 'Closure') }}<br>
                                         <strong>Action:</strong> {{ is_array($route['action'] ?? 'handle') ? '[Complex Action]' : ($route['action'] ?? 'handle') }}
                                         @if(isset($route['middleware']) && !empty($route['middleware']))
-                                            <br><strong>Middleware:</strong> {{ implode(', ', $route['middleware']) }}
+                                            <br><strong>Middleware:</strong> 
+                                            @foreach($route['middleware'] as $middleware)
+                                                {{ is_array($middleware) ? '[Complex Middleware]' : $middleware }}@if(!$loop->last), @endif
+                                            @endforeach
                                         @endif
                                     </div>
                                 </div>
@@ -760,9 +763,13 @@
                                         <td>{{ is_array($route['action'] ?? 'handle') ? '[Complex Action]' : ($route['action'] ?? 'handle') }}</td>
                                         <td>
                                             @if(isset($route['middleware']) && !empty($route['middleware']))
-                                                @foreach($route['middleware'] as $middleware)
-                                                    <span class="badge badge-secondary">{{ is_array($middleware) ? implode(', ', $middleware) : $middleware }}</span>
-                                                @endforeach
+                                                @if(is_array($route['middleware']))
+                                                    @foreach($route['middleware'] as $middleware)
+                                                        <span class="badge badge-secondary">{{ is_array($middleware) ? implode(', ', $middleware) : $middleware }}</span>
+                                                    @endforeach
+                                                @else
+                                                    <span class="badge badge-secondary">{{ $route['middleware'] }}</span>
+                                                @endif
                                             @else
                                                 -
                                             @endif
