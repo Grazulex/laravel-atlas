@@ -4,6 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title ?? 'Laravel Atlas - Architecture Report' }}</title>
+    
+    <!-- DEBUG OUTPUT -->
+    <?php
+    if (isset($_GET['debug'])) {
+        echo "<pre style='background:#f0f0f0;padding:20px;margin:20px;border:1px solid #ccc;'>";
+        echo "=== DEBUG TEMPLATE DATA ===\n";
+        echo "Data keys: " . implode(', ', array_keys($data ?? [])) . "\n\n";
+        
+        if (isset($data['routes'])) {
+            echo "Routes count: " . count($data['routes']) . "\n";
+            foreach ($data['routes'] as $i => $route) {
+                echo "Route $i method type: " . gettype($route['method'] ?? 'null') . "\n";
+                if (is_array($route['method'] ?? null)) {
+                    echo "  Method array: " . implode(', ', $route['method']) . "\n";
+                }
+                echo "Route $i controller type: " . gettype($route['controller'] ?? 'null') . "\n";
+                if (is_array($route['controller'] ?? null)) {
+                    echo "  Controller is array: " . print_r($route['controller'], true) . "\n";
+                }
+                if ($i >= 1) break; // Only show first 2
+            }
+        }
+        echo "</pre>";
+        die();
+    }
+    ?>
+    
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         

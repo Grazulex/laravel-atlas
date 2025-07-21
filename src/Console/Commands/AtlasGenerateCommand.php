@@ -217,12 +217,9 @@ class AtlasGenerateCommand extends Command
                 $transformedData[$type] = $typeData['data'] ?? $typeData;
             }
             
-            // TEMPORARY DEBUG: Use debug template
-            $exporter = new HtmlExporter();
-            $debugTemplate = base_path() . '/debug-template.blade.php';
-            $content = $exporter->export($transformedData, $debugTemplate);
+            $content = $atlasManager->exportIntelligentHtml($transformedData);
             file_put_contents($path, $content);
-            $this->info("💾 Debug output saved to: {$path} (using debug template)");
+            $this->info("💾 Output saved to: {$path} (using intelligent HTML template)");
             return;
         }
 
