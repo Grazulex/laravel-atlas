@@ -407,12 +407,25 @@
                                     </div>
                                     <div class="entry-point-details">
                                         <strong>Controller:</strong> {{ is_array($route['controller'] ?? 'Closure') ? 'Mixed' : class_basename($route['controller'] ?? 'Closure') }}<br>
-                                        <strong>Action:</strong> {{ is_array($route['action'] ?? 'handle') ? '[Complex Action]' : ($route['action'] ?? 'handle') }}
+                                        <strong>Action:</strong> 
+                                        @if(is_array($route['action'] ?? 'handle'))
+                                            @if(isset($route['action']['uses']))
+                                                {{ $route['action']['uses'] }}
+                                            @else
+                                                [Complex Action]
+                                            @endif
+                                        @else
+                                            {{ $route['action'] ?? 'handle' }}
+                                        @endif
                                         @if(isset($route['middleware']) && !empty($route['middleware']))
                                             <br><strong>Middleware:</strong> 
-                                            @foreach($route['middleware'] as $middleware)
-                                                {{ is_array($middleware) ? '[Complex Middleware]' : $middleware }}@if(!$loop->last), @endif
-                                            @endforeach
+                                            @if(is_array($route['middleware']))
+                                                @foreach($route['middleware'] as $middleware)
+                                                    {{ is_array($middleware) ? '[Complex Middleware]' : $middleware }}@if(!$loop->last), @endif
+                                                @endforeach
+                                            @else
+                                                {{ $route['middleware'] }}
+                                            @endif
                                         @endif
                                     </div>
                                 </div>
@@ -760,7 +773,17 @@
                                         <td><code>{{ $route['uri'] }}</code></td>
                                         <td>{{ $route['name'] ?? '-' }}</td>
                                         <td>{{ is_array($route['controller'] ?? 'Closure') ? 'Mixed' : class_basename($route['controller'] ?? 'Closure') }}</td>
-                                        <td>{{ is_array($route['action'] ?? 'handle') ? '[Complex Action]' : ($route['action'] ?? 'handle') }}</td>
+                                        <td>
+                                            @if(is_array($route['action'] ?? 'handle'))
+                                                @if(isset($route['action']['uses']))
+                                                    {{ $route['action']['uses'] }}
+                                                @else
+                                                    [Complex Action]
+                                                @endif
+                                            @else
+                                                {{ $route['action'] ?? 'handle' }}
+                                            @endif
+                                        </td>
                                         <td>
                                             @if(isset($route['middleware']) && !empty($route['middleware']))
                                                 @if(is_array($route['middleware']))
@@ -853,17 +876,25 @@
                                 <div class="card-body">
                                     @if(isset($service['methods']))
                                     <h4>Methods</h4>
-                                    @foreach($service['methods'] as $method => $details)
-                                    <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 6px;">
-                                        <strong>{{ is_array($method) ? implode(', ', $method) : $method }}()</strong>
-                                        @if(isset($details['dependencies']))
-                                        <br><small><strong>Dependencies:</strong> {{ implode(', ', array_map('class_basename', $details['dependencies'])) }}</small>
+                                    @if(is_array($service['methods']) && count($service['methods']) > 0)
+                                        @if(is_numeric(array_keys($service['methods'])[0]))
+                                            <p><em>{{ count($service['methods']) }} methods found</em></p>
+                                        @else
+                                            @foreach($service['methods'] as $method => $details)
+                                            <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 6px;">
+                                                <strong>{{ is_array($method) ? implode(', ', $method) : $method }}()</strong>
+                                                @if(isset($details['dependencies']))
+                                                <br><small><strong>Dependencies:</strong> {{ implode(', ', array_map('class_basename', $details['dependencies'])) }}</small>
+                                                @endif
+                                                @if(isset($details['returns']))
+                                                <br><small><strong>Returns:</strong> {{ is_array($details['returns']) ? implode(', ', $details['returns']) : $details['returns'] }}</small>
+                                                @endif
+                                            </div>
+                                            @endforeach
                                         @endif
-                                        @if(isset($details['returns']))
-                                        <br><small><strong>Returns:</strong> {{ is_array($details['returns']) ? implode(', ', $details['returns']) : $details['returns'] }}</small>
-                                        @endif
-                                    </div>
-                                    @endforeach
+                                    @else
+                                        <p><em>No method details available</em></p>
+                                    @endif
                                     @endif
                                     
                                     @if(isset($service['connected_to']))
@@ -1051,17 +1082,25 @@
                                 <div class="card-body">
                                     @if(isset($controller['methods']))
                                     <h4>Methods</h4>
-                                    @foreach($controller['methods'] as $method => $details)
-                                    <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 6px;">
-                                        <strong>{{ is_array($method) ? implode(', ', $method) : $method }}()</strong>
-                                        @if(isset($details['dependencies']))
-                                        <br><small><strong>Dependencies:</strong> {{ implode(', ', array_map('class_basename', $details['dependencies'])) }}</small>
+                                    @if(is_array($controller['methods']) && count($controller['methods']) > 0)
+                                        @if(is_numeric(array_keys($controller['methods'])[0]))
+                                            <p><em>{{ count($controller['methods']) }} methods found</em></p>
+                                        @else
+                                            @foreach($controller['methods'] as $method => $details)
+                                            <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 6px;">
+                                                <strong>{{ is_array($method) ? implode(', ', $method) : $method }}()</strong>
+                                                @if(isset($details['dependencies']))
+                                                <br><small><strong>Dependencies:</strong> {{ implode(', ', array_map('class_basename', $details['dependencies'])) }}</small>
+                                                @endif
+                                                @if(isset($details['events']))
+                                                <br><small><strong>Events:</strong> {{ implode(', ', array_map('class_basename', $details['events'])) }}</small>
+                                                @endif
+                                            </div>
+                                            @endforeach
                                         @endif
-                                        @if(isset($details['events']))
-                                        <br><small><strong>Events:</strong> {{ implode(', ', array_map('class_basename', $details['events'])) }}</small>
-                                        @endif
-                                    </div>
-                                    @endforeach
+                                    @else
+                                        <p><em>No method details available</em></p>
+                                    @endif
                                     @endif
                                     
                                     @if(isset($controller['connected_to']))
@@ -1102,7 +1141,19 @@
                                 </div>
                                 <div class="card-body">
                                     @if(isset($policy['methods']))
-                                    <p><strong>Methods:</strong> {{ implode(', ', $policy['methods']) }}</p>
+                                    @if(is_array($policy['methods']) && count($policy['methods']) > 0)
+                                        @if(isset($policy['methods'][0]['name']))
+                                            <p><strong>Methods:</strong> 
+                                            @foreach($policy['methods'] as $method)
+                                                {{ $method['name'] ?? 'unknown' }}@if(!$loop->last), @endif
+                                            @endforeach
+                                            </p>
+                                        @else
+                                            <p><strong>Methods:</strong> {{ implode(', ', $policy['methods']) }}</p>
+                                        @endif
+                                    @else
+                                        <p><strong>Methods:</strong> <em>No methods available</em></p>
+                                    @endif
                                     @endif
                                     
                                     @if(isset($policy['connected_to']))
