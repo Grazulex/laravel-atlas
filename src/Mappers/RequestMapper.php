@@ -66,6 +66,7 @@ class RequestMapper extends BaseMapper
             $reflectionClass = new ReflectionClass($className);
 
             $requests->put($className, [
+                'class_name' => $className,
                 'name' => $reflectionClass->getShortName(),
                 'full_name' => $reflectionClass->getName(),
                 'file' => $file->getRealPath(),

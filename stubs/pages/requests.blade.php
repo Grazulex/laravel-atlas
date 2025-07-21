@@ -13,7 +13,7 @@
                         <small>{{ $request['class_name'] }}</small>
                     </div>
                     <div class="card-body">
-                        @if(isset($request['rules']) && !empty($request['rules']))
+                        @if(isset($request['validation_rules']) && !empty($request['validation_rules']))
                         <h4>Validation Rules</h4>
                         <div class="table-responsive">
                             <table class="table table-sm">
@@ -24,16 +24,16 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($request['rules'] as $field => $rules)
+                                    @foreach($request['validation_rules'] as $rule)
                                     <tr>
-                                        <td><code>{{ $field }}</code></td>
+                                        <td><code>{{ $rule['field'] ?? 'unknown' }}</code></td>
                                         <td>
-                                            @if(is_array($rules))
-                                                @foreach($rules as $rule)
-                                                    <span class="badge bg-secondary">{{ $rule }}</span>
+                                            @if(isset($rule['rules']) && is_array($rule['rules']))
+                                                @foreach($rule['rules'] as $validationRule)
+                                                    <span class="badge bg-secondary">{{ $validationRule }}</span>
                                                 @endforeach
                                             @else
-                                                <span class="badge bg-secondary">{{ $rules }}</span>
+                                                <span class="badge bg-secondary">{{ $rule['rules'] ?? 'no rules' }}</span>
                                             @endif
                                         </td>
                                     </tr>
@@ -43,7 +43,7 @@
                         </div>
                         @endif
 
-                        @if(isset($request['messages']) && !empty($request['messages']))
+                        @if(isset($request['custom_messages']) && !empty($request['custom_messages']))
                         <h4>Custom Messages</h4>
                         <div class="table-responsive">
                             <table class="table table-sm">
@@ -54,7 +54,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($request['messages'] as $rule => $message)
+                                    @foreach($request['custom_messages'] as $rule => $message)
                                     <tr>
                                         <td><code>{{ $rule }}</code></td>
                                         <td>{{ $message }}</td>

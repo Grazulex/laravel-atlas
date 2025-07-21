@@ -65,6 +65,7 @@ class NotificationMapper extends BaseMapper
             $reflectionClass = new ReflectionClass($className);
 
             $notifications->put($className, [
+                'class_name' => $className,
                 'name' => $reflectionClass->getShortName(),
                 'full_name' => $reflectionClass->getName(),
                 'file' => $file->getRealPath(),
