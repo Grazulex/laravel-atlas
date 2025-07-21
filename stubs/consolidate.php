@@ -31,6 +31,11 @@ function consolidateTemplates()
         'listeners' => file_get_contents($pagesDir . '/listeners.blade.php'),
         'controllers' => file_get_contents($pagesDir . '/controllers.blade.php'),
         'policies' => file_get_contents($pagesDir . '/policies.blade.php'),
+        'middleware' => file_get_contents($pagesDir . '/middleware.blade.php'),
+        'resources' => file_get_contents($pagesDir . '/resources.blade.php'),
+        'notifications' => file_get_contents($pagesDir . '/notifications.blade.php'),
+        'requests' => file_get_contents($pagesDir . '/requests.blade.php'),
+        'rules' => file_get_contents($pagesDir . '/rules.blade.php'),
     ];
 
     // Créer le template consolidé

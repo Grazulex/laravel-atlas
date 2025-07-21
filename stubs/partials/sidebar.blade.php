@@ -57,8 +57,23 @@
         <a href="#controllers" class="nav-item" onclick="showPage('controllers')">
             Controllers <span class="nav-badge">{{ count($data['controllers'] ?? []) }}</span>
         </a>
+        <a href="#middleware" class="nav-item" onclick="showPage('middleware')">
+            Middleware <span class="nav-badge">{{ count($data['middleware'] ?? []) }}</span>
+        </a>
         <a href="#policies" class="nav-item" onclick="showPage('policies')">
             Policies <span class="nav-badge">{{ count($data['policies'] ?? []) }}</span>
+        </a>
+        <a href="#resources" class="nav-item" onclick="showPage('resources')">
+            Resources <span class="nav-badge">{{ count($data['resources'] ?? []) }}</span>
+        </a>
+        <a href="#notifications" class="nav-item" onclick="showPage('notifications')">
+            Notifications <span class="nav-badge">{{ count($data['notifications'] ?? []) }}</span>
+        </a>
+        <a href="#requests" class="nav-item" onclick="showPage('requests')">
+            Requests <span class="nav-badge">{{ count($data['requests'] ?? []) }}</span>
+        </a>
+        <a href="#rules" class="nav-item" onclick="showPage('rules')">
+            Rules <span class="nav-badge">{{ count($data['rules'] ?? []) }}</span>
         </a>
     </div>
 </nav>
