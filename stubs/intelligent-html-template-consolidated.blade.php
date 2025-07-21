@@ -864,25 +864,7 @@
                 <div class="card" style="margin-bottom: 20px;">
                     <div class="card-header">
                         <h3>{{ class_basename($observer['class_name']) }}</h3>
-                        <small>Observes: 
-                            @php
-                                $modelClass = $observer['model'];
-                                $modelExists = false;
-                                if (isset($data['models'])) {
-                                    foreach ($data['models'] as $model) {
-                                        if (isset($model['class_name']) && $model['class_name'] === $modelClass) {
-                                            $modelExists = true;
-                                            break;
-                                        }
-                                    }
-                                }
-                            @endphp
-                            @if($modelExists)
-                                <a href="#models" style="color: #0d6efd; text-decoration: none; border-bottom: 1px dotted #0d6efd;">{{ class_basename($observer['model']) }}</a>
-                            @else
-                                {{ class_basename($observer['model']) }}
-                            @endif
-                        </small>
+                        <small>Observes: {!! componentLink($observer['model'], 'models', $data, class_basename($observer['model'])) !!}</small>
                     </div>
                     <div class="card-body">
                         @if(isset($observer['methods']) && is_array($observer['methods']))
