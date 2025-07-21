@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Support;
 
-use Illuminate\View\Factory;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Illuminate\View\Factory;
 use League\HTMLToMarkdown\HtmlConverter;
 use RuntimeException;
 

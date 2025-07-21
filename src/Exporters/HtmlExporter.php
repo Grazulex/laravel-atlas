@@ -105,6 +105,20 @@ class HtmlExporter extends BaseExporter
             }
         }
 
+        // Add global variables that should be available in the template
+        $globalVars = [
+            'generated_at' => date('Y-m-d H:i:s'),
+            'generation_time_ms' => round(microtime(true) * 1000 - $_SERVER['REQUEST_TIME_FLOAT'] * 1000),
+            'atlas_version' => '1.0.0',
+            'total_components' => $this->countTotalComponents($variables['data'] ?? []),
+        ];
+
+        // Add global variables to template
+        foreach ($globalVars as $key => $value) {
+            $stringValue = is_string($value) ? $value : (string) $value;
+            $template = str_replace('{{ $' . $key . ' }}', $stringValue, $template);
+        }
+
         // Handle data iteration for components
         if (isset($variables['data']) && is_array($variables['data'])) {
             return $this->renderDataSections($template, $variables['data']);
@@ -120,8 +134,12 @@ class HtmlExporter extends BaseExporter
      */
     protected function renderDataSections(string $template, array $data): string
     {
-        // Simple foreach rendering for each component type
-        foreach ($data as $componentType => $componentData) {
+        // First, find all section markers in the template
+        preg_match_all('/<!-- START:([a-z0-9_]+) -->/', $template, $matches);
+        $allComponentTypes = $matches[1];
+
+        // Process all sections that exist in the template
+        foreach ($allComponentTypes as $componentType) {
             $sectionStart = "<!-- START:{$componentType} -->";
             $sectionEnd = "<!-- END:{$componentType} -->";
 
@@ -129,25 +147,54 @@ class HtmlExporter extends BaseExporter
             $endPos = strpos($template, $sectionEnd);
 
             if ($startPos !== false && $endPos !== false) {
-                $sectionTemplate = substr($template, $startPos + strlen($sectionStart), $endPos - $startPos - strlen($sectionStart));
+                // Extract the section template between the markers
+                $sectionTemplate = substr(
+                    $template,
+                    $startPos + strlen($sectionStart),
+                    $endPos - $startPos - strlen($sectionStart)
+                );
+
                 $renderedSection = '';
 
-                if (isset($componentData['data']) && is_array($componentData['data'])) {
-                    foreach ($componentData['data'] as $item) {
+                // Process only if we have data for this component type
+                if (isset($data[$componentType]) && is_array($data[$componentType])) {
+                    $componentItems = $data[$componentType];
+
+                    // Handle both array of items and nested data structure
+                    $itemsToProcess = isset($componentItems['data']) && is_array($componentItems['data'])
+                        ? $componentItems['data']
+                        : $componentItems;
+
+                    foreach ($itemsToProcess as $item) {
                         $itemHtml = $sectionTemplate;
+
                         if (is_array($item)) {
                             foreach ($item as $key => $value) {
-                                $encodedValue = is_string($value) ? $value : json_encode($value);
-                                if ($encodedValue !== false) {
-                                    $itemHtml = str_replace('{{ $' . $key . ' }}', $encodedValue, $itemHtml);
+                                $stringValue = is_string($value) ? $value : json_encode($value);
+                                if ($stringValue !== false) {
+                                    $itemHtml = str_replace('{{ $' . $key . ' }}', $stringValue, $itemHtml);
                                 }
                             }
                         }
+
                         $renderedSection .= $itemHtml;
                     }
+                } else {
+                    // No data for this section, replace template variables with empty strings
+                    preg_match_all('/{{ \$([\w_]+) }}/', $sectionTemplate, $varMatches);
+                    $emptySection = $sectionTemplate;
+                    foreach ($varMatches[0] as $match) {
+                        $emptySection = str_replace($match, '', $emptySection);
+                    }
+                    $renderedSection = $emptySection;
                 }
 
-                $template = str_replace($sectionStart . $sectionTemplate . $sectionEnd, $renderedSection, $template);
+                // Replace the section in the template
+                $template = str_replace(
+                    $sectionStart . $sectionTemplate . $sectionEnd,
+                    $renderedSection,
+                    $template
+                );
             }
         }
 
@@ -210,5 +257,30 @@ class HtmlExporter extends BaseExporter
             'title' => 'Laravel Atlas Architecture Map',
             'template_path' => null, // Custom template path
         ];
+    }
+
+    /**
+     * Count total components in the data array
+     *
+     * @param  array<string, mixed>  $data
+     */
+    protected function countTotalComponents(array $data): int
+    {
+        $total = 0;
+
+        foreach ($data as $components) {
+            if (is_array($components)) {
+                // If it's a direct array of items
+                if (isset($components[0])) {
+                    $total += count($components);
+                }
+                // If it has a 'data' key with components
+                elseif (isset($components['data']) && is_array($components['data'])) {
+                    $total += count($components['data']);
+                }
+            }
+        }
+
+        return $total;
     }
 }

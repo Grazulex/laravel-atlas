@@ -99,27 +99,14 @@
     <h1>{{ $title }}</h1>
     
     <div class="metadata">
-        @if(isset($data['generated_at']))
-        <strong>Generated:</strong> {{ $data['generated_at'] }}<br>
-        @endif
-        
-        @if(isset($data['generation_time_ms']))
-        <strong>Generation Time:</strong> {{ $data['generation_time_ms'] }}ms<br>
-        @endif
-        
-        @if(isset($data['atlas_version']))
-        <strong>Atlas Version:</strong> {{ $data['atlas_version'] }}<br>
-        @endif
+        <strong>Generated:</strong> {{ $generated_at }}<br>
+        <strong>Generation Time:</strong> {{ $generation_time_ms }}ms<br>
+        <strong>Atlas Version:</strong> {{ $atlas_version }}<br>
+        <strong>Total Components:</strong> {{ $total_components }}
     </div>
     
-    @if(isset($data['summary']))
     <h2>📈 Summary</h2>
     
-    @if(isset($data['summary']['total_components']))
-    <p><strong>Total Components:</strong> {{ $data['summary']['total_components'] }}</p>
-    @endif
-    
-    @if(isset($data['summary']['by_type']))
     <table class="summary-table">
         <thead>
             <tr>
@@ -128,31 +115,27 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($data['summary']['by_type'] as $type => $count)
+            @foreach($data as $type => $items)
             <tr>
                 <td>{{ ucfirst($type) }}</td>
-                <td>{{ $count }}</td>
+                <td>{{ is_array($items) ? count($items) : 0 }}</td>
             </tr>
             @endforeach
         </tbody>
     </table>
-    @endif
-    @endif
     
-    @if(isset($data['data']))
-    @foreach($data['data'] as $type => $typeData)
+    @foreach($data as $type => $items)
+    @if(is_array($items) && count($items) > 0)
     <div class="page-break">
-        <h2>{{ ucfirst($type) }} ({{ count($typeData['data'] ?? []) }})</h2>
+        <h2>{{ ucfirst($type) }} ({{ count($items) }})</h2>
         
-        @foreach($typeData['data'] ?? [] as $key => $item)
+        @foreach($items as $item)
         <div class="component">
             <div class="component-header">
-                {{ $item['short_name'] ?? last(explode('\\', $key)) }}
+                {{ $item['class_name'] ?? $item['name'] ?? 'Unknown' }}
             </div>
             
             <div class="component-details">
-                <strong>Full Name:</strong> <code>{{ $key }}</code><br>
-                
                 @if(isset($item['namespace']))
                 <strong>Namespace:</strong> <code>{{ $item['namespace'] }}</code><br>
                 @endif
@@ -172,8 +155,8 @@
                     </div>
                     @endif
                     
-                    @if(isset($item['attributes']['table']))
-                    <strong>Table:</strong> <code>{{ $item['attributes']['table'] }}</code><br>
+                    @if(isset($item['table']))
+                    <strong>Table:</strong> <code>{{ $item['table'] }}</code><br>
                     @endif
                 @endif
                 
@@ -183,12 +166,16 @@
                     <strong>URI:</strong> <code>{{ $item['uri'] }}</code><br>
                     @endif
                     
-                    @if(isset($item['methods']))
-                    <strong>Methods:</strong> <code>{{ implode(', ', $item['methods']) }}</code><br>
+                    @if(isset($item['method']))
+                    <strong>Method:</strong> <code>{{ $item['method'] }}</code><br>
                     @endif
                     
-                    @if(isset($item['controller']))
-                    <strong>Controller:</strong> <code>{{ $item['controller']['class'] ?? '' }}@{{ $item['controller']['method'] ?? '' }}</code><br>
+                    @if(isset($item['action']))
+                    <strong>Action:</strong> <code>{{ $item['action'] }}</code><br>
+                    @endif
+                    
+                    @if(isset($item['name']))
+                    <strong>Name:</strong> <code>{{ $item['name'] }}</code><br>
                     @endif
                 @endif
                 
@@ -204,7 +191,7 @@
         </div>
         @endforeach
     </div>
-    @endforeach
     @endif
+    @endforeach
 </body>
 </html>
