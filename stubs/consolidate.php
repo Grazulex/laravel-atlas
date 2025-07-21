@@ -23,6 +23,7 @@ function consolidateTemplates()
         'commands' => file_get_contents($pagesDir . '/commands.blade.php'),
         'flows' => file_get_contents($pagesDir . '/flows.blade.php'),
         'models' => file_get_contents($pagesDir . '/models.blade.php'),
+        'observers' => file_get_contents($pagesDir . '/observers.blade.php'),
         'services' => file_get_contents($pagesDir . '/services.blade.php'),
         'jobs' => file_get_contents($pagesDir . '/jobs.blade.php'),
         'events' => file_get_contents($pagesDir . '/events.blade.php'),

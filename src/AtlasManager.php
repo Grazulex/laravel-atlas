@@ -20,6 +20,7 @@ use LaravelAtlas\Mappers\JobMapper;
 use LaravelAtlas\Mappers\MiddlewareMapper;
 use LaravelAtlas\Mappers\ModelMapper;
 use LaravelAtlas\Mappers\NotificationMapper;
+use LaravelAtlas\Mappers\ObserverMapper;
 use LaravelAtlas\Mappers\PolicyMapper;
 use LaravelAtlas\Mappers\RequestMapper;
 use LaravelAtlas\Mappers\ResourceMapper;
@@ -44,6 +45,7 @@ class AtlasManager
         'notifications' => NotificationMapper::class,
         'requests' => RequestMapper::class,
         'rules' => RuleMapper::class,
+        'observers' => ObserverMapper::class,
     ];
 
     /** @var array<string, string> */

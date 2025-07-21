@@ -28,6 +28,9 @@
         <a href="#models" class="nav-item" onclick="showPage('models')">
             Models <span class="nav-badge">{{ count($data['models'] ?? []) }}</span>
         </a>
+        <a href="#observers" class="nav-item" onclick="showPage('observers')">
+            Observers <span class="nav-badge">{{ count($data['observers'] ?? []) }}</span>
+        </a>
         <a href="#services" class="nav-item" onclick="showPage('services')">
             Services <span class="nav-badge">{{ count($data['services'] ?? []) }}</span>
         </a>
