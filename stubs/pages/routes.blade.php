@@ -1,8 +1,5 @@
 <!-- Routes Page -->
 <div id="routes" class="page">
-    @include('partials.helpers')
-    @include('partials.component-links')
-    
     @if (!empty($routes))
         <div class="card">
             <div class="card-header">

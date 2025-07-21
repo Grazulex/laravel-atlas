@@ -1,7 +1,5 @@
 <!-- Observers Page -->
 <div id="observers" class="page">
-    @include('partials.helpers')
-    @include('partials.component-links')
     <div class="card">
         <div class="card-header">
             <h2>👁️ Model Observers</h2>
