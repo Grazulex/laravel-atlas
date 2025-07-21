@@ -862,13 +862,13 @@
                         <h4>Lifecycle Hooks</h4>
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
                             @foreach($observer['methods'] as $method)
-                            <div style="padding: 10px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid {{ $method['lifecycle_event'] == 'before' ? '#ffc107' : '#28a745' }};">
+                            <div style="padding: 10px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid {{ $method['type'] == 'before' ? '#ffc107' : '#28a745' }};">
                                 <strong>{{ $method['name'] }}()</strong>
                                 <br><small>
-                                    <span class="badge badge-{{ $method['lifecycle_event'] == 'before' ? 'warning' : 'success' }}">
-                                        {{ ucfirst($method['lifecycle_event']) }}
+                                    <span class="badge badge-{{ $method['type'] == 'before' ? 'warning' : 'success' }}">
+                                        {{ ucfirst($method['type']) }}
                                     </span>
-                                    {{ $method['lifecycle_event'] == 'before' ? 'Pre-action hook' : 'Post-action hook' }}
+                                    {{ $method['type'] == 'before' ? 'Pre-action hook' : 'Post-action hook' }}
                                 </small>
                             </div>
                             @endforeach
