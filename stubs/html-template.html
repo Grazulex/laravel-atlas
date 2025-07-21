@@ -407,7 +407,7 @@
                                 <div class="relationship-item">
                                     {{ $relationName }} ({{ $relation['type'] ?? 'unknown' }})
                                     @if(isset($relation['related']))
-                                    → {{ $relation['related'] }}
+                                    → {{ is_array($relation['related']) ? implode(', ', $relation['related']) : $relation['related'] }}
                                     @endif
                                 </div>
                                 @endforeach

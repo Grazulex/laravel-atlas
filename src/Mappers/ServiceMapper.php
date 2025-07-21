@@ -100,6 +100,7 @@ class ServiceMapper extends BaseMapper
                 return null;
             }
 
+            $parentClass = $reflection->getParentClass();
             $serviceData = [
                 'class_name' => $className,
                 'file_path' => $file->getRealPath(),
@@ -107,7 +108,7 @@ class ServiceMapper extends BaseMapper
                 'short_name' => $reflection->getShortName(),
                 'is_abstract' => $reflection->isAbstract(),
                 'is_interface' => $reflection->isInterface(),
-                'parent_class' => $reflection->getParentClass()?->getName(),
+                'parent_class' => $parentClass ? $parentClass->getName() : null,
                 'traits' => array_keys($reflection->getTraits()),
                 'interfaces' => $reflection->getInterfaceNames(),
             ];

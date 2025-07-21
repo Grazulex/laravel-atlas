@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace LaravelAtlas\Console\Commands;
 
 use Illuminate\Console\Command;
+use LaravelAtlas\AtlasManager;
 use LaravelAtlas\Contracts\ExporterInterface;
 use LaravelAtlas\Contracts\MapperInterface;
 use LaravelAtlas\Exporters\HtmlExporter;
@@ -205,7 +206,24 @@ class AtlasGenerateCommand extends Command
             mkdir($directory, 0755, true);
         }
 
-        // Use the appropriate exporter
+        // For HTML format with multiple types, use intelligent workflow
+        if ($format === 'html' && $this->shouldUseIntelligentHtml($output)) {
+            $atlasManager = new AtlasManager();
+            
+            // Transform command data format to AtlasManager expected format
+            $transformedData = [];
+            foreach ($output['data'] ?? [] as $type => $typeData) {
+                // Extract just the 'data' portion, skip errors
+                $transformedData[$type] = $typeData['data'] ?? $typeData;
+            }
+            
+            $content = $atlasManager->exportIntelligentHtml($transformedData);
+            file_put_contents($path, $content);
+            $this->info("💾 Output saved to: {$path} (using intelligent HTML template)");
+            return;
+        }
+
+        // Use the appropriate exporter for other formats or simple HTML
         if (isset($this->availableExporters[$format])) {
             $exporterClass = $this->availableExporters[$format];
             /** @var ExporterInterface $exporter */
@@ -224,6 +242,28 @@ class AtlasGenerateCommand extends Command
     }
 
     /**
+     * Determine if we should use intelligent HTML template
+     *
+     * @param  array<string, mixed>  $output
+     */
+    protected function shouldUseIntelligentHtml(array $output): bool
+    {
+        $data = $output['data'] ?? [];
+        
+        // Use intelligent HTML if we have multiple component types
+        // or if we have rich data that benefits from the intelligent template
+        $componentTypes = array_keys($data);
+        $hasMultipleTypes = count($componentTypes) > 1;
+        
+        // Also use intelligent template if we have models, controllers, or services
+        // as these create meaningful relationships and flows
+        $richTypes = ['models', 'controllers', 'services', 'jobs', 'events'];
+        $hasRichTypes = !empty(array_intersect($componentTypes, $richTypes));
+        
+        return $hasMultipleTypes || $hasRichTypes;
+    }
+
+    /**
      * @param  array<string, mixed>  $output
      */
     protected function displayResults(array $output, string $format): void
@@ -231,6 +271,14 @@ class AtlasGenerateCommand extends Command
         // Don't display binary formats in terminal
         if ($format === 'pdf') {
             $this->warn('⚠️  PDF format cannot be displayed in terminal. Use --output option to save to file.');
+
+            return;
+        }
+
+        // For HTML with intelligent template, suggest saving to file
+        if ($format === 'html' && $this->shouldUseIntelligentHtml($output)) {
+            $this->warn('⚠️  HTML intelligent template is best viewed in a file. Use --output option to save to file.');
+            $this->info('💡 Example: php artisan atlas:generate --type=all --format=html --output=atlas.html');
 
             return;
         }

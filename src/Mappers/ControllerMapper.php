@@ -94,13 +94,14 @@ class ControllerMapper extends BaseMapper
                 return null;
             }
 
+            $parentClass = $reflection->getParentClass();
             $controllerData = [
                 'class_name' => $className,
                 'file_path' => $file->getRealPath(),
                 'namespace' => $reflection->getNamespaceName(),
                 'short_name' => $reflection->getShortName(),
                 'is_abstract' => $reflection->isAbstract(),
-                'parent_class' => $reflection->getParentClass()?->getName(),
+                'parent_class' => $parentClass ? $parentClass->getName() : null,
                 'traits' => array_keys($reflection->getTraits()),
                 'interfaces' => $reflection->getInterfaceNames(),
                 'is_api_controller' => $this->isApiController($reflection),

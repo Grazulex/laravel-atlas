@@ -99,13 +99,14 @@ class CommandMapper extends BaseMapper
                 return null;
             }
 
+            $parentClass = $reflection->getParentClass();
             $commandData = [
                 'class_name' => $className,
                 'file_path' => $file->getRealPath(),
                 'namespace' => $reflection->getNamespaceName(),
                 'short_name' => $reflection->getShortName(),
                 'is_abstract' => $reflection->isAbstract(),
-                'parent_class' => $reflection->getParentClass()?->getName(),
+                'parent_class' => $parentClass ? $parentClass->getName() : null,
                 'traits' => array_keys($reflection->getTraits()),
                 'interfaces' => $reflection->getInterfaceNames(),
             ];

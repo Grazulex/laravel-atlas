@@ -635,8 +635,18 @@ class PhpExporter extends BaseExporter
         if (is_null($value)) {
             return 'null';
         }
+        if (is_object($value)) {
+            // Handle objects that can't be converted to string
+            if ($value instanceof \Closure) {
+                return "'[Closure]'";
+            }
+            if (method_exists($value, '__toString')) {
+                return "'" . addslashes((string) $value) . "'";
+            }
+            return "'" . get_class($value) . " object'";
+        }
 
-        return (string) $value;
+        return "'" . addslashes((string) $value) . "'";
     }
 
     /**

@@ -399,7 +399,7 @@
                                 @foreach($data['routes'] as $route)
                                 <div class="entry-point route" onclick="showRouteDetails('{{ $route['name'] ?? $route['uri'] }}')">
                                     <div class="entry-point-title">
-                                        <span class="badge badge-success">{{ $route['method'] }}</span>
+                                        <span class="badge badge-success">{{ is_array($route['method'] ?? '') ? implode('|', $route['method']) : ($route['method'] ?? 'GET') }}</span>
                                         {{ $route['uri'] }}
                                         @if(isset($route['name']))
                                             <small style="color: #6c757d;">({{ $route['name'] }})</small>
@@ -654,7 +654,7 @@
                                             <h4>Attributes</h4>
                                             <ul>
                                                 @foreach($model['attributes'] as $attr)
-                                                <li>{{ $attr }}</li>
+                                                <li>{{ is_array($attr) ? implode(', ', $attr) : $attr }}</li>
                                                 @endforeach
                                             </ul>
                                         </div>
@@ -665,7 +665,7 @@
                                                 <p><strong>{{ ucfirst($type) }}:</strong></p>
                                                 <ul>
                                                     @foreach($relations as $relation)
-                                                    <li>{{ $relation }}</li>
+                                                    <li>{{ is_array($relation) ? implode(', ', $relation) : $relation }}</li>
                                                     @endforeach
                                                 </ul>
                                                 @endforeach
@@ -718,7 +718,7 @@
                                 <tbody>
                                     @foreach($data['routes'] as $route)
                                     <tr>
-                                        <td><span class="badge badge-success">{{ $route['method'] }}</span></td>
+                                        <td><span class="badge badge-success">{{ is_array($route['method'] ?? '') ? implode('|', $route['method']) : ($route['method'] ?? 'GET') }}</span></td>
                                         <td><code>{{ $route['uri'] }}</code></td>
                                         <td>{{ $route['name'] ?? '-' }}</td>
                                         <td>{{ class_basename($route['controller'] ?? 'Closure') }}</td>
@@ -726,7 +726,7 @@
                                         <td>
                                             @if(isset($route['middleware']) && !empty($route['middleware']))
                                                 @foreach($route['middleware'] as $middleware)
-                                                    <span class="badge badge-secondary">{{ $middleware }}</span>
+                                                    <span class="badge badge-secondary">{{ is_array($middleware) ? implode(', ', $middleware) : $middleware }}</span>
                                                 @endforeach
                                             @else
                                                 -
@@ -768,7 +768,7 @@
                                         @foreach($command['flows']['synchronous'] as $step)
                                         <div class="flow-step">
                                             <div class="flow-step-icon">{{ $loop->iteration }}</div>
-                                            {{ $step }}
+                                            {{ is_array($step) ? implode(', ', $step) : $step }}
                                         </div>
                                         @endforeach
                                         @endif
@@ -778,7 +778,7 @@
                                         @foreach($command['flows']['asynchronous'] as $step)
                                         <div class="flow-step async">
                                             <div class="flow-step-icon">A{{ $loop->iteration }}</div>
-                                            {{ $step }}
+                                            {{ is_array($step) ? implode(', ', $step) : $step }}
                                         </div>
                                         @endforeach
                                         @endif
@@ -813,12 +813,12 @@
                                     <h4>Methods</h4>
                                     @foreach($service['methods'] as $method => $details)
                                     <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 6px;">
-                                        <strong>{{ $method }}()</strong>
+                                        <strong>{{ is_array($method) ? implode(', ', $method) : $method }}()</strong>
                                         @if(isset($details['dependencies']))
                                         <br><small><strong>Dependencies:</strong> {{ implode(', ', array_map('class_basename', $details['dependencies'])) }}</small>
                                         @endif
                                         @if(isset($details['returns']))
-                                        <br><small><strong>Returns:</strong> {{ $details['returns'] }}</small>
+                                        <br><small><strong>Returns:</strong> {{ is_array($details['returns']) ? implode(', ', $details['returns']) : $details['returns'] }}</small>
                                         @endif
                                     </div>
                                     @endforeach
@@ -922,7 +922,7 @@
                                     <p><strong>Triggered by:</strong></p>
                                     <ul>
                                         @foreach($event['triggered_by'] as $trigger)
-                                        <li>{{ $trigger }}</li>
+                                        <li>{{ is_array($trigger) ? implode(', ', $trigger) : $trigger }}</li>
                                         @endforeach
                                     </ul>
                                     @endif
@@ -1011,7 +1011,7 @@
                                     <h4>Methods</h4>
                                     @foreach($controller['methods'] as $method => $details)
                                     <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 6px;">
-                                        <strong>{{ $method }}()</strong>
+                                        <strong>{{ is_array($method) ? implode(', ', $method) : $method }}()</strong>
                                         @if(isset($details['dependencies']))
                                         <br><small><strong>Dependencies:</strong> {{ implode(', ', array_map('class_basename', $details['dependencies'])) }}</small>
                                         @endif

@@ -36,16 +36,29 @@
             padding-bottom: 5px;
             margin-bottom: 15px;
         }
-        .component {
-            background: #f9f9f9;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-left: 4px solid #3498db;
-            border-radius: 4px;
+        .data-section {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
         }
-        .component h3 {
-            margin-bottom: 10px;
-            color: #2c3e50;
+        .data-title {
+            color: #495057;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        .raw-data {
+            background: #ffffff;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
         }
         .metadata {
             background: #ecf0f1;
@@ -66,208 +79,35 @@
     <div class="container">
         <div class="header">
             <h1>{{ $title }}</h1>
-            <p>Laravel Application Architecture</p>
+            <p>Laravel Application Architecture - Simple Export</p>
         </div>
 
-        @if(isset($metadata))
         <div class="metadata">
-            <h2>Application Information</h2>
+            <h2>Export Information</h2>
             <ul>
-                @if(isset($metadata['app_name']))
-                <li><strong>Application:</strong> {{ $metadata['app_name'] }}</li>
-                @endif
-                @if(isset($metadata['version']))
-                <li><strong>Version:</strong> {{ $metadata['version'] }}</li>
-                @endif
-                @if(isset($metadata['description']))
-                <li><strong>Description:</strong> {{ $metadata['description'] }}</li>
-                @endif
-                @if(isset($metadata['generated_at']))
-                <li><strong>Generated:</strong> {{ $metadata['generated_at'] }}</li>
-                @endif
+                <li><strong>Generated:</strong> {{ $generated_at }}</li>
+                <li><strong>Export Type:</strong> Simple HTML Template</li>
+                <li><strong>Total Components:</strong> {{ $total_components }}</li>
             </ul>
+            <p><em>Note: This is the simple template showing raw architecture data. For a detailed interactive view with navigation and flows, the system will automatically use the intelligent template when complex data structures are detected.</em></p>
         </div>
-        @endif
 
-        @if(!empty($routes))
-        <div class="section">
-            <h2>Routes</h2>
-            @foreach($routes as $route)
-            <div class="component">
-                <h3>{{ $route['method'] ?? 'GET' }} {{ $route['uri'] ?? '' }}</h3>
-                @if(!empty($route['name']))
-                <p><strong>Name:</strong> {{ $route['name'] }}</p>
-                @endif
-                @if(!empty($route['controller']))
-                <p><strong>Controller:</strong> {{ $route['controller'] }}</p>
-                @endif
-                @if(!empty($route['action']))
-                <p><strong>Action:</strong> {{ $route['action'] }}</p>
-                @endif
-                @if(!empty($route['middleware']))
-                <p><strong>Middleware:</strong> {{ implode(', ', $route['middleware']) }}</p>
-                @endif
-            </div>
-            @endforeach
+        <div class="data-section">
+            <div class="data-title">📊 Complete Architecture Data</div>
+            <div class="raw-data">{{ $data }}</div>
         </div>
-        @endif
 
-        @if(!empty($commands))
         <div class="section">
-            <h2>Artisan Commands</h2>
-            @foreach($commands as $command)
-            <div class="component">
-                <h3>{{ $command['name'] ?? 'Unknown Command' }}</h3>
-                @if(!empty($command['signature']))
-                <p><strong>Signature:</strong> {{ $command['signature'] }}</p>
-                @endif
-                @if(!empty($command['description']))
-                <p><strong>Description:</strong> {{ $command['description'] }}</p>
-                @endif
-                @if(!empty($command['class_name']))
-                <p><strong>Class:</strong> {{ $command['class_name'] }}</p>
-                @endif
-            </div>
-            @endforeach
+            <h2>About This Export</h2>
+            <p>This simple export format displays all collected architecture data in a readable JSON format. It's useful for:</p>
+            <ul>
+                <li>Quick data inspection</li>
+                <li>Debugging mapper output</li>
+                <li>Raw data analysis</li>
+                <li>Integration with other tools</li>
+            </ul>
+            <p>For applications with rich architectural data (routes, models, services, etc.), the system automatically switches to the intelligent HTML template which provides interactive navigation, component relationships, and visual flows.</p>
         </div>
-        @endif
-
-        @if(!empty($models))
-        <div class="section">
-            <h2>Models</h2>
-            @foreach($models as $model)
-            <div class="component">
-                <h3>{{ $model['class_name'] ?? 'Unknown Model' }}</h3>
-                @if(!empty($model['table']))
-                <p><strong>Table:</strong> {{ $model['table'] }}</p>
-                @endif
-                @if(!empty($model['attributes']))
-                <p><strong>Attributes:</strong> {{ implode(', ', $model['attributes']) }}</p>
-                @endif
-                @if(!empty($model['relationships']))
-                <div>
-                    <strong>Relationships:</strong>
-                    <ul>
-                        @foreach($model['relationships'] as $type => $relations)
-                        <li><strong>{{ ucfirst($type) }}:</strong> {{ implode(', ', $relations) }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-                @endif
-            </div>
-            @endforeach
-        </div>
-        @endif
-
-        @if(!empty($controllers))
-        <div class="section">
-            <h2>Controllers</h2>
-            @foreach($controllers as $controller)
-            <div class="component">
-                <h3>{{ $controller['class_name'] ?? 'Unknown Controller' }}</h3>
-                @if(!empty($controller['methods']))
-                <div>
-                    <strong>Methods:</strong>
-                    <ul>
-                        @foreach($controller['methods'] as $method => $details)
-                        <li>{{ $method }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-                @endif
-            </div>
-            @endforeach
-        </div>
-        @endif
-
-        @if(!empty($services))
-        <div class="section">
-            <h2>Services</h2>
-            @foreach($services as $service)
-            <div class="component">
-                <h3>{{ $service['class_name'] ?? 'Unknown Service' }}</h3>
-                @if(!empty($service['methods']))
-                <div>
-                    <strong>Methods:</strong>
-                    <ul>
-                        @foreach($service['methods'] as $method => $details)
-                        <li>{{ $method }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-                @endif
-            </div>
-            @endforeach
-        </div>
-        @endif
-
-        @if(!empty($jobs))
-        <div class="section">
-            <h2>Jobs</h2>
-            @foreach($jobs as $job)
-            <div class="component">
-                <h3>{{ $job['class_name'] ?? 'Unknown Job' }}</h3>
-                @if(!empty($job['queue']))
-                <p><strong>Queue:</strong> {{ $job['queue'] }}</p>
-                @endif
-                @if(!empty($job['dependencies']))
-                <p><strong>Dependencies:</strong> {{ implode(', ', $job['dependencies']) }}</p>
-                @endif
-            </div>
-            @endforeach
-        </div>
-        @endif
-
-        @if(!empty($events))
-        <div class="section">
-            <h2>Events</h2>
-            @foreach($events as $event)
-            <div class="component">
-                <h3>{{ $event['class_name'] ?? 'Unknown Event' }}</h3>
-                @if(!empty($event['listeners']))
-                <p><strong>Listeners:</strong> {{ implode(', ', $event['listeners']) }}</p>
-                @endif
-                @if(!empty($event['properties']))
-                <p><strong>Properties:</strong> {{ implode(', ', $event['properties']) }}</p>
-                @endif
-            </div>
-            @endforeach
-        </div>
-        @endif
-
-        @if(!empty($middleware))
-        <div class="section">
-            <h2>Middleware</h2>
-            @foreach($middleware as $mw)
-            <div class="component">
-                <h3>{{ $mw['class_name'] ?? 'Unknown Middleware' }}</h3>
-                @if(!empty($mw['type']))
-                <p><strong>Type:</strong> {{ $mw['type'] }}</p>
-                @endif
-                @if(!empty($mw['used_by']))
-                <p><strong>Used by:</strong> {{ implode(', ', $mw['used_by']) }}</p>
-                @endif
-            </div>
-            @endforeach
-        </div>
-        @endif
-
-        @if(!empty($policies))
-        <div class="section">
-            <h2>Policies</h2>
-            @foreach($policies as $policy)
-            <div class="component">
-                <h3>{{ $policy['class_name'] ?? 'Unknown Policy' }}</h3>
-                @if(!empty($policy['model']))
-                <p><strong>Model:</strong> {{ $policy['model'] }}</p>
-                @endif
-                @if(!empty($policy['methods']))
-                <p><strong>Methods:</strong> {{ implode(', ', $policy['methods']) }}</p>
-                @endif
-            </div>
-            @endforeach
-        </div>
-        @endif
     </div>
 </body>
 </html>
