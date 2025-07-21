@@ -185,6 +185,46 @@ class PhpExporter extends BaseExporter
             $php .= "    ],\n\n";
         }
 
+        // Resources
+        if (! empty($data['resources'])) {
+            $php .= "    // === RESOURCES ===\n";
+            $php .= "    'resources' => [\n";
+            foreach ($data['resources'] as $resource) {
+                $php .= $this->generateResourceEntry($resource);
+            }
+            $php .= "    ],\n\n";
+        }
+
+        // Notifications
+        if (! empty($data['notifications'])) {
+            $php .= "    // === NOTIFICATIONS ===\n";
+            $php .= "    'notifications' => [\n";
+            foreach ($data['notifications'] as $notification) {
+                $php .= $this->generateNotificationEntry($notification);
+            }
+            $php .= "    ],\n\n";
+        }
+
+        // Requests
+        if (! empty($data['requests'])) {
+            $php .= "    // === REQUESTS ===\n";
+            $php .= "    'requests' => [\n";
+            foreach ($data['requests'] as $request) {
+                $php .= $this->generateRequestEntry($request);
+            }
+            $php .= "    ],\n\n";
+        }
+
+        // Rules
+        if (! empty($data['rules'])) {
+            $php .= "    // === RULES ===\n";
+            $php .= "    'rules' => [\n";
+            foreach ($data['rules'] as $rule) {
+                $php .= $this->generateRuleEntry($rule);
+            }
+            $php .= "    ],\n\n";
+        }
+
         // Flows intelligents
         $php .= "    // === FLOWS & INTERCONNECTIONS ===\n";
         $php .= "    'flows' => [\n";
@@ -548,6 +588,102 @@ class PhpExporter extends BaseExporter
 
         if (! empty($action['events'])) {
             $php .= "            'events' => " . $this->exportArray($action['events']) . ",\n";
+        }
+
+        return $php . "        ],\n";
+    }
+
+    /**
+     * @param  array<string, mixed>  $resource
+     */
+    private function generateResourceEntry(array $resource): string
+    {
+        $php = "        [\n";
+        $php .= "            'class_name' => " . $this->exportValue($resource['class_name'] ?? '') . ",\n";
+        $php .= "            'type' => " . $this->exportValue($resource['type'] ?? 'resource') . ",\n";
+
+        if (! empty($resource['model'])) {
+            $php .= "            'model' => " . $this->exportValue($resource['model']) . ",\n";
+        }
+
+        if (! empty($resource['methods'])) {
+            $php .= "            'methods' => " . $this->exportArray($resource['methods']) . ",\n";
+        }
+
+        if (! empty($resource['dependencies'])) {
+            $php .= "            'dependencies' => " . $this->exportArray($resource['dependencies']) . ",\n";
+        }
+
+        return $php . "        ],\n";
+    }
+
+    /**
+     * @param  array<string, mixed>  $notification
+     */
+    private function generateNotificationEntry(array $notification): string
+    {
+        $php = "        [\n";
+        $php .= "            'class_name' => " . $this->exportValue($notification['class_name'] ?? '') . ",\n";
+        $php .= "            'type' => " . $this->exportValue($notification['type'] ?? 'notification') . ",\n";
+
+        if (! empty($notification['channels'])) {
+            $php .= "            'channels' => " . $this->exportArray($notification['channels']) . ",\n";
+        }
+
+        if (! empty($notification['methods'])) {
+            $php .= "            'methods' => " . $this->exportArray($notification['methods']) . ",\n";
+        }
+
+        if (! empty($notification['dependencies'])) {
+            $php .= "            'dependencies' => " . $this->exportArray($notification['dependencies']) . ",\n";
+        }
+
+        return $php . "        ],\n";
+    }
+
+    /**
+     * @param  array<string, mixed>  $request
+     */
+    private function generateRequestEntry(array $request): string
+    {
+        $php = "        [\n";
+        $php .= "            'class_name' => " . $this->exportValue($request['class_name'] ?? '') . ",\n";
+        $php .= "            'type' => " . $this->exportValue($request['type'] ?? 'form_request') . ",\n";
+
+        if (! empty($request['validation_rules'])) {
+            $php .= "            'validation_rules' => " . $this->exportArray($request['validation_rules']) . ",\n";
+        }
+
+        if (! empty($request['methods'])) {
+            $php .= "            'methods' => " . $this->exportArray($request['methods']) . ",\n";
+        }
+
+        if (! empty($request['dependencies'])) {
+            $php .= "            'dependencies' => " . $this->exportArray($request['dependencies']) . ",\n";
+        }
+
+        return $php . "        ],\n";
+    }
+
+    /**
+     * @param  array<string, mixed>  $rule
+     */
+    private function generateRuleEntry(array $rule): string
+    {
+        $php = "        [\n";
+        $php .= "            'class_name' => " . $this->exportValue($rule['class_name'] ?? '') . ",\n";
+        $php .= "            'type' => " . $this->exportValue($rule['type'] ?? 'validation_rule') . ",\n";
+
+        if (! empty($rule['methods'])) {
+            $php .= "            'methods' => " . $this->exportArray($rule['methods']) . ",\n";
+        }
+
+        if (! empty($rule['dependencies'])) {
+            $php .= "            'dependencies' => " . $this->exportArray($rule['dependencies']) . ",\n";
+        }
+
+        if (! empty($rule['parameters'])) {
+            $php .= "            'parameters' => " . $this->exportArray($rule['parameters']) . ",\n";
         }
 
         return $php . "        ],\n";
