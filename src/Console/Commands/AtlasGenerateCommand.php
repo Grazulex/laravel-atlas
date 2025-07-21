@@ -33,7 +33,7 @@ class AtlasGenerateCommand extends Command
 {
     protected $signature = 'atlas:generate 
                             {--type=all : Type of component to map (models, routes, jobs, services, controllers, events, commands, middleware, policies, resources, notifications, requests, rules, all)}
-                            {--format=json : Output format (json, image, markdown, pdf, html)}
+                            {--format=json : Output format (json, image, markdown, pdf, html, php)}
                             {--output= : Output file path}
                             {--detailed : Include detailed information}';
 

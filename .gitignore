@@ -28,3 +28,15 @@ package-lock.json
 /.phpunit.cache
 cache.sqlite
 /build
+
+# Laravel Atlas test files
+atlas-*.php
+atlas-*.html
+atlas-*.json
+test-*.php
+*test*.php
+examples/*.html
+examples/*test*.php
+examples/atlas-*
+examples/workflow-*
+examples/realistic-app-data.php

@@ -12,6 +12,7 @@ use LaravelAtlas\Exporters\ImageExporter;
 use LaravelAtlas\Exporters\JsonExporter;
 use LaravelAtlas\Exporters\MarkdownExporter;
 use LaravelAtlas\Exporters\PdfExporter;
+use LaravelAtlas\Exporters\PhpExporter;
 use LaravelAtlas\Mappers\CommandMapper;
 use LaravelAtlas\Mappers\ControllerMapper;
 use LaravelAtlas\Mappers\EventMapper;
@@ -52,6 +53,7 @@ class AtlasManager
         'markdown' => MarkdownExporter::class,
         'image' => ImageExporter::class,
         'pdf' => PdfExporter::class,
+        'php' => PhpExporter::class,
     ];
 
     /**
@@ -76,6 +78,12 @@ class AtlasManager
     public function export(string $type, string $format, array $options = []): string
     {
         $data = $this->scan($type, $options);
+
+        // Pour HTML, utiliser le workflow intelligent si on a des données complètes (type='all')
+        if ($format === 'html' && ($type === 'all' || $this->hasIntelligentData($data))) {
+            return $this->exportIntelligentHtml([$type => $data], $options);
+        }
+
         $exporter = $this->exporter($format);
 
         // Set configuration options
@@ -99,6 +107,11 @@ class AtlasManager
         $allData = [];
         foreach ($types as $type) {
             $allData[$type] = $this->scan($type, $options);
+        }
+
+        // Pour HTML avec des données multi-types, utiliser le workflow intelligent
+        if ($format === 'html' && count($allData) > 1) {
+            return $this->exportIntelligentHtml($allData, $options);
         }
 
         $exporter = $this->exporter($format);
@@ -171,5 +184,60 @@ class AtlasManager
     public function registerExporter(string $format, string $exporterClass): void
     {
         $this->exporters[$format] = $exporterClass;
+    }
+
+    /**
+     * Export using the PHP->HTML intelligent workflow
+     *
+     * @param  array<string, mixed>  $data
+     * @param  array<string, mixed>  $config
+     */
+    public function exportIntelligentHtml(array $data, array $config = []): string
+    {
+        // 1. Générer le fichier PHP canonical
+        $phpExporter = new PhpExporter($config);
+        $phpCode = $phpExporter->export($data);
+
+        // 2. Sauvegarder temporairement (optionnel pour debug)
+        $tempPhpFile = sys_get_temp_dir() . '/atlas-temp-' . uniqid() . '.php';
+        file_put_contents($tempPhpFile, $phpCode);
+
+        try {
+            // 3. Générer le HTML depuis le fichier PHP
+            $htmlExporter = new HtmlExporter($config);
+
+            return $htmlExporter->exportFromPhpFile($tempPhpFile);
+        } finally {
+            // Nettoyer le fichier temporaire
+            if (file_exists($tempPhpFile)) {
+                unlink($tempPhpFile);
+            }
+        }
+    }
+
+    /**
+     * Check if data contains intelligent flows/connections information
+     *
+     * @param  array<string, mixed>  $data
+     */
+    protected function hasIntelligentData(array $data): bool
+    {
+        // Si on a plusieurs types de composants (comme avec type=all)
+        if (isset($data['routes']) || isset($data['commands']) || isset($data['flows'])) {
+            return true;
+        }
+
+        // Si on a des flows définis dans les routes
+        foreach ($data as $items) {
+            if (is_array($items)) {
+                foreach ($items as $item) {
+                    if (isset($item['flows']) || isset($item['connected_to'])) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 }
