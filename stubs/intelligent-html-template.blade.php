@@ -406,7 +406,7 @@
                                         @endif
                                     </div>
                                     <div class="entry-point-details">
-                                        <strong>Controller:</strong> {{ class_basename($route['controller'] ?? 'Closure') }}<br>
+                                        <strong>Controller:</strong> {{ is_array($route['controller'] ?? 'Closure') ? 'Mixed' : class_basename($route['controller'] ?? 'Closure') }}<br>
                                         <strong>Action:</strong> {{ $route['action'] ?? 'handle' }}
                                         @if(isset($route['middleware']) && !empty($route['middleware']))
                                             <br><strong>Middleware:</strong> {{ implode(', ', $route['middleware']) }}
@@ -679,7 +679,7 @@
                                         <div class="connection-group">
                                             <h4>{{ is_array($type) ? 'Mixed' : ucfirst($type) }}</h4>
                                             @foreach($components as $component)
-                                            <span class="connection-item">{{ class_basename($component) }}</span>
+                                            <span class="connection-item">{{ is_array($component) ? 'Mixed' : class_basename($component) }}</span>
                                             @endforeach
                                         </div>
                                         @endforeach
@@ -721,7 +721,7 @@
                                         <td><span class="badge badge-success">{{ is_array($route['method'] ?? '') ? implode('|', $route['method']) : ($route['method'] ?? 'GET') }}</span></td>
                                         <td><code>{{ $route['uri'] }}</code></td>
                                         <td>{{ $route['name'] ?? '-' }}</td>
-                                        <td>{{ class_basename($route['controller'] ?? 'Closure') }}</td>
+                                        <td>{{ is_array($route['controller'] ?? 'Closure') ? 'Mixed' : class_basename($route['controller'] ?? 'Closure') }}</td>
                                         <td>{{ $route['action'] ?? 'handle' }}</td>
                                         <td>
                                             @if(isset($route['middleware']) && !empty($route['middleware']))
@@ -830,7 +830,7 @@
                                         <div class="connection-group">
                                             <h4>{{ is_array($type) ? 'Mixed' : ucfirst($type) }}</h4>
                                             @foreach($components as $component)
-                                            <span class="connection-item">{{ class_basename($component) }}</span>
+                                            <span class="connection-item">{{ is_array($component) ? 'Mixed' : class_basename($component) }}</span>
                                             @endforeach
                                         </div>
                                         @endforeach
@@ -1028,7 +1028,7 @@
                                         <div class="connection-group">
                                             <h4>{{ is_array($type) ? 'Mixed' : ucfirst($type) }}</h4>
                                             @foreach($components as $component)
-                                            <span class="connection-item">{{ class_basename($component) }}</span>
+                                            <span class="connection-item">{{ is_array($component) ? 'Mixed' : class_basename($component) }}</span>
                                             @endforeach
                                         </div>
                                         @endforeach
@@ -1069,7 +1069,7 @@
                                         <div class="connection-group">
                                             <h4>{{ is_array($type) ? 'Mixed' : ucfirst($type) }}</h4>
                                             @foreach($components as $component)
-                                            <span class="connection-item">{{ class_basename($component) }}</span>
+                                            <span class="connection-item">{{ is_array($component) ? 'Mixed' : class_basename($component) }}</span>
                                             @endforeach
                                         </div>
                                         @endforeach
