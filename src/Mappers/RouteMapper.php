@@ -131,22 +131,23 @@ class RouteMapper extends BaseMapper
             if (is_string($action['uses'])) {
                 if (str_contains($action['uses'], '@')) {
                     [$class, $method] = explode('@', $action['uses']);
+
                     return [
                         'class' => $class,
                         'method' => $method,
                         'namespace' => $this->extractNamespace($class),
                         'short_name' => class_basename($class),
                     ];
-                } else {
-                    // Invokable controller
-                    return [
-                        'class' => $action['uses'],
-                        'method' => '__invoke',
-                        'namespace' => $this->extractNamespace($action['uses']),
-                        'short_name' => class_basename($action['uses']),
-                    ];
                 }
-            } elseif (is_array($action['uses']) && count($action['uses']) === 2) {
+                // Invokable controller
+                return [
+                    'class' => $action['uses'],
+                    'method' => '__invoke',
+                    'namespace' => $this->extractNamespace($action['uses']),
+                    'short_name' => class_basename($action['uses']),
+                ];
+            }
+            if (is_array($action['uses']) && count($action['uses']) === 2) {
                 [$class, $method] = $action['uses'];
                 return [
                     'class' => $class,
@@ -163,26 +164,27 @@ class RouteMapper extends BaseMapper
 
             if (str_contains($controller, '@')) {
                 [$class, $method] = explode('@', $controller);
+
                 return [
                     'class' => $class,
                     'method' => $method,
                     'namespace' => $this->extractNamespace($class),
                     'short_name' => class_basename($class),
                 ];
-            } else {
-                // Invokable controller
-                return [
-                    'class' => $controller,
-                    'method' => '__invoke',
-                    'namespace' => $this->extractNamespace($controller),
-                    'short_name' => class_basename($controller),
-                ];
             }
+            // Invokable controller
+            return [
+                'class' => $controller,
+                'method' => '__invoke',
+                'namespace' => $this->extractNamespace($controller),
+                'short_name' => class_basename($controller),
+            ];
         }
 
         // Array format [Controller::class, 'method']
         if (is_array($action['controller'] ?? null) && count($action['controller']) === 2) {
             [$class, $method] = $action['controller'];
+
             return [
                 'class' => $class,
                 'method' => $method,
