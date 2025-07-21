@@ -1,6 +1,6 @@
 <!-- Routes Page -->
 <div id="routes" class="page">
-    @if (!empty($routes))
+    @if (isset($data['routes']) && !empty($data['routes']))
         <div class="card">
             <div class="card-header">
                 <h2>🛣️ Application Routes</h2>
