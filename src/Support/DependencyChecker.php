@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Support;
 
+use Illuminate\View\Factory;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use League\HTMLToMarkdown\HtmlConverter;
 use RuntimeException;
 
 class DependencyChecker
@@ -13,7 +17,7 @@ class DependencyChecker
      */
     public static function checkBlade(string $context = 'export'): void
     {
-        if (! class_exists('Illuminate\View\Factory')) {
+        if (! class_exists(Factory::class)) {
             throw new RuntimeException(
                 "Laravel Blade view engine is required for {$context}. Install it with: composer require illuminate/view"
             );
@@ -27,7 +31,7 @@ class DependencyChecker
      */
     public static function checkDompdf(): bool
     {
-        return class_exists('Dompdf\Dompdf') && class_exists('Dompdf\Options');
+        return class_exists(Dompdf::class) && class_exists(Options::class);
     }
 
     /**
@@ -35,7 +39,7 @@ class DependencyChecker
      */
     public static function checkHtmlToMarkdown(): void
     {
-        if (! class_exists('League\HTMLToMarkdown\HtmlConverter')) {
+        if (! class_exists(HtmlConverter::class)) {
             throw new RuntimeException(
                 'HTML to Markdown converter is required. Install it with: composer require league/html-to-markdown'
             );
@@ -54,7 +58,7 @@ class DependencyChecker
         // Blade is included by default in Laravel, so HTML should always be available
         $formats[] = 'html';
 
-        if (class_exists('Dompdf\Dompdf')) {
+        if (class_exists(Dompdf::class)) {
             $formats[] = 'pdf';
         }
 
@@ -76,7 +80,7 @@ class DependencyChecker
                 break;
 
             case 'pdf':
-                if (! class_exists('Dompdf\Dompdf')) {
+                if (! class_exists(Dompdf::class)) {
                     $missing[] = 'dompdf/dompdf';
                 }
                 break;
@@ -92,7 +96,7 @@ class DependencyChecker
      */
     public static function getInstallCommand(array $dependencies): string
     {
-        if (empty($dependencies)) {
+        if ($dependencies === []) {
             return '';
         }
 
