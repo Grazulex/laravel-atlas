@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Mappers;
 
-use ReflectionMethod;
-use ReflectionType;
-use ReflectionNamedType;
 use Illuminate\Support\Collection;
 use ReflectionClass;
 use ReflectionException;
+use ReflectionMethod;
+use ReflectionNamedType;
+use ReflectionType;
 
 class ActionMapper extends BaseMapper
 {

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Mappers;
 
-use ReflectionNamedType;
-use ReflectionMethod;
 use Illuminate\Support\Collection;
 use ReflectionClass;
 use ReflectionException;
+use ReflectionMethod;
+use ReflectionNamedType;
 
 class ObserverMapper extends BaseMapper
 {
