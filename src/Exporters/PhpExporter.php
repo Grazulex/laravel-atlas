@@ -484,8 +484,15 @@ class PhpExporter extends BaseExporter
 
         // Logic pour détecter automatiquement les flows basés sur le controller/action
         if (! empty($route['controller'])) {
+            $controller = is_array($route['controller']) ? '[Multiple Controllers]' : $route['controller'];
+            $action = $route['action'] ?? 'handle';
+            
+            if (is_array($action)) {
+                $action = isset($action['uses']) ? $action['uses'] : '[Complex Action]';
+            }
+            
             $flows['synchronous'] = [
-                $route['controller'] . '::' . ($route['action'] ?? 'handle'),
+                $controller . '::' . $action,
             ];
         }
 
