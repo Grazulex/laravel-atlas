@@ -17,6 +17,7 @@ use LaravelAtlas\Mappers\CommandMapper;
 use LaravelAtlas\Mappers\ControllerMapper;
 use LaravelAtlas\Mappers\EventMapper;
 use LaravelAtlas\Mappers\JobMapper;
+use LaravelAtlas\Mappers\ListenerMapper;
 use LaravelAtlas\Mappers\MiddlewareMapper;
 use LaravelAtlas\Mappers\ModelMapper;
 use LaravelAtlas\Mappers\NotificationMapper;
@@ -35,7 +36,7 @@ use Throwable;
 class AtlasGenerateCommand extends Command
 {
     protected $signature = 'atlas:generate 
-                            {--type=all : Type of component to map (models, routes, jobs, services, controllers, events, commands, middleware, policies, resources, notifications, requests, rules, observers, actions, all)}
+                            {--type=all : Type of component to map (models, routes, jobs, services, controllers, events, commands, middleware, policies, resources, notifications, requests, rules, observers, listeners, actions, all)}
                             {--format=json : Output format (json, image, markdown, pdf, html, php)}
                             {--output= : Output file path}
                             {--detailed : Include detailed information}';
@@ -60,6 +61,7 @@ class AtlasGenerateCommand extends Command
         'requests' => RequestMapper::class,
         'rules' => RuleMapper::class,
         'observers' => ObserverMapper::class,
+        'listeners' => ListenerMapper::class,
         'actions' => ActionMapper::class,
     ];
 

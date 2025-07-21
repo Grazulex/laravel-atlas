@@ -17,6 +17,7 @@ use LaravelAtlas\Mappers\CommandMapper;
 use LaravelAtlas\Mappers\ControllerMapper;
 use LaravelAtlas\Mappers\EventMapper;
 use LaravelAtlas\Mappers\JobMapper;
+use LaravelAtlas\Mappers\ListenerMapper;
 use LaravelAtlas\Mappers\MiddlewareMapper;
 use LaravelAtlas\Mappers\ModelMapper;
 use LaravelAtlas\Mappers\NotificationMapper;
@@ -47,6 +48,7 @@ class AtlasManager
         'requests' => RequestMapper::class,
         'rules' => RuleMapper::class,
         'observers' => ObserverMapper::class,
+        'listeners' => ListenerMapper::class,
         'actions' => ActionMapper::class,
     ];
 
