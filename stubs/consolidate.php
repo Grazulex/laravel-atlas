@@ -3,18 +3,18 @@
 /**
  * Script pour consolider les templates modulaires en un seul template
  */
-
-function consolidateTemplates() {
+function consolidateTemplates()
+{
     $stubsDir = __DIR__;
     $partialsDir = $stubsDir . '/partials';
     $pagesDir = $stubsDir . '/pages';
-    
+
     // Lire le contenu des différents templates
     $styles = file_get_contents($partialsDir . '/styles.blade.php');
     $scripts = file_get_contents($partialsDir . '/scripts.blade.php');
     $header = file_get_contents($partialsDir . '/header.blade.php');
     $sidebar = file_get_contents($partialsDir . '/sidebar.blade.php');
-    
+
     // Lire toutes les pages
     $pages = [
         'overview' => file_get_contents($pagesDir . '/overview.blade.php'),
@@ -30,7 +30,7 @@ function consolidateTemplates() {
         'controllers' => file_get_contents($pagesDir . '/controllers.blade.php'),
         'policies' => file_get_contents($pagesDir . '/policies.blade.php'),
     ];
-    
+
     // Créer le template consolidé
     $consolidatedTemplate = <<<BLADE
 <!DOCTYPE html>
@@ -66,7 +66,7 @@ BLADE;
 
     // Sauvegarder le template consolidé
     file_put_contents($stubsDir . '/intelligent-html-template-consolidated.blade.php', $consolidatedTemplate);
-    
+
     echo "Template consolidé créé : intelligent-html-template-consolidated.blade.php\n";
 }
 
