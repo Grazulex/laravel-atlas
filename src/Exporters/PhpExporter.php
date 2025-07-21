@@ -165,6 +165,16 @@ class PhpExporter extends BaseExporter
             $php .= "    ],\n\n";
         }
 
+        // Observers
+        if (! empty($data['observers'])) {
+            $php .= "    // === OBSERVERS ===\n";
+            $php .= "    'observers' => [\n";
+            foreach ($data['observers'] as $observer) {
+                $php .= $this->generateObserverEntry($observer);
+            }
+            $php .= "    ],\n\n";
+        }
+
         // Flows intelligents
         $php .= "    // === FLOWS & INTERCONNECTIONS ===\n";
         $php .= "    'flows' => [\n";
@@ -476,6 +486,30 @@ class PhpExporter extends BaseExporter
 
         if (! empty($flow['steps'])) {
             $php .= "            'steps' => " . $this->exportArray($flow['steps']) . "\n";
+        }
+
+        return $php . "        ],\n";
+    }
+
+    /**
+     * @param  array<string, mixed>  $observer
+     */
+    private function generateObserverEntry(array $observer): string
+    {
+        $php = "        [\n";
+        $php .= "            'class_name' => " . $this->exportValue($observer['class_name'] ?? '') . ",\n";
+        $php .= "            'model' => " . $this->exportValue($observer['model'] ?? '') . ",\n";
+
+        if (! empty($observer['methods'])) {
+            $php .= "            'methods' => " . $this->exportArray($observer['methods']) . ",\n";
+        }
+
+        if (! empty($observer['dependencies'])) {
+            $php .= "            'dependencies' => " . $this->exportArray($observer['dependencies']) . ",\n";
+        }
+
+        if (! empty($observer['events'])) {
+            $php .= "            'events' => " . $this->exportArray($observer['events']) . ",\n";
         }
 
         return $php . "        ],\n";
