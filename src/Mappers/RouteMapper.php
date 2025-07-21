@@ -126,27 +126,63 @@ class RouteMapper extends BaseMapper
     {
         $action = $route->getAction();
 
-        if (! isset($action['controller']) || ! is_string($action['controller'])) {
-            return null;
+        // Handle modern Laravel route formats
+        if (isset($action['uses'])) {
+            if (is_string($action['uses'])) {
+                if (str_contains($action['uses'], '@')) {
+                    [$class, $method] = explode('@', $action['uses']);
+                    return [
+                        'class' => $class,
+                        'method' => $method,
+                        'namespace' => $this->extractNamespace($class),
+                        'short_name' => class_basename($class),
+                    ];
+                } else {
+                    // Invokable controller
+                    return [
+                        'class' => $action['uses'],
+                        'method' => '__invoke',
+                        'namespace' => $this->extractNamespace($action['uses']),
+                        'short_name' => class_basename($action['uses']),
+                    ];
+                }
+            } elseif (is_array($action['uses']) && count($action['uses']) === 2) {
+                [$class, $method] = $action['uses'];
+                return [
+                    'class' => $class,
+                    'method' => $method,
+                    'namespace' => $this->extractNamespace($class),
+                    'short_name' => class_basename($class),
+                ];
+            }
         }
 
-        $controller = $action['controller'];
+        // Legacy controller format
+        if (isset($action['controller']) && is_string($action['controller'])) {
+            $controller = $action['controller'];
 
-        if (str_contains($controller, '@')) {
-            [$class, $method] = explode('@', $controller);
-
-            return [
-                'class' => $class,
-                'method' => $method,
-                'namespace' => $this->extractNamespace($class),
-                'short_name' => class_basename($class),
-            ];
+            if (str_contains($controller, '@')) {
+                [$class, $method] = explode('@', $controller);
+                return [
+                    'class' => $class,
+                    'method' => $method,
+                    'namespace' => $this->extractNamespace($class),
+                    'short_name' => class_basename($class),
+                ];
+            } else {
+                // Invokable controller
+                return [
+                    'class' => $controller,
+                    'method' => '__invoke',
+                    'namespace' => $this->extractNamespace($controller),
+                    'short_name' => class_basename($controller),
+                ];
+            }
         }
 
-        if (is_array($controller) && count($controller) === 2) {
-            $class = $controller[0];
-            $method = $controller[1];
-
+        // Array format [Controller::class, 'method']
+        if (is_array($action['controller'] ?? null) && count($action['controller']) === 2) {
+            [$class, $method] = $action['controller'];
             return [
                 'class' => $class,
                 'method' => $method,

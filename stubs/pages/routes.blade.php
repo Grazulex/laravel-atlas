@@ -37,16 +37,16 @@
                                 @endif
                             </td>
                             <td>
-                                @if(is_array($route['action'] ?? 'handle'))
+                                @if(isset($route['controller']['method']))
+                                    {{ $route['controller']['method'] }}
+                                @elseif(is_array($route['action'] ?? null))
                                     @if(isset($route['action']['uses']) && strpos($route['action']['uses'], '@') !== false)
-                                        {{ explode('@', $route['action']['uses'])[1] ?? 'handle' }}
-                                    @elseif(isset($route['controller']['method']))
-                                        {{ $route['controller']['method'] }}
+                                        {{ explode('@', $route['action']['uses'])[1] ?? '__invoke' }}
                                     @else
-                                        [Complex Action]
+                                        __invoke
                                     @endif
                                 @else
-                                    {{ $route['action'] ?? 'handle' }}
+                                    {{ is_string($route['action'] ?? null) ? $route['action'] : 'handle' }}
                                 @endif
                             </td>
                             <td>
