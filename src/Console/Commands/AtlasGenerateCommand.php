@@ -13,6 +13,7 @@ use LaravelAtlas\Exporters\ImageExporter;
 use LaravelAtlas\Exporters\JsonExporter;
 use LaravelAtlas\Exporters\MarkdownExporter;
 use LaravelAtlas\Exporters\PdfExporter;
+use LaravelAtlas\Exporters\PhpExporter;
 use LaravelAtlas\Mappers\ActionMapper;
 use LaravelAtlas\Mappers\CommandMapper;
 use LaravelAtlas\Mappers\ControllerMapper;
@@ -74,6 +75,7 @@ class AtlasGenerateCommand extends Command
         'markdown' => MarkdownExporter::class,
         'pdf' => PdfExporter::class,
         'html' => HtmlExporter::class,
+        'php' => PhpExporter::class,
     ];
 
     public function handle(): int
