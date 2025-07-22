@@ -1097,28 +1097,24 @@
                         @endif
                         
                         @if(isset($action['dependencies']) && count($action['dependencies']) > 0)
-                        <h4>Dependency Injection Flow</h4>
+                        <h4>Dependency Injection</h4>
                         <div class="flow">
-                            <h5>Injected Services</h5>
                             @foreach($action['dependencies'] as $dependency)
-                            <div class="flow-step dependency">
-                                <div class="flow-step-icon">D{{ $loop->iteration }}</div>
-                                <span class="flow-step-text">{{ class_basename($dependency) }}</span>
-                                <span style="background: #17a2b8; color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.75em; margin-left: 8px;">Service</span>
+                            <div class="flow-step">
+                                <div class="flow-step-icon">{{ $loop->iteration }}</div>
+                                {{ class_basename($dependency) }}
                             </div>
                             @endforeach
                         </div>
                         @endif
                         
                         @if(isset($action['events']) && count($action['events']) > 0)
-                        <h4>Events & Dispatch Flow</h4>
+                        <h4>Events Dispatched</h4>
                         <div class="flow">
-                            <h5>Synchronous Events</h5>
                             @foreach($action['events'] as $event)
-                            <div class="flow-step">
-                                <div class="flow-step-icon">{{ $loop->iteration }}</div>
-                                <span class="flow-step-text">{{ class_basename($event) }}</span>
-                                <span style="background: #28a745; color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.75em; margin-left: 8px;">Sync</span>
+                            <div class="flow-step async">
+                                <div class="flow-step-icon">A{{ $loop->iteration }}</div>
+                                {{ class_basename($event) }}
                             </div>
                             @endforeach
                         </div>
@@ -1218,28 +1214,24 @@
                     </div>
                     <div class="card-body">
                         @if(isset($job['triggered_by']))
-                        <h4>Job Execution Flow</h4>
+                        <h4>Triggered By</h4>
                         <div class="flow">
-                            <h5>Triggered By</h5>
                             @foreach($job['triggered_by'] as $trigger)
                             <div class="flow-step">
-                                <div class="flow-step-icon">T{{ $loop->iteration }}</div>
-                                <span class="flow-step-text">{{ class_basename($trigger) }}</span>
-                                <span style="background: #ffc107; color: #212529; padding: 2px 6px; border-radius: 10px; font-size: 0.75em; margin-left: 8px;">Trigger</span>
+                                <div class="flow-step-icon">{{ $loop->iteration }}</div>
+                                {{ class_basename($trigger) }}
                             </div>
                             @endforeach
                         </div>
                         @endif
                         
                         @if(isset($job['dependencies']))
-                        <h4>Dependency Injection</h4>
+                        <h4>Dependencies</h4>
                         <div class="flow">
-                            <h5>Required Services</h5>
                             @foreach($job['dependencies'] as $dep)
-                            <div class="flow-step dependency">
-                                <div class="flow-step-icon">D{{ $loop->iteration }}</div>
-                                <span class="flow-step-text">{{ class_basename($dep) }}</span>
-                                <span style="background: #17a2b8; color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.75em; margin-left: 8px;">Service</span>
+                            <div class="flow-step">
+                                <div class="flow-step-icon">{{ $loop->iteration }}</div>
+                                {{ class_basename($dep) }}
                             </div>
                             @endforeach
                         </div>
@@ -1248,12 +1240,10 @@
                         @if(isset($job['events']))
                         <h4>Events Dispatched</h4>
                         <div class="flow">
-                            <h5>Job Events</h5>
                             @foreach($job['events'] as $event)
                             <div class="flow-step async">
-                                <div class="flow-step-icon">E{{ $loop->iteration }}</div>
-                                <span class="flow-step-text">{{ class_basename($event) }}</span>
-                                <span style="background: #6f42c1; color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.75em; margin-left: 8px;">Event</span>
+                                <div class="flow-step-icon">A{{ $loop->iteration }}</div>
+                                {{ class_basename($event) }}
                             </div>
                             @endforeach
                         </div>
@@ -1300,28 +1290,24 @@
                         @endif
                         
                         @if(isset($event['triggered_by']))
-                        <h4>Event Trigger Flow</h4>
+                        <h4>Triggered By</h4>
                         <div class="flow">
-                            <h5>Triggered By</h5>
                             @foreach($event['triggered_by'] as $trigger)
                             <div class="flow-step">
-                                <div class="flow-step-icon">T{{ $loop->iteration }}</div>
-                                <span class="flow-step-text">{{ is_array($trigger) ? implode(', ', $trigger) : class_basename($trigger) }}</span>
-                                <span style="background: #ffc107; color: #212529; padding: 2px 6px; border-radius: 10px; font-size: 0.75em; margin-left: 8px;">Trigger</span>
+                                <div class="flow-step-icon">{{ $loop->iteration }}</div>
+                                {{ is_array($trigger) ? implode(', ', $trigger) : class_basename($trigger) }}
                             </div>
                             @endforeach
                         </div>
                         @endif
                         
                         @if(isset($event['listeners']))
-                        <h4>Listener Chain</h4>
+                        <h4>Event Listeners</h4>
                         <div class="flow">
-                            <h5>Event Listeners</h5>
                             @foreach($event['listeners'] as $listener)
                             <div class="flow-step async">
-                                <div class="flow-step-icon">L{{ $loop->iteration }}</div>
-                                <span class="flow-step-text">{{ class_basename($listener) }}</span>
-                                <span style="background: #6f42c1; color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.75em; margin-left: 8px;">Async</span>
+                                <div class="flow-step-icon">A{{ $loop->iteration }}</div>
+                                {{ class_basename($listener) }}
                             </div>
                             @endforeach
                         </div>
