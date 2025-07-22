@@ -416,20 +416,72 @@ class PhpExporter extends BaseExporter
     {
         $php = "        [\n";
         $php .= "            'class_name' => " . $this->exportValue($service['class_name'] ?? '') . ",\n";
+        
+        // Add namespace and other service properties
+        if (isset($service['namespace'])) {
+            $php .= "            'namespace' => " . $this->exportValue($service['namespace']) . ",\n";
+        }
+        if (isset($service['short_name'])) {
+            $php .= "            'short_name' => " . $this->exportValue($service['short_name']) . ",\n";
+        }
+        if (isset($service['is_abstract'])) {
+            $php .= "            'is_abstract' => " . $this->exportValue($service['is_abstract']) . ",\n";
+        }
+        if (isset($service['is_interface'])) {
+            $php .= "            'is_interface' => " . $this->exportValue($service['is_interface']) . ",\n";
+        }
+        if (isset($service['parent_class']) && $service['parent_class']) {
+            $php .= "            'parent_class' => " . $this->exportValue($service['parent_class']) . ",\n";
+        }
+        if (isset($service['traits']) && is_array($service['traits']) && !empty($service['traits'])) {
+            $php .= "            'traits' => " . $this->exportArray($service['traits']) . ",\n";
+        }
+        if (isset($service['interfaces']) && is_array($service['interfaces']) && !empty($service['interfaces'])) {
+            $php .= "            'interfaces' => " . $this->exportArray($service['interfaces']) . ",\n";
+        }
+        if (isset($service['dependencies']) && is_array($service['dependencies']) && !empty($service['dependencies'])) {
+            $php .= "            'dependencies' => " . $this->exportArray($service['dependencies']) . ",\n";
+        }
 
         if (! empty($service['methods'])) {
             $php .= "            'methods' => [\n";
-            foreach ($service['methods'] as $method => $details) {
-                $php .= "                '$method' => [\n";
-                if (! empty($details['dependencies'])) {
-                    $php .= "                    'dependencies' => " . $this->exportArray($details['dependencies']) . ",\n";
+            foreach ($service['methods'] as $methodIndex => $methodData) {
+                // Handle both formats: indexed array with 'name' property or associative array
+                $methodName = is_array($methodData) && isset($methodData['name']) 
+                    ? $methodData['name'] 
+                    : (is_string($methodIndex) ? $methodIndex : "method_$methodIndex");
+                
+                $php .= "                '$methodName' => [\n";
+                
+                // Add method details
+                if (is_array($methodData)) {
+                    if (isset($methodData['visibility'])) {
+                        $php .= "                    'visibility' => " . $this->exportValue($methodData['visibility']) . ",\n";
+                    }
+                    if (isset($methodData['return_type'])) {
+                        $php .= "                    'return_type' => " . $this->exportValue($methodData['return_type']) . ",\n";
+                    }
+                    if (isset($methodData['parameters']) && is_array($methodData['parameters'])) {
+                        $php .= "                    'parameters' => " . $this->exportArray($methodData['parameters']) . ",\n";
+                    }
+                    if (isset($methodData['is_static'])) {
+                        $php .= "                    'is_static' => " . $this->exportValue($methodData['is_static']) . ",\n";
+                    }
                 }
-                if (! empty($details['returns'])) {
-                    $php .= "                    'returns' => " . $this->exportValue($details['returns']) . ",\n";
+                
+                // Legacy support for old format
+                if (is_array($methodData)) {
+                    if (!empty($methodData['dependencies'])) {
+                        $php .= "                    'dependencies' => " . $this->exportArray($methodData['dependencies']) . ",\n";
+                    }
+                    if (!empty($methodData['returns'])) {
+                        $php .= "                    'returns' => " . $this->exportValue($methodData['returns']) . ",\n";
+                    }
+                    if (!empty($methodData['events'])) {
+                        $php .= "                    'events' => " . $this->exportArray($methodData['events']) . ",\n";
+                    }
                 }
-                if (! empty($details['events'])) {
-                    $php .= "                    'events' => " . $this->exportArray($details['events']) . ",\n";
-                }
+                
                 $php .= "                ],\n";
             }
             $php .= "            ],\n";
