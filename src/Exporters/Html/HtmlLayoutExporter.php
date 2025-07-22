@@ -13,8 +13,15 @@ class HtmlLayoutExporter
      */
     public function render(array $data): string
     {
+        // Extraire les données selon le type
+        $modelsData = [];
+        
+        if (isset($data['models']) && is_array($data['models']) && isset($data['models']['data'])) {
+            $modelsData = $data['models']['data'];
+        }
+        
         return View::make('atlas::exports.layout', [
-            'models' => $data,
+            'models' => $modelsData,
             'commands' => [], // à remplir plus tard
             'services' => [], // à remplir plus tard
         ])->render();
