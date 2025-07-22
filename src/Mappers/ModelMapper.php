@@ -11,7 +11,6 @@ use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
 use ReflectionClass;
 use ReflectionMethod;
-use Throwable;
 
 class ModelMapper implements ComponentMapper
 {
@@ -32,6 +31,8 @@ class ModelMapper implements ComponentMapper
         $paths = $options['paths'] ?? [app_path('Models'), app_path()];
         $recursive = $options['recursive'] ?? true;
 
+        $seen = [];
+
         foreach ($paths as $path) {
             if (! is_dir($path)) {
                 continue;
@@ -45,12 +46,14 @@ class ModelMapper implements ComponentMapper
                 if (
                     $fqcn &&
                     class_exists($fqcn) &&
-                    is_subclass_of($fqcn, Model::class)
+                    is_subclass_of($fqcn, Model::class) &&
+                    ! isset($seen[$fqcn])
                 ) {
                     $reflection = new ReflectionClass($fqcn);
                     if (! $reflection->isAbstract()) {
                         $instance = app($fqcn);
                         $models[] = $this->analyzeModel($instance);
+                        $seen[$fqcn] = true;
                     }
                 }
             }
@@ -89,27 +92,35 @@ class ModelMapper implements ComponentMapper
     protected function guessRelations(Model $model): array
     {
         $relations = [];
+        $class = get_class($model);
+        $reflection = new ReflectionClass($class);
 
-        $class = $model::class;
-        $methods = (new ReflectionClass($class))->getMethods(ReflectionMethod::IS_PUBLIC);
+        foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+            // Exclure les scopes, hérités, statiques, magiques, etc.
+            if (
+                $method->class !== $class ||
+                $method->isStatic() ||
+                $method->isConstructor() ||
+                $method->getNumberOfParameters() > 0 ||
+                str_starts_with($method->name, '__') ||
+                str_starts_with($method->name, 'scope')
+            ) {
+                continue;
+            }
 
-        foreach ($methods as $method) {
-            if ($method->class !== $class) {
-                continue;
-            }
-            if ($method->getNumberOfParameters() > 0) {
-                continue;
-            }
-            if ($method->isStatic()) {
-                continue;
-            }
             try {
-                $return = $method->invoke($model);
-                if ($return instanceof Relation) {
-                    $relations[$method->getName()] = class_basename($return::class);
+                $result = $method->invoke($model);
+                if ($result instanceof Relation) {
+                    $relations[$method->getName()] = [
+                        'type' => class_basename($result),
+                        'related' => get_class($result->getRelated()),
+                        'foreignKey' => method_exists($result, 'getForeignKeyName')
+                            ? $result->getForeignKeyName()
+                            : null,
+                    ];
                 }
-            } catch (Throwable) {
-                // silencieux
+            } catch (\Throwable) {
+                // ne rien faire
             }
         }
 
