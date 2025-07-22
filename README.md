@@ -49,17 +49,17 @@ Laravel Atlas is perfect for:
 
 ## ✨ Features
 
-- 🚀 **Comprehensive Scanning** - Analyze models, services, routes, jobs, events, and more
+- 🚀 **Comprehensive Scanning** - Analyze 17 different Laravel component types
 - 🗺️ **Architecture Mapping** - Generate detailed application structure maps
-- 📊 **Multiple Export Formats** - Export to Mermaid, Markdown, JSON, PDF, and HTML
+- 📊 **Multiple Export Formats** - Export to JSON, HTML, Markdown, Image, PDF, and PHP
 - 🔍 **Dependency Analysis** - Track relationships and dependencies between components
-- 📋 **Custom Node Types** - Extensible architecture for custom component types
+- 📋 **Extensible Architecture** - Support for custom mappers and exporters
 - 🎯 **Smart Detection** - Intelligent component discovery and classification
-- ✅ **Validation** - Validate architectural patterns and dependencies
-- 📈 **Visual Diagrams** - Generate beautiful Mermaid diagrams and flowcharts
+- 📈 **Visual Diagrams** - Generate beautiful architectural diagrams
 - 🧪 **Analysis Reports** - Comprehensive architectural analysis reports
 - ⚡ **CLI Integration** - Powerful Artisan commands for map generation
-- 🔄 **Real-time Updates** - Watch mode for continuous map updates
+- 💻 **Programmatic API** - Full PHP API with Atlas facade
+- 🔧 **Intelligent HTML Export** - Advanced PHP-to-HTML workflow for complex visualizations
 - 📝 **Documentation Generation** - Auto-generate architecture documentation
 
 ## 📦 Installation
@@ -93,26 +93,32 @@ This creates a JSON output showing all discovered components in your application
 
 ```bash
 # Generate model architecture map
-php artisan atlas:generate --type=models --format=mermaid
+php artisan atlas:generate --type=models --format=markdown
 
 # Generate service layer map
-php artisan atlas:generate --type=services --format=markdown
+php artisan atlas:generate --type=services --format=html
 
 # Generate complete application map
-php artisan atlas:generate --format=json --output=docs/architecture.json
+php artisan atlas:generate --type=all --format=json --output=docs/architecture.json
 ```
 
 ### 3. Customize Export Formats
 
 ```bash
-# Generate Mermaid diagram
-php artisan atlas:generate --format=mermaid
+# Generate JSON output (default)
+php artisan atlas:generate --format=json
 
 # Generate comprehensive markdown documentation
 php artisan atlas:generate --format=markdown
 
-# Generate interactive HTML map
+# Generate interactive HTML map with intelligent workflow
 php artisan atlas:generate --format=html
+
+# Generate visual diagrams as images
+php artisan atlas:generate --format=image
+
+# Generate PDF reports
+php artisan atlas:generate --format=pdf
 ```
 
 ### 4. Access Generated Maps Programmatically
@@ -127,7 +133,8 @@ $routeData = Atlas::scan('routes');
 // Export to different formats
 $jsonOutput = Atlas::export('models', 'json');
 $markdownDocs = Atlas::export('routes', 'markdown');
-$mermaidDiagram = Atlas::export('models', 'mermaid');
+$htmlReport = Atlas::export('services', 'html');
+$pdfDocument = Atlas::export('controllers', 'pdf');
 ```
 
 ## 🗺️ Architecture Mapping
@@ -156,6 +163,42 @@ $routeData = Atlas::scan('routes', [
     'include_controllers' => true,
     'group_by_prefix' => true,
 ]);
+
+// Additional component types available
+$jobData = Atlas::scan('jobs');
+$eventData = Atlas::scan('events');
+$commandData = Atlas::scan('commands');
+$middlewareData = Atlas::scan('middleware');
+$policyData = Atlas::scan('policies');
+$resourceData = Atlas::scan('resources');
+$notificationData = Atlas::scan('notifications');
+$requestData = Atlas::scan('requests');
+$ruleData = Atlas::scan('rules');
+$observerData = Atlas::scan('observers');
+$listenerData = Atlas::scan('listeners');
+$actionData = Atlas::scan('actions');
+```
+
+### Available Component Types
+
+Laravel Atlas can analyze **17 different component types**:
+
+- **models** - Eloquent models with relationships, observers, and factories
+- **routes** - Application routes with middleware and controllers
+- **jobs** - Queued jobs and their properties
+- **services** - Service classes and their dependencies
+- **controllers** - Controllers and their methods
+- **events** - Application events and listeners
+- **commands** - Artisan commands
+- **middleware** - HTTP middleware
+- **policies** - Authorization policies
+- **resources** - API resources
+- **notifications** - Notification classes
+- **requests** - Form request classes
+- **rules** - Custom validation rules
+- **observers** - Eloquent model observers
+- **listeners** - Event listeners
+- **actions** - Action classes
 ```
 
 ## 📊 Export Formats
@@ -163,20 +206,23 @@ $routeData = Atlas::scan('routes', [
 Multiple export formats for different use cases:
 
 ```bash
-# Mermaid diagrams for documentation
-php artisan atlas:generate --format=mermaid --output=docs/architecture.mmd
-
-# JSON for programmatic access
+# JSON for data processing and API integration
 php artisan atlas:generate --format=json --output=storage/atlas/map.json
 
-# Markdown documentation
+# Markdown documentation for README files
 php artisan atlas:generate --format=markdown --output=docs/ARCHITECTURE.md
 
-# Interactive HTML maps
+# Interactive HTML maps with intelligent workflow
 php artisan atlas:generate --format=html --output=public/atlas/map.html
 
-# PDF reports
+# Visual diagrams as PNG/JPG images
+php artisan atlas:generate --format=image --output=docs/architecture.png
+
+# PDF reports for documentation
 php artisan atlas:generate --format=pdf --output=reports/architecture.pdf
+
+# PHP code for advanced processing
+php artisan atlas:generate --format=php --output=storage/atlas/map.php
 ```
 
 ### Programmatic Export
@@ -187,8 +233,9 @@ use LaravelAtlas\Facades\Atlas;
 // Export specific types to different formats
 $jsonOutput = Atlas::export('models', 'json');
 $markdownDocs = Atlas::export('routes', 'markdown');
-$mermaidDiagram = Atlas::export('controllers', 'mermaid');
-$htmlReport = Atlas::export('services', 'html');
+$htmlReport = Atlas::export('controllers', 'html');
+$imageFile = Atlas::export('services', 'image');
+$pdfReport = Atlas::export('all', 'pdf');
 ```
 
 ## 🔍 Analysis Tools
@@ -238,7 +285,7 @@ return [
     'generation' => [
         'output_path' => env('ATLAS_OUTPUT_PATH', base_path('atlas')),
         'formats' => [
-            'mermaid' => env('ATLAS_FORMAT_MERMAID', true),
+            'image' => env('ATLAS_FORMAT_IMAGE', true),
             'json' => env('ATLAS_FORMAT_JSON', true),
             'markdown' => env('ATLAS_FORMAT_MARKDOWN', true),
         ],
@@ -253,6 +300,7 @@ return [
             config_path(),
         ],
     ],
+];
 ];
 ```
 
@@ -272,12 +320,12 @@ For detailed documentation, examples, and advanced usage:
 
 ```bash
 # Generate comprehensive application architecture
-php artisan atlas:generate --type=all --format=mermaid --output=docs/
+php artisan atlas:generate --type=all --format=html --output=docs/architecture.html
 
 # Generate specific component maps
-php artisan atlas:generate --type=models --format=mermaid
-php artisan atlas:generate --type=services --format=markdown
-php artisan atlas:generate --type=routes --format=mermaid
+php artisan atlas:generate --type=models --format=markdown --output=docs/models.md
+php artisan atlas:generate --type=services --format=json --output=docs/services.json
+php artisan atlas:generate --type=routes --format=image --output=docs/routes.png
 ```
 
 ### Custom Architecture Analysis
@@ -300,17 +348,51 @@ file_put_contents('docs/architecture-analysis.md', $markdownReport);
 ### Interactive Architecture Explorer
 
 ```php
-// Generate interactive HTML map
+// Generate intelligent HTML map with advanced features
 $htmlOutput = Atlas::export('all', 'html');
 file_put_contents('public/atlas/explorer.html', $htmlOutput);
+
+// Or use the intelligent HTML workflow for complex applications
+use LaravelAtlas\AtlasManager;
+
+$manager = app(AtlasManager::class);
+$intelligentHtml = $manager->exportIntelligentHtml([
+    'models' => Atlas::scan('models'),
+    'routes' => Atlas::scan('routes'),
+    'services' => Atlas::scan('services'),
+]);
+file_put_contents('public/atlas/intelligent-map.html', $intelligentHtml);
 ```
 
 ### CI/CD Integration
 
 ```bash
 # In your CI/CD pipeline
-php artisan atlas:generate --format=json --output=docs/architecture.json
-php artisan atlas:generate --format=markdown --output=docs/ARCHITECTURE.md
+php artisan atlas:generate --type=all --format=json --output=docs/architecture.json
+php artisan atlas:generate --type=all --format=markdown --output=docs/ARCHITECTURE.md
+php artisan atlas:generate --type=all --format=html --output=public/docs/architecture.html
+
+# Generate specific component documentation
+php artisan atlas:generate --type=models --format=markdown --output=docs/models.md
+php artisan atlas:generate --type=routes --format=json --output=api/routes.json
+```
+
+### Advanced Export Examples
+
+```php
+use LaravelAtlas\Facades\Atlas;
+
+// Generate PDF report for architecture review
+$pdfReport = Atlas::export('all', 'pdf');
+file_put_contents('reports/architecture-review.pdf', $pdfReport);
+
+// Export raw PHP data for custom processing
+$phpData = Atlas::export('models', 'php');
+file_put_contents('storage/atlas/models-data.php', $phpData);
+
+// Generate visual diagrams
+$imageData = Atlas::export('services', 'image');
+file_put_contents('public/diagrams/services.png', $imageData);
 ```
 
 Check out the [examples directory](examples) for more examples.
