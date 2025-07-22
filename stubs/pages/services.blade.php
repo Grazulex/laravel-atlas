@@ -19,7 +19,7 @@
                             @foreach($service['methods'] as $method)
                             <div style="padding: 15px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #17a2b8;">
                                 <div style="margin-bottom: 10px;">
-                                    <strong style="font-size: 1.1em;">{{ $method['name'] ?? 'unknown' }}()</strong>
+                                    <strong style="font-size: 1.1em;">{{ isset($method['name']) ? $method['name'] : 'NO_NAME' }}()</strong>
                                     @if(isset($method['visibility']))
                                         <span style="background: {{ $method['visibility'] === 'public' ? '#28a745' : ($method['visibility'] === 'protected' ? '#ffc107' : '#6c757d') }}; color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.75em; margin-left: 8px;">{{ ucfirst($method['visibility']) }}</span>
                                     @endif
@@ -91,7 +91,7 @@
                         <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #dee2e6;">
                             <h5 style="color: #6c757d; margin-bottom: 10px;">Class Information</h5>
                             <div style="display: grid; gap: 5px; font-size: 0.9em; color: #6c757d;">
-                                <div><strong>Namespace:</strong> {{ $service['namespace'] ?? 'Unknown' }}</div>
+                                <div><strong>Namespace:</strong> {{ isset($service['namespace']) ? $service['namespace'] : 'NO_NAMESPACE' }}</div>
                                 @if(isset($service['parent_class']) && $service['parent_class'])
                                 <div><strong>Extends:</strong> {{ class_basename($service['parent_class']) }}</div>
                                 @endif
