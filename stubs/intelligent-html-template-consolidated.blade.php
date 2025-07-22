@@ -885,7 +885,7 @@
                 <div class="card" style="margin-bottom: 20px;">
                     <div class="card-header">
                         <h3>{{ class_basename($model['class_name']) }}</h3>
-                        <small>{{ $model['class_name'] }} → {{ $model['table'] }}</small>
+                        <small>{{ $model['class_name'] }} → {{ $model['attributes']['table'] ?? 'unknown' }}</small>
                     </div>
                     <div class="card-body">
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
@@ -926,10 +926,6 @@
                                             <li>{{ $field }}</li>
                                             @endforeach
                                         </ul>
-                                    @endif
-                                    
-                                    @if(isset($model['attributes']['table']))
-                                        <p><strong>Table:</strong> {{ $model['attributes']['table'] }}</p>
                                     @endif
                                     
                                     @if(isset($model['attributes']['primary_key']))
