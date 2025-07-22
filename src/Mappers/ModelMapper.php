@@ -82,12 +82,12 @@ class ModelMapper implements ComponentMapper
             'fillable' => $model->getFillable(),
             'guarded' => $model->getGuarded(),
             'casts' => $model->getCasts(),
-            'relations' => [], // à remplir plus tard
+            'relations' => $this->guessRelations($model),
         ];
     }
 
     /**
-     * @return array<string, string>
+     * @return array<string, array<string, mixed>>
      */
     protected function guessRelations(Model $model): array
     {

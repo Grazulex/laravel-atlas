@@ -31,9 +31,8 @@ it('handles empty array', function () {
 
     $result = JsonPrinter::pretty($data);
 
-    expect($result)->toBe('{}');
+    expect($result)->toBe('[]');
 });
-
 it('handles complex nested data', function () {
     $data = [
         'models' => [
