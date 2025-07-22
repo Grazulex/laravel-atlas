@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Registry;
 
-use LaravelAtlas\Mappers\Contracts\ComponentMapper;
+use LaravelAtlas\Contracts\ComponentMapper;
 
 class MapperRegistry
 {

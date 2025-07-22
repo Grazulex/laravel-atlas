@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LaravelAtlas\Mappers\Contracts;
+namespace LaravelAtlas\Contracts;
 
 interface ComponentMapper
 {
