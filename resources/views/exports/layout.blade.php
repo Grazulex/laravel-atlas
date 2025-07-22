@@ -30,7 +30,7 @@
     <div class="flex-1 p-6 space-y-8">
         <div id="section-models" class="content-section hidden">
             <h2 class="text-xl font-bold mb-4">🧱 Models</h2>
-            @foreach ($models['data'] ?? [] as $model)
+            @foreach ($models as $model)
                 @include('atlas::exports.partials.model-card', ['model' => $model])
             @endforeach
         </div>
