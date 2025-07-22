@@ -16,16 +16,16 @@ class LaravelAtlasServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/Config/atlas.php' => config_path('atlas.php'),
         ], 'atlas-config');
+
+        $this->commands([
+            AtlasDebugModelsCommand::class,
+            AtlasExportCommand::class,
+        ]);
     }
 
     #[Override]
     public function register(): void
     {
-        $this->commands([
-            AtlasDebugModelsCommand::class,
-            AtlasExportCommand::class,
-        ]);
-
         // Merge config file
         $this->mergeConfigFrom(
             __DIR__ . '/Config/atlas.php', 'atlas'
