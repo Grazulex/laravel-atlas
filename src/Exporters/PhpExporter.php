@@ -284,37 +284,37 @@ class PhpExporter extends BaseExporter
     private function generateCommandEntry(array $command): string
     {
         $php = "        [\n";
-        
+
         // Use new structure with signature_info
         $name = $command['signature_info']['name'] ?? $command['name'] ?? '';
         $signature = $command['signature_info']['signature'] ?? $command['signature'] ?? '';
         $description = $command['signature_info']['description'] ?? $command['description'] ?? '';
-        
+
         $php .= "            'name' => " . $this->exportValue($name) . ",\n";
         $php .= "            'class_name' => " . $this->exportValue($command['class_name'] ?? '') . ",\n";
         $php .= "            'signature' => " . $this->exportValue($signature) . ",\n";
         $php .= "            'description' => " . $this->exportValue($description) . ",\n";
-        
+
         // Add signature_info section
         if (isset($command['signature_info'])) {
             $php .= "            'signature_info' => " . $this->exportArray($command['signature_info']) . ",\n";
         }
-        
+
         // Add arguments if present
-        if (isset($command['arguments']) && !empty($command['arguments'])) {
+        if (isset($command['arguments']) && ! empty($command['arguments'])) {
             $php .= "            'arguments' => " . $this->exportArray($command['arguments']) . ",\n";
         }
-        
+
         // Add options if present
-        if (isset($command['options']) && !empty($command['options'])) {
+        if (isset($command['options']) && ! empty($command['options'])) {
             $php .= "            'options' => " . $this->exportArray($command['options']) . ",\n";
         }
-        
+
         // Add dependencies if present
-        if (isset($command['dependencies']) && !empty($command['dependencies'])) {
+        if (isset($command['dependencies']) && ! empty($command['dependencies'])) {
             $php .= "            'dependencies' => " . $this->exportArray($command['dependencies']) . ",\n";
         }
-        
+
         // Add namespace and other class information
         if (isset($command['namespace'])) {
             $php .= "            'namespace' => " . $this->exportValue($command['namespace']) . ",\n";
@@ -825,9 +825,8 @@ class PhpExporter extends BaseExporter
 
         // Flows des relations Model-Observer
         $observerFlows = $this->generateObserverFlows($data);
-        $flows = array_merge($flows, $observerFlows);
 
-        return $flows;
+        return array_merge($flows, $observerFlows);
     }
 
     /**
@@ -886,6 +885,7 @@ class PhpExporter extends BaseExporter
      * Génère des flows pour les relations Model-Observer
      *
      * @param  array<string, mixed>  $data
+     *
      * @return array<int, array<string, mixed>>
      */
     private function generateObserverFlows(array $data): array
@@ -907,27 +907,27 @@ class PhpExporter extends BaseExporter
         foreach ($models as $model) {
             $modelClass = $model['class_name'] ?? '';
             $modelName = class_basename($modelClass);
-            
+
             if (isset($observersByModel[$modelClass]) || isset($observersByModel[$modelName])) {
                 $modelObservers = $observersByModel[$modelClass] ?? $observersByModel[$modelName] ?? [];
-                
+
                 $steps = [];
                 $steps[] = "$modelName model lifecycle event";
-                
+
                 foreach ($modelObservers as $observer) {
                     $observerName = class_basename($observer['class_name'] ?? '');
                     $methods = $observer['methods'] ?? [];
-                    
-                    if (!empty($methods)) {
+
+                    if (! empty($methods)) {
                         foreach (array_keys($methods) as $methodName) {
                             $steps[] = "$observerName::$methodName - Handle $modelName $methodName event";
                         }
                     } else {
                         $steps[] = "$observerName - Handle $modelName lifecycle events";
                     }
-                    
+
                     // Ajouter les événements dispatchés par l'observer
-                    if (!empty($observer['events'])) {
+                    if (! empty($observer['events'])) {
                         foreach ($observer['events'] as $event) {
                             $eventName = class_basename($event);
                             $steps[] = "$eventName event dispatched (async)";

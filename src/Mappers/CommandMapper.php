@@ -192,7 +192,7 @@ class CommandMapper extends BaseMapper
                 $signature = preg_replace('/\s+/', ' ', trim($matches[1]));
                 if ($signature !== null) {
                     $signatureInfo['signature'] = $signature;
-                    
+
                     if (preg_match('/^([^\s{]+)/', $signature, $nameMatches)) {
                         $signatureInfo['name'] = $nameMatches[1];
                     }
@@ -203,7 +203,7 @@ class CommandMapper extends BaseMapper
                 $signature = preg_replace('/\s+/', ' ', trim($matches[1]));
                 if ($signature !== null) {
                     $signatureInfo['signature'] = $signature;
-                    
+
                     if (preg_match('/^([^\s{]+)/', $signature, $nameMatches)) {
                         $signatureInfo['name'] = $nameMatches[1];
                     }
@@ -260,7 +260,7 @@ class CommandMapper extends BaseMapper
                 if (str_starts_with($argument, '--')) {
                     continue;
                 }
-                
+
                 $argInfo = $this->parseArgumentOrOption($argument);
                 if ($argInfo && isset($argInfo['name']) && is_string($argInfo['name'])) {
                     $arguments[] = $argInfo;
@@ -299,7 +299,7 @@ class CommandMapper extends BaseMapper
                 if (! str_starts_with($option, '--')) {
                     continue;
                 }
-                
+
                 $optInfo = $this->parseArgumentOrOption($option);
                 if ($optInfo && isset($optInfo['name']) && is_string($optInfo['name'])) {
                     $options[] = $optInfo;
@@ -343,9 +343,7 @@ class CommandMapper extends BaseMapper
             $parts = explode('=', $definition, 2);
             $namepart = trim($parts[0]);
             $valueAndDesc = trim($parts[1]);
-            
             $info['has_default'] = true;
-            
             // Check if it starts directly with " : " (empty default value with description)
             if (str_starts_with($valueAndDesc, ': ') || str_starts_with($valueAndDesc, ' : ')) {
                 $info['default_value'] = null;
@@ -363,15 +361,13 @@ class CommandMapper extends BaseMapper
                 $info['default_value'] = $valueAndDesc === '' ? null : $valueAndDesc;
                 $info['name'] = $namepart;
             }
-        } else {
+        } elseif (str_contains($definition, ' : ')) {
             // Extract name and description when no default value
-            if (str_contains($definition, ' : ')) {
-                $parts = explode(' : ', $definition, 2);
-                $info['name'] = trim($parts[0]);
-                $info['description'] = trim($parts[1]);
-            } else {
-                $info['name'] = $definition;
-            }
+            $parts = explode(' : ', $definition, 2);
+            $info['name'] = trim($parts[0]);
+            $info['description'] = trim($parts[1]);
+        } else {
+            $info['name'] = $definition;
         }
 
         return $info;

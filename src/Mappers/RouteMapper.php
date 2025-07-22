@@ -139,6 +139,7 @@ class RouteMapper extends BaseMapper
                         'short_name' => class_basename($class),
                     ];
                 }
+
                 // Invokable controller
                 return [
                     'class' => $action['uses'],
@@ -149,6 +150,7 @@ class RouteMapper extends BaseMapper
             }
             if (is_array($action['uses']) && count($action['uses']) === 2) {
                 [$class, $method] = $action['uses'];
+
                 return [
                     'class' => $class,
                     'method' => $method,
@@ -172,6 +174,7 @@ class RouteMapper extends BaseMapper
                     'short_name' => class_basename($class),
                 ];
             }
+
             // Invokable controller
             return [
                 'class' => $controller,

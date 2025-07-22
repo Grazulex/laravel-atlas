@@ -376,7 +376,7 @@ class HtmlExporter extends BaseExporter
 
         // Générer les flows d'observers automatiquement
         $observerFlows = $this->generateObserverFlows($data);
-        if (!empty($observerFlows)) {
+        if ($observerFlows !== []) {
             $data['flows'] = array_merge($data['flows'] ?? [], $observerFlows);
         }
 
@@ -391,6 +391,7 @@ class HtmlExporter extends BaseExporter
      * Génère des flows pour les relations Model-Observer
      *
      * @param  array<string, mixed>  $data
+     *
      * @return array<int, array<string, mixed>>
      */
     protected function generateObserverFlows(array $data): array
@@ -412,27 +413,27 @@ class HtmlExporter extends BaseExporter
         foreach ($models as $model) {
             $modelClass = $model['class_name'] ?? '';
             $modelName = class_basename($modelClass);
-            
+
             if (isset($observersByModel[$modelClass]) || isset($observersByModel[$modelName])) {
                 $modelObservers = $observersByModel[$modelClass] ?? $observersByModel[$modelName] ?? [];
-                
+
                 $steps = [];
                 $steps[] = "$modelName model lifecycle event";
-                
+
                 foreach ($modelObservers as $observer) {
                     $observerName = class_basename($observer['class_name'] ?? '');
                     $methods = $observer['methods'] ?? [];
-                    
-                    if (!empty($methods)) {
+
+                    if (! empty($methods)) {
                         foreach (array_keys($methods) as $methodName) {
                             $steps[] = "$observerName::$methodName - Handle $modelName $methodName event";
                         }
                     } else {
                         $steps[] = "$observerName - Handle $modelName lifecycle events";
                     }
-                    
+
                     // Ajouter les événements dispatchés par l'observer
-                    if (!empty($observer['events'])) {
+                    if (! empty($observer['events'])) {
                         foreach ($observer['events'] as $event) {
                             $eventName = class_basename($event);
                             $steps[] = "$eventName event dispatched (async)";
