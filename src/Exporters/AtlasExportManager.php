@@ -11,6 +11,9 @@ use InvalidArgumentException;
 
 class AtlasExportManager
 {
+    /**
+     * @param array<string, mixed> $options
+     */
     public static function export(string $type, string $format, array $options = []): string
     {
         $data = Atlas::scan($type, $options);
@@ -20,6 +23,26 @@ class AtlasExportManager
                 $type => $data,
             ]),
             'json' => (new JsonExporter())->render($data),
+            default => throw new InvalidArgumentException("Unsupported export format: $format"),
+        };
+    }
+
+    /**
+     * @param array<string, mixed> $options
+     */
+    public static function exportAll(string $format, array $options = []): string
+    {
+        // Récupérer tous les types de composants disponibles
+        $types = ['models']; // Pour l'instant, seuls les models sont supportés
+        $allData = [];
+
+        foreach ($types as $type) {
+            $allData[$type] = Atlas::scan($type, $options);
+        }
+
+        return match ($format) {
+            'html' => (new HtmlLayoutExporter())->render($allData),
+            'json' => (new JsonExporter())->render($allData),
             default => throw new InvalidArgumentException("Unsupported export format: $format"),
         };
     }
