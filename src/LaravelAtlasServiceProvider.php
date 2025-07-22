@@ -28,6 +28,5 @@ class LaravelAtlasServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(
             __DIR__ . '/Config/atlas.php', 'atlas'
         );
-
     }
 }
