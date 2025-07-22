@@ -346,14 +346,21 @@ class CommandMapper extends BaseMapper
             
             $info['has_default'] = true;
             
+            // Check if it starts directly with " : " (empty default value with description)
+            if (str_starts_with($valueAndDesc, ': ') || str_starts_with($valueAndDesc, ' : ')) {
+                $info['default_value'] = null;
+                $info['description'] = trim(substr($valueAndDesc, strpos($valueAndDesc, ':') + 1));
+                $info['name'] = $namepart;
+            }
             // Check if the value part contains a description
-            if (str_contains($valueAndDesc, ' : ')) {
+            elseif (str_contains($valueAndDesc, ' : ')) {
                 $valueParts = explode(' : ', $valueAndDesc, 2);
-                $info['default_value'] = trim($valueParts[0]);
+                $defaultValue = trim($valueParts[0]);
+                $info['default_value'] = $defaultValue === '' ? null : $defaultValue;
                 $info['description'] = trim($valueParts[1]);
                 $info['name'] = $namepart;
             } else {
-                $info['default_value'] = $valueAndDesc;
+                $info['default_value'] = $valueAndDesc === '' ? null : $valueAndDesc;
                 $info['name'] = $namepart;
             }
         } else {

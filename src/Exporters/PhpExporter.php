@@ -284,10 +284,44 @@ class PhpExporter extends BaseExporter
     private function generateCommandEntry(array $command): string
     {
         $php = "        [\n";
-        $php .= "            'name' => " . $this->exportValue($command['name'] ?? '') . ",\n";
+        
+        // Use new structure with signature_info
+        $name = $command['signature_info']['name'] ?? $command['name'] ?? '';
+        $signature = $command['signature_info']['signature'] ?? $command['signature'] ?? '';
+        $description = $command['signature_info']['description'] ?? $command['description'] ?? '';
+        
+        $php .= "            'name' => " . $this->exportValue($name) . ",\n";
         $php .= "            'class_name' => " . $this->exportValue($command['class_name'] ?? '') . ",\n";
-        $php .= "            'signature' => " . $this->exportValue($command['signature'] ?? '') . ",\n";
-        $php .= "            'description' => " . $this->exportValue($command['description'] ?? '') . ",\n";
+        $php .= "            'signature' => " . $this->exportValue($signature) . ",\n";
+        $php .= "            'description' => " . $this->exportValue($description) . ",\n";
+        
+        // Add signature_info section
+        if (isset($command['signature_info'])) {
+            $php .= "            'signature_info' => " . $this->exportArray($command['signature_info']) . ",\n";
+        }
+        
+        // Add arguments if present
+        if (isset($command['arguments']) && !empty($command['arguments'])) {
+            $php .= "            'arguments' => " . $this->exportArray($command['arguments']) . ",\n";
+        }
+        
+        // Add options if present
+        if (isset($command['options']) && !empty($command['options'])) {
+            $php .= "            'options' => " . $this->exportArray($command['options']) . ",\n";
+        }
+        
+        // Add dependencies if present
+        if (isset($command['dependencies']) && !empty($command['dependencies'])) {
+            $php .= "            'dependencies' => " . $this->exportArray($command['dependencies']) . ",\n";
+        }
+        
+        // Add namespace and other class information
+        if (isset($command['namespace'])) {
+            $php .= "            'namespace' => " . $this->exportValue($command['namespace']) . ",\n";
+        }
+        if (isset($command['parent_class'])) {
+            $php .= "            'parent_class' => " . $this->exportValue($command['parent_class']) . ",\n";
+        }
 
         // Générer flows pour les commandes
         $flows = $this->generateFlowsForCommand($command);
