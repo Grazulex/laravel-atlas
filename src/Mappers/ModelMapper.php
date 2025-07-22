@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Mappers;
 
-use Throwable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\File;
@@ -12,6 +11,7 @@ use LaravelAtlas\Mappers\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
 use ReflectionClass;
 use ReflectionMethod;
+use Throwable;
 
 class ModelMapper implements ComponentMapper
 {
