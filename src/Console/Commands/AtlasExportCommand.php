@@ -9,7 +9,7 @@ use LaravelAtlas\Exporters\AtlasExportManager;
 
 class AtlasExportCommand extends Command
 {
-    protected $signature = 'atlas:export-test {type : The component type to scan (models, routes, etc.)} {--format=html : Export format (html, json, markdown, etc.)} {--output= : Output file path (default: public/atlas/{type}.{format})}';
+    protected $signature = 'atlas:export-test {type : The component type to scan (models, routes, etc.)} {--format=html : Export format (html, json, markdown, etc.)} {--output= : Output file path}';
 
     protected $description = 'Export a component type (models, routes, etc.) to a chosen format (HTML, JSON, Markdown, etc.)';
 
