@@ -10,6 +10,8 @@ class LaravelAtlasServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'atlas');
+
         // Publish config file
         if ($this->app->runningInConsole()) {
             $this->publishes([
@@ -29,5 +31,7 @@ class LaravelAtlasServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(
             __DIR__ . '/Config/atlas.php', 'atlas'
         );
+
+        $this->app->singleton('atlas', fn (): AtlasManager => new AtlasManager);
     }
 }

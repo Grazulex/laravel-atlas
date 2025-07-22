@@ -137,10 +137,13 @@ class ModelMapper implements ComponentMapper
         return $relations;
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     protected function guessScopes(Model $model): array
     {
         $scopes = [];
-        $class = get_class($model);
+        $class = $model::class;
         $reflection = new ReflectionClass($class);
 
         foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
@@ -151,7 +154,7 @@ class ModelMapper implements ComponentMapper
                 $scopeName = lcfirst(substr($method->getName(), 5));
                 $scopes[] = [
                     'name' => $scopeName,
-                    'parameters' => array_map(fn ($p) => '$' . $p->getName(), $method->getParameters()),
+                    'parameters' => array_map(fn ($p): string => '$' . $p->getName(), $method->getParameters()),
                 ];
             }
         }
@@ -159,9 +162,12 @@ class ModelMapper implements ComponentMapper
         return $scopes;
     }
 
+    /**
+     * @return array<int, string>
+     */
     protected function guessBootHooks(Model $model): array
     {
-        $class = get_class($model);
+        $class = $model::class;
         $reflection = new ReflectionClass($class);
 
         if (! $reflection->hasMethod('boot')) {
@@ -174,12 +180,22 @@ class ModelMapper implements ComponentMapper
             return [];
         }
 
-        $contents = file_get_contents($reflection->getFileName());
+        $fileName = $reflection->getFileName();
+
+        if ($fileName === false) {
+            return [];
+        }
+
+        $contents = file_get_contents($fileName);
+
+        if ($contents === false) {
+            return [];
+        }
 
         // Extraire les hooks Laravel statiques appelés dans boot()
         $matches = [];
         preg_match_all('/static::(saving|creating|updating|deleting|restoring|retrieved)\(/', $contents, $matches);
 
-        return array_unique($matches[1] ?? []);
+        return array_unique($matches[1]);
     }
 }
