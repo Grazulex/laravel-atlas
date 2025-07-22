@@ -17,31 +17,74 @@
                             <div>
                                 <h4>Attributes</h4>
                                 @if(isset($model['attributes']) && is_array($model['attributes']))
-                                    <ul>
-                                        @foreach($model['attributes'] as $attribute)
-                                            @if(is_array($attribute))
-                                                <li>{{ implode(', ', $attribute) }}</li>
-                                            @else
-                                                <li>{{ $attribute }}</li>
-                                            @endif
-                                        @endforeach
-                                    </ul>
+                                    @if(isset($model['attributes']['fillable']) && is_array($model['attributes']['fillable']) && !empty($model['attributes']['fillable']))
+                                        <p><strong>Fillable:</strong></p>
+                                        <ul>
+                                            @foreach($model['attributes']['fillable'] as $field)
+                                            <li>{{ $field }}</li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+                                    
+                                    @if(isset($model['attributes']['hidden']) && is_array($model['attributes']['hidden']) && !empty($model['attributes']['hidden']))
+                                        <p><strong>Hidden:</strong></p>
+                                        <ul>
+                                            @foreach($model['attributes']['hidden'] as $field)
+                                            <li>{{ $field }}</li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+                                    
+                                    @if(isset($model['attributes']['casts']) && is_array($model['attributes']['casts']) && !empty($model['attributes']['casts']))
+                                        <p><strong>Casts:</strong></p>
+                                        <ul>
+                                            @foreach($model['attributes']['casts'] as $field => $type)
+                                            <li>{{ $field }} → {{ $type }}</li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+                                    
+                                    @if(isset($model['attributes']['dates']) && is_array($model['attributes']['dates']) && !empty($model['attributes']['dates']))
+                                        <p><strong>Dates:</strong></p>
+                                        <ul>
+                                            @foreach($model['attributes']['dates'] as $field)
+                                            <li>{{ $field }}</li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+                                    
+                                    @if(isset($model['attributes']['table']))
+                                        <p><strong>Table:</strong> {{ $model['attributes']['table'] }}</p>
+                                    @endif
+                                    
+                                    @if(isset($model['attributes']['primary_key']))
+                                        <p><strong>Primary Key:</strong> {{ $model['attributes']['primary_key'] }}</p>
+                                    @endif
+                                    
+                                    @if(isset($model['attributes']['timestamps']) && $model['attributes']['timestamps'])
+                                        <p><strong>Timestamps:</strong> Yes</p>
+                                    @endif
                                 @else
                                     <p><em>No attributes found</em></p>
                                 @endif
                             </div>
                             <div>
                                 <h4>Relationships</h4>
-                                @if(isset($model['relationships']))
-                                    <ul>
-                                        @foreach($model['relationships'] as $relationship)
-                                            @if(is_array($relationship))
-                                                <li>{{ implode(' → ', $relationship) }}</li>
-                                            @else
-                                                <li>{{ $relationship }}</li>
-                                            @endif
-                                        @endforeach
-                                    </ul>
+                                @if(isset($model['relationships']) && !empty($model['relationships']))
+                                    @foreach($model['relationships'] as $relationName => $relationData)
+                                    <div style="margin-bottom: 10px;">
+                                        <p><strong>{{ ucfirst($relationName) }}:</strong></p>
+                                        @if(is_array($relationData))
+                                            <ul style="margin-left: 20px;">
+                                                @foreach($relationData as $key => $value)
+                                                <li>{{ $key }}: {{ is_array($value) ? implode(', ', $value) : $value }}</li>
+                                                @endforeach
+                                            </ul>
+                                        @else
+                                            <span style="margin-left: 20px;">{{ $relationData }}</span>
+                                        @endif
+                                    </div>
+                                    @endforeach
                                 @else
                                     <p><em>No relationships found</em></p>
                                 @endif
