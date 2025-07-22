@@ -416,7 +416,7 @@ class PhpExporter extends BaseExporter
     {
         $php = "        [\n";
         $php .= "            'class_name' => " . $this->exportValue($service['class_name'] ?? '') . ",\n";
-        
+
         // Add namespace and other service properties
         if (isset($service['namespace'])) {
             $php .= "            'namespace' => " . $this->exportValue($service['namespace']) . ",\n";
@@ -433,13 +433,13 @@ class PhpExporter extends BaseExporter
         if (isset($service['parent_class']) && $service['parent_class']) {
             $php .= "            'parent_class' => " . $this->exportValue($service['parent_class']) . ",\n";
         }
-        if (isset($service['traits']) && is_array($service['traits']) && !empty($service['traits'])) {
+        if (isset($service['traits']) && is_array($service['traits']) && (isset($service['traits']) && $service['traits'] !== [])) {
             $php .= "            'traits' => " . $this->exportArray($service['traits']) . ",\n";
         }
-        if (isset($service['interfaces']) && is_array($service['interfaces']) && !empty($service['interfaces'])) {
+        if (isset($service['interfaces']) && is_array($service['interfaces']) && (isset($service['interfaces']) && $service['interfaces'] !== [])) {
             $php .= "            'interfaces' => " . $this->exportArray($service['interfaces']) . ",\n";
         }
-        if (isset($service['dependencies']) && is_array($service['dependencies']) && !empty($service['dependencies'])) {
+        if (isset($service['dependencies']) && is_array($service['dependencies']) && (isset($service['dependencies']) && $service['dependencies'] !== [])) {
             $php .= "            'dependencies' => " . $this->exportArray($service['dependencies']) . ",\n";
         }
 
@@ -447,12 +447,12 @@ class PhpExporter extends BaseExporter
             $php .= "            'methods' => [\n";
             foreach ($service['methods'] as $methodIndex => $methodData) {
                 // Handle both formats: indexed array with 'name' property or associative array
-                $methodName = is_array($methodData) && isset($methodData['name']) 
-                    ? $methodData['name'] 
+                $methodName = is_array($methodData) && isset($methodData['name'])
+                    ? $methodData['name']
                     : (is_string($methodIndex) ? $methodIndex : "method_$methodIndex");
-                
+
                 $php .= "                '$methodName' => [\n";
-                
+
                 // Add method details
                 if (is_array($methodData)) {
                     if (isset($methodData['visibility'])) {
@@ -468,20 +468,20 @@ class PhpExporter extends BaseExporter
                         $php .= "                    'is_static' => " . $this->exportValue($methodData['is_static']) . ",\n";
                     }
                 }
-                
+
                 // Legacy support for old format
                 if (is_array($methodData)) {
-                    if (!empty($methodData['dependencies'])) {
+                    if (! empty($methodData['dependencies'])) {
                         $php .= "                    'dependencies' => " . $this->exportArray($methodData['dependencies']) . ",\n";
                     }
-                    if (!empty($methodData['returns'])) {
+                    if (! empty($methodData['returns'])) {
                         $php .= "                    'returns' => " . $this->exportValue($methodData['returns']) . ",\n";
                     }
-                    if (!empty($methodData['events'])) {
+                    if (! empty($methodData['events'])) {
                         $php .= "                    'events' => " . $this->exportArray($methodData['events']) . ",\n";
                     }
                 }
-                
+
                 $php .= "                ],\n";
             }
             $php .= "            ],\n";
@@ -947,7 +947,6 @@ class PhpExporter extends BaseExporter
         $observers = $data['observers'] ?? [];
         $events = $data['events'] ?? [];
         $listeners = $data['listeners'] ?? [];
-        $jobs = $data['jobs'] ?? [];
 
         // Créer un mapping des observers par modèle
         $observersByModel = [];
@@ -986,13 +985,13 @@ class PhpExporter extends BaseExporter
                         foreach ($observer['events'] as $event) {
                             $eventName = class_basename($event);
                             $steps[] = "$eventName event dispatched (async)";
-                            
+
                             // Chercher les listeners pour cet événement
                             $eventListeners = $this->findListenersForEvent($event, $listeners);
                             foreach ($eventListeners as $listener) {
                                 $listenerName = class_basename($listener['class_name'] ?? '');
                                 $steps[] = "$listenerName listener - Handle $eventName";
-                                
+
                                 // Chercher les jobs dispatchés par ce listener
                                 $listenerJobs = $listener['jobs'] ?? [];
                                 foreach ($listenerJobs as $job) {
@@ -1008,15 +1007,15 @@ class PhpExporter extends BaseExporter
                 $modelEvents = $this->findModelEvents($modelName, $events);
                 foreach ($modelEvents as $event) {
                     $eventName = class_basename($event['class_name'] ?? '');
-                    if (!in_array("$eventName event dispatched (async)", $steps)) {
+                    if (! in_array("$eventName event dispatched (async)", $steps)) {
                         $steps[] = "$eventName event dispatched (async)";
-                        
+
                         // Chercher les listeners pour cet événement
                         $eventListeners = $this->findListenersForEvent($event['class_name'], $listeners);
                         foreach ($eventListeners as $listener) {
                             $listenerName = class_basename($listener['class_name'] ?? '');
                             $steps[] = "$listenerName listener - Handle $eventName";
-                            
+
                             // Chercher les jobs dispatchés par ce listener
                             $listenerJobs = $listener['jobs'] ?? [];
                             foreach ($listenerJobs as $job) {
@@ -1043,35 +1042,35 @@ class PhpExporter extends BaseExporter
     /**
      * Trouve les listeners pour un événement donné
      *
-     * @param string $eventClass
-     * @param array<string, mixed> $listeners
+     * @param  array<string, mixed>  $listeners
+     *
      * @return array<int, array<string, mixed>>
      */
     private function findListenersForEvent(string $eventClass, array $listeners): array
     {
         $eventListeners = [];
-        
+
         foreach ($listeners as $listener) {
             $listenerEvent = $listener['event'] ?? '';
             if ($listenerEvent === $eventClass || class_basename($listenerEvent) === class_basename($eventClass)) {
                 $eventListeners[] = $listener;
             }
         }
-        
+
         return $eventListeners;
     }
 
     /**
      * Trouve les événements liés à un modèle par convention de nommage
      *
-     * @param string $modelName
-     * @param array<string, mixed> $events
+     * @param  array<string, mixed>  $events
+     *
      * @return array<int, array<string, mixed>>
      */
     private function findModelEvents(string $modelName, array $events): array
     {
         $modelEvents = [];
-        
+
         foreach ($events as $event) {
             $eventName = class_basename($event['class_name'] ?? '');
             // Chercher les événements qui contiennent le nom du modèle
@@ -1079,7 +1078,7 @@ class PhpExporter extends BaseExporter
                 $modelEvents[] = $event;
             }
         }
-        
+
         return $modelEvents;
     }
 

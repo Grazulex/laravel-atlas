@@ -401,7 +401,6 @@ class HtmlExporter extends BaseExporter
         $observers = $data['observers'] ?? [];
         $events = $data['events'] ?? [];
         $listeners = $data['listeners'] ?? [];
-        $jobs = $data['jobs'] ?? [];
 
         // Créer un mapping des observers par modèle
         $observersByModel = [];
@@ -440,13 +439,13 @@ class HtmlExporter extends BaseExporter
                         foreach ($observer['events'] as $event) {
                             $eventName = class_basename($event);
                             $steps[] = "$eventName event dispatched (async)";
-                            
+
                             // Chercher les listeners pour cet événement
                             $eventListeners = $this->findListenersForEvent($event, $listeners);
                             foreach ($eventListeners as $listener) {
                                 $listenerName = class_basename($listener['class_name'] ?? '');
                                 $steps[] = "$listenerName listener - Handle $eventName";
-                                
+
                                 // Chercher les jobs dispatchés par ce listener
                                 $listenerJobs = $listener['jobs'] ?? [];
                                 foreach ($listenerJobs as $job) {
@@ -462,15 +461,15 @@ class HtmlExporter extends BaseExporter
                 $modelEvents = $this->findModelEvents($modelName, $events);
                 foreach ($modelEvents as $event) {
                     $eventName = class_basename($event['class_name'] ?? '');
-                    if (!in_array("$eventName event dispatched (async)", $steps)) {
+                    if (! in_array("$eventName event dispatched (async)", $steps)) {
                         $steps[] = "$eventName event dispatched (async)";
-                        
+
                         // Chercher les listeners pour cet événement
                         $eventListeners = $this->findListenersForEvent($event['class_name'], $listeners);
                         foreach ($eventListeners as $listener) {
                             $listenerName = class_basename($listener['class_name'] ?? '');
                             $steps[] = "$listenerName listener - Handle $eventName";
-                            
+
                             // Chercher les jobs dispatchés par ce listener
                             $listenerJobs = $listener['jobs'] ?? [];
                             foreach ($listenerJobs as $job) {
@@ -497,35 +496,35 @@ class HtmlExporter extends BaseExporter
     /**
      * Trouve les listeners pour un événement donné
      *
-     * @param string $eventClass
-     * @param array<string, mixed> $listeners
+     * @param  array<string, mixed>  $listeners
+     *
      * @return array<int, array<string, mixed>>
      */
     protected function findListenersForEvent(string $eventClass, array $listeners): array
     {
         $eventListeners = [];
-        
+
         foreach ($listeners as $listener) {
             $listenerEvent = $listener['event'] ?? '';
             if ($listenerEvent === $eventClass || class_basename($listenerEvent) === class_basename($eventClass)) {
                 $eventListeners[] = $listener;
             }
         }
-        
+
         return $eventListeners;
     }
 
     /**
      * Trouve les événements liés à un modèle par convention de nommage
      *
-     * @param string $modelName
-     * @param array<string, mixed> $events
+     * @param  array<string, mixed>  $events
+     *
      * @return array<int, array<string, mixed>>
      */
     protected function findModelEvents(string $modelName, array $events): array
     {
         $modelEvents = [];
-        
+
         foreach ($events as $event) {
             $eventName = class_basename($event['class_name'] ?? '');
             // Chercher les événements qui contiennent le nom du modèle
@@ -533,7 +532,7 @@ class HtmlExporter extends BaseExporter
                 $modelEvents[] = $event;
             }
         }
-        
+
         return $modelEvents;
     }
 
