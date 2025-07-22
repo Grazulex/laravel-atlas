@@ -338,21 +338,33 @@ class CommandMapper extends BaseMapper
             $definition = str_replace('?', '', $definition);
         }
 
-        // Check for default values
+        // Check for default values first, before extracting description
         if (str_contains($definition, '=')) {
             $parts = explode('=', $definition, 2);
-            $definition = trim($parts[0]);
+            $namepart = trim($parts[0]);
+            $valueAndDesc = trim($parts[1]);
+            
             $info['has_default'] = true;
-            $info['default_value'] = trim($parts[1]);
-        }
-
-        // Extract name and description
-        if (str_contains($definition, ' : ')) {
-            $parts = explode(' : ', $definition, 2);
-            $info['name'] = trim($parts[0]);
-            $info['description'] = trim($parts[1]);
+            
+            // Check if the value part contains a description
+            if (str_contains($valueAndDesc, ' : ')) {
+                $valueParts = explode(' : ', $valueAndDesc, 2);
+                $info['default_value'] = trim($valueParts[0]);
+                $info['description'] = trim($valueParts[1]);
+                $info['name'] = $namepart;
+            } else {
+                $info['default_value'] = $valueAndDesc;
+                $info['name'] = $namepart;
+            }
         } else {
-            $info['name'] = $definition;
+            // Extract name and description when no default value
+            if (str_contains($definition, ' : ')) {
+                $parts = explode(' : ', $definition, 2);
+                $info['name'] = trim($parts[0]);
+                $info['description'] = trim($parts[1]);
+            } else {
+                $info['name'] = $definition;
+            }
         }
 
         return $info;
