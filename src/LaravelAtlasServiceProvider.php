@@ -4,6 +4,7 @@ namespace LaravelAtlas;
 
 use Illuminate\Support\ServiceProvider;
 use LaravelAtlas\Console\Commands\AtlasDebugModelsCommand;
+use LaravelAtlas\Console\Commands\AtlasExportCommand;
 use Override;
 
 class LaravelAtlasServiceProvider extends ServiceProvider
@@ -12,21 +13,19 @@ class LaravelAtlasServiceProvider extends ServiceProvider
     {
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'atlas');
 
-        // Publish config file
-        if ($this->app->runningInConsole()) {
-            $this->publishes([
-                __DIR__ . '/Config/atlas.php' => config_path('atlas.php'),
-            ], 'atlas-config');
-
-            $this->commands([
-                AtlasDebugModelsCommand::class,
-            ]);
-        }
+        $this->publishes([
+            __DIR__ . '/Config/atlas.php' => config_path('atlas.php'),
+        ], 'atlas-config');
     }
 
     #[Override]
     public function register(): void
     {
+        $this->commands([
+            AtlasDebugModelsCommand::class,
+            AtlasExportCommand::class,
+        ]);
+
         // Merge config file
         $this->mergeConfigFrom(
             __DIR__ . '/Config/atlas.php', 'atlas'

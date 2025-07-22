@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace LaravelAtlas;
 
-use LaravelAtlas\Mappers\ModelMapper;
 use InvalidArgumentException;
 use LaravelAtlas\Contracts\ComponentMapper;
+use LaravelAtlas\Mappers\ModelMapper;
 use LaravelAtlas\Registry\MapperRegistry;
 
 class AtlasManager
