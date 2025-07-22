@@ -13,10 +13,12 @@ The main command is `atlas:generate` with various options for customization.
 php artisan atlas:generate
 
 # Generate with specific format
-php artisan atlas:generate --format=mermaid
+php artisan atlas:generate --format=json
 php artisan atlas:generate --format=markdown
 php artisan atlas:generate --format=html
+php artisan atlas:generate --format=image
 php artisan atlas:generate --format=pdf
+php artisan atlas:generate --format=php
 ```
 
 ### Component-Specific Generation
@@ -36,6 +38,9 @@ php artisan atlas:generate --type=resources
 php artisan atlas:generate --type=notifications
 php artisan atlas:generate --type=requests
 php artisan atlas:generate --type=rules
+php artisan atlas:generate --type=observers
+php artisan atlas:generate --type=listeners
+php artisan atlas:generate --type=actions
 ```
 
 ### Output Options
@@ -43,8 +48,10 @@ php artisan atlas:generate --type=rules
 ```bash
 # Save to specific file
 php artisan atlas:generate --output=docs/architecture.json
-php artisan atlas:generate --format=mermaid --output=docs/diagram.mmd
+php artisan atlas:generate --format=html --output=docs/architecture.html
 php artisan atlas:generate --format=markdown --output=docs/ARCHITECTURE.md
+php artisan atlas:generate --format=image --output=diagrams/architecture.png
+php artisan atlas:generate --format=pdf --output=reports/architecture.pdf
 
 # Include detailed information
 php artisan atlas:generate --detailed
@@ -55,13 +62,16 @@ php artisan atlas:generate --type=models --detailed --format=markdown
 
 ```bash
 # Generate detailed model map as Markdown
-php artisan atlas:generate --type=models --format=markdown --detailed --output=docs/models.md
+php artisan atlas:generate --type=models --format=markdown --output=docs/models.md
 
 # Generate complete application map with all details as HTML
-php artisan atlas:generate --format=html --detailed --output=public/atlas.html
+php artisan atlas:generate --type=all --format=html --output=public/atlas.html
 
-# Generate routes map as Mermaid diagram
-php artisan atlas:generate --type=routes --format=mermaid --output=docs/routes.mmd
+# Generate routes map as image
+php artisan atlas:generate --type=routes --format=image --output=docs/routes.png
+
+# Generate services as PDF report
+php artisan atlas:generate --type=services --format=pdf --output=reports/services.pdf
 ```
 
 ## ⚙️ Command Options
@@ -89,14 +99,18 @@ php artisan atlas:generate --type=routes --format=mermaid --output=docs/routes.m
 - `notifications` - Notification classes
 - `requests` - Form request classes
 - `rules` - Custom validation rules
+- `observers` - Eloquent model observers
+- `listeners` - Event listeners
+- `actions` - Action classes
 
 ### Available Formats
 
 - `json` - Machine-readable JSON (default)
 - `markdown` - Human-readable Markdown
-- `mermaid` - Mermaid diagram syntax
-- `html` - Interactive HTML documentation
+- `html` - Interactive HTML documentation with intelligent workflow
+- `image` - Visual diagrams and charts (PNG/JPG)
 - `pdf` - Printable PDF report
+- `php` - Raw PHP data for advanced processing
 
 ## 💻 Programmatic Usage
 

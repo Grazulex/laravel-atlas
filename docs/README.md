@@ -27,21 +27,24 @@ php artisan atlas:generate
 
 ## 💡 What Can Laravel Atlas Do?
 
-Laravel Atlas can analyze and document:
+Laravel Atlas can analyze and document **17 different component types**:
 
-- **Models** - Eloquent models with relationships, observers, and factories
-- **Routes** - Application routes with middleware and controllers
-- **Jobs** - Queued jobs and their properties
-- **Services** - Service classes and their dependencies  
-- **Controllers** - Controllers and their methods
-- **Events** - Application events and listeners
-- **Commands** - Artisan commands
-- **Middleware** - HTTP middleware
-- **Policies** - Authorization policies
-- **Resources** - API resources
-- **Notifications** - Notification classes
-- **Requests** - Form request classes
-- **Rules** - Custom validation rules
+- **models** - Eloquent models with relationships, observers, and factories
+- **routes** - Application routes with middleware and controllers
+- **jobs** - Queued jobs and their properties
+- **services** - Service classes and their dependencies  
+- **controllers** - Controllers and their methods
+- **events** - Application events and listeners
+- **commands** - Artisan commands
+- **middleware** - HTTP middleware
+- **policies** - Authorization policies
+- **resources** - API resources
+- **notifications** - Notification classes
+- **requests** - Form request classes
+- **rules** - Custom validation rules
+- **observers** - Eloquent model observers
+- **listeners** - Event listeners
+- **actions** - Action classes
 
 ## 📊 Export Formats
 
@@ -49,9 +52,10 @@ Generate documentation in multiple formats:
 
 - **JSON** - Machine-readable data structure
 - **Markdown** - Human-readable documentation
-- **Mermaid** - Visual diagrams and flowcharts
-- **HTML** - Interactive web-based documentation
+- **HTML** - Interactive web-based documentation with intelligent workflow
+- **Image** - Visual diagrams and charts (PNG/JPG)
 - **PDF** - Printable documentation reports
+- **PHP** - Raw PHP data for advanced processing
 
 ## 🎯 Use Cases
 

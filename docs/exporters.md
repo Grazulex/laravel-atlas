@@ -105,84 +105,69 @@ php artisan atlas:generate --format=markdown --output=docs/ARCHITECTURE.md
 php artisan atlas:generate --format=markdown --detailed
 ```
 
-### Mermaid Exporter (`mermaid`)
-
-Creates visual diagrams using Mermaid syntax for architecture visualization.
-
-**Configuration Options:**
-```php
-[
-    'direction' => 'TD',              // Graph direction (TD, LR, BT, RL)
-    'theme' => 'default',             // Diagram theme
-    'include_relationships' => true,  // Show component relationships
-    'show_methods' => false,          // Include method names in nodes
-    'cluster_by_type' => true,       // Group similar components
-]
-```
-
-**Example Output:**
-```mermaid
-graph TD
-    %% Laravel Atlas Architecture Map
-    %% Generated at: 2024-01-01T12:00:00.000000Z
-
-    %% Models section
-    User[User Model]
-    Post[Post Model]
-    Role[Role Model]
-    
-    %% Relationships
-    User --> Post : hasMany
-    User --> Role : belongsTo
-    Post --> User : belongsTo
-    
-    %% Controllers section
-    UserController[UserController]
-    PostController[PostController]
-    
-    %% Controller-Model relationships
-    UserController --> User
-    PostController --> Post
-```
-
-**Usage:**
-```bash
-# Generate Mermaid diagram
-php artisan atlas:generate --format=mermaid --output=docs/architecture.mmd
-
-# Left-to-right layout
-php artisan atlas:generate --format=mermaid --type=models
-```
-
 ### HTML Exporter (`html`)
 
-Produces interactive HTML documentation with navigation and search capabilities.
+Produces interactive HTML documentation with advanced visualization using intelligent workflow.
 
 **Configuration Options:**
 ```php
 [
     'theme' => 'default',         // UI theme (default, dark, minimal)
-    'include_search' => true,     // Add search functionality
+    'include_search' => true,     // Add search functionality  
     'include_navigation' => true, // Include navigation sidebar
-    'interactive_diagrams' => true, // Interactive Mermaid diagrams
+    'interactive_flows' => true,  // Interactive component flows
     'expand_sections' => false,   // Start with sections expanded
+    'use_intelligent_workflow' => true, // Use PHP-to-HTML intelligent template
 ]
 ```
 
 **Features:**
-- Interactive component exploration
+- Interactive component exploration with intelligent flows
+- Advanced PHP-to-HTML processing workflow
 - Search and filter capabilities
 - Responsive design
-- Embedded Mermaid diagrams
-- Export to PDF functionality
+- Complex architectural visualizations
+- Export capabilities
 
 **Usage:**
 ```bash
 # Generate interactive HTML documentation
 php artisan atlas:generate --format=html --output=public/atlas.html
 
-# Dark theme HTML
-php artisan atlas:generate --format=html --type=models
+# Use intelligent workflow for complex applications
+php artisan atlas:generate --type=all --format=html --output=docs/architecture.html
+```
+
+### Image Exporter (`image`)
+
+Creates visual diagrams and charts as PNG or JPG images.
+
+**Configuration Options:**
+```php
+[
+    'format' => 'png',            // Image format (png, jpg)
+    'width' => 1920,              // Image width in pixels
+    'height' => 1080,             // Image height in pixels
+    'background_color' => 'white', // Background color
+    'include_legend' => true,      // Include component legend
+    'layout' => 'hierarchical',   // Layout algorithm
+]
+```
+
+**Features:**
+- High-quality architectural diagrams
+- Customizable layouts and styling
+- Multiple output formats
+- Suitable for presentations and documentation
+- Automatic component positioning
+
+**Usage:**
+```bash
+# Generate PNG architectural diagram
+php artisan atlas:generate --format=image --output=docs/architecture.png
+
+# Generate JPG with custom dimensions
+php artisan atlas:generate --type=models --format=image --output=diagrams/models.jpg
 ```
 
 ### PDF Exporter (`pdf`)
@@ -212,7 +197,59 @@ composer require dompdf/dompdf --dev
 php artisan atlas:generate --format=pdf --output=reports/architecture.pdf
 
 # Landscape orientation for wide diagrams
-php artisan atlas:generate --format=pdf --type=routes
+php artisan atlas:generate --format=pdf --type=routes --output=reports/routes.pdf
+```
+
+### PHP Exporter (`php`)
+
+Exports raw PHP data structures for advanced programmatic processing.
+
+**Configuration Options:**
+```php
+[
+    'format_code' => true,        // Format PHP code with indentation
+    'include_metadata' => true,   // Include generation metadata
+    'variable_name' => 'atlasData', // Variable name for the data
+    'export_as_array' => false,   // Export as array or return statement
+]
+```
+
+**Example Output:**
+```php
+<?php
+/**
+ * Laravel Atlas Data Export
+ * Generated at: 2024-01-01T12:00:00.000000Z
+ * Generation time: 150.25ms
+ */
+
+return [
+    'atlas_version' => '1.0.0',
+    'generated_at' => '2024-01-01T12:00:00.000000Z',
+    'type' => 'models',
+    'data' => [
+        'models' => [
+            'type' => 'models',
+            'data' => [
+                [
+                    'name' => 'User',
+                    'namespace' => 'App\\Models',
+                    'path' => '/app/Models/User.php',
+                    // ... more data
+                ],
+            ],
+        ],
+    ],
+];
+```
+
+**Usage:**
+```bash
+# Generate PHP data file
+php artisan atlas:generate --format=php --output=storage/atlas/data.php
+
+# Use in your application
+$atlasData = include storage_path('atlas/data.php');
 ```
 
 ## 🔧 Customizing Export Behavior
@@ -221,10 +258,13 @@ php artisan atlas:generate --format=pdf --type=routes
 
 ```bash
 # Export with custom formatting
-php artisan atlas:generate --format=markdown --detailed --output=docs/detailed-architecture.md
+php artisan atlas:generate --format=markdown --output=docs/detailed-architecture.md
 
 # Multiple component types
-php artisan atlas:generate --type=models --format=mermaid --output=diagrams/models.mmd
+php artisan atlas:generate --type=models --format=image --output=diagrams/models.png
+
+# Complex HTML with intelligent workflow
+php artisan atlas:generate --type=all --format=html --output=public/architecture.html
 ```
 
 ### Programmatic Customization
@@ -244,18 +284,24 @@ $markdownOutput = Atlas::export('routes', 'markdown', [
     'detailed_sections' => true,
 ]);
 
-// Custom Mermaid diagram
-$mermaidDiagram = Atlas::export('models', 'mermaid', [
-    'direction' => 'LR',
-    'theme' => 'dark',
-    'include_relationships' => true,
+// Custom Image generation
+$imageData = Atlas::export('models', 'image', [
+    'format' => 'png',
+    'width' => 1920,
+    'include_legend' => true,
 ]);
 
-// Custom HTML with theming
+// Custom HTML with intelligent workflow
 $htmlOutput = Atlas::export('controllers', 'html', [
     'theme' => 'dark',
     'include_search' => true,
-    'interactive_diagrams' => true,
+    'use_intelligent_workflow' => true,
+]);
+
+// PHP data export
+$phpData = Atlas::export('services', 'php', [
+    'format_code' => true,
+    'variable_name' => 'servicesData',
 ]);
 ```
 

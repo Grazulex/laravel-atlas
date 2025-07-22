@@ -301,6 +301,66 @@ Analyzes custom validation rules.
 - Implicit validation rules
 - Rule dependencies and services
 
+### Observers Mapper (`observers`)
+
+Analyzes Eloquent model observers.
+
+**Default Options:**
+```php
+[
+    'include_observed_models' => true,
+    'include_event_methods' => true,
+    'scan_path' => app_path('Observers'),
+    'analyze_dependencies' => true,
+]
+```
+
+**What it analyzes:**
+- Observer class structure and namespace
+- Observed model relationships
+- Event method implementations
+- Observer dependencies and services
+
+### Listeners Mapper (`listeners`)
+
+Analyzes event listeners.
+
+**Default Options:**
+```php
+[
+    'include_handled_events' => true,
+    'include_queued_listeners' => true,
+    'scan_path' => app_path('Listeners'),
+    'analyze_dependencies' => true,
+]
+```
+
+**What it analyzes:**
+- Listener class structure and namespace
+- Handled event relationships
+- Queued listener configurations
+- Listener dependencies and services
+
+### Actions Mapper (`actions`)
+
+Analyzes action classes and single-purpose classes.
+
+**Default Options:**
+```php
+[
+    'include_dependencies' => true,
+    'include_invokable' => true,
+    'scan_path' => app_path('Actions'),
+    'detect_patterns' => true,
+]
+```
+
+**What it analyzes:**
+- Action class structure and namespace
+- Dependencies and service injection
+- Invokable action patterns
+- Business logic encapsulation
+
 ## 🔧 Customizing Mapper Behavior
 
 ### Using Options in Commands
