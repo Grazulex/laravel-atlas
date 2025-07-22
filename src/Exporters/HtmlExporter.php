@@ -424,8 +424,8 @@ class HtmlExporter extends BaseExporter
                     $methods = $observer['methods'] ?? [];
                     
                     if (!empty($methods)) {
-                        foreach ($methods as $method) {
-                            $steps[] = "$observerName::$method - Handle $modelName $method event";
+                        foreach (array_keys($methods) as $methodName) {
+                            $steps[] = "$observerName::$methodName - Handle $modelName $methodName event";
                         }
                     } else {
                         $steps[] = "$observerName - Handle $modelName lifecycle events";
