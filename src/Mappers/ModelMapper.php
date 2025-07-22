@@ -79,6 +79,9 @@ class ModelMapper implements ComponentMapper
     {
         return [
             'class' => $model::class,
+            'primary_key' => $model->getKeyName(),
+            'incrementing' => $model->getIncrementing(),
+            'timestamps' => $model->usesTimestamps(),
             'table' => $model->getTable(),
             'fillable' => $model->getFillable(),
             'guarded' => $model->getGuarded(),
