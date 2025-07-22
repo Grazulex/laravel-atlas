@@ -374,11 +374,83 @@ class HtmlExporter extends BaseExporter
             throw new RuntimeException("Intelligent HTML template not found at: {$templatePath}");
         }
 
+        // Générer les flows d'observers automatiquement
+        $observerFlows = $this->generateObserverFlows($data);
+        if (!empty($observerFlows)) {
+            $data['flows'] = array_merge($data['flows'] ?? [], $observerFlows);
+        }
+
         return $this->renderWithBlade($templatePath, [
             'data' => $data,
             'config' => $this->config,
             'title' => $data['metadata']['app_name'] ?? 'Laravel Atlas - Architecture Report',
         ]);
+    }
+
+    /**
+     * Génère des flows pour les relations Model-Observer
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<int, array<string, mixed>>
+     */
+    protected function generateObserverFlows(array $data): array
+    {
+        $flows = [];
+        $models = $data['models'] ?? [];
+        $observers = $data['observers'] ?? [];
+
+        // Créer un mapping des observers par modèle
+        $observersByModel = [];
+        foreach ($observers as $observer) {
+            $model = $observer['model'] ?? '';
+            if ($model) {
+                $observersByModel[$model][] = $observer;
+            }
+        }
+
+        // Générer des flows pour chaque modèle avec observers
+        foreach ($models as $model) {
+            $modelClass = $model['class_name'] ?? '';
+            $modelName = class_basename($modelClass);
+            
+            if (isset($observersByModel[$modelClass]) || isset($observersByModel[$modelName])) {
+                $modelObservers = $observersByModel[$modelClass] ?? $observersByModel[$modelName] ?? [];
+                
+                $steps = [];
+                $steps[] = "$modelName model lifecycle event";
+                
+                foreach ($modelObservers as $observer) {
+                    $observerName = class_basename($observer['class_name'] ?? '');
+                    $methods = $observer['methods'] ?? [];
+                    
+                    if (!empty($methods)) {
+                        foreach ($methods as $method) {
+                            $steps[] = "$observerName::$method - Handle $modelName $method event";
+                        }
+                    } else {
+                        $steps[] = "$observerName - Handle $modelName lifecycle events";
+                    }
+                    
+                    // Ajouter les événements dispatchés par l'observer
+                    if (!empty($observer['events'])) {
+                        foreach ($observer['events'] as $event) {
+                            $eventName = class_basename($event);
+                            $steps[] = "$eventName event dispatched (async)";
+                        }
+                    }
+                }
+
+                $flows[] = [
+                    'name' => "$modelName Lifecycle Flow",
+                    'entry_point' => "$modelName model operations",
+                    'type' => 'mixed',
+                    'description' => "Automatic handling of $modelName model lifecycle events through observers",
+                    'steps' => $steps,
+                ];
+            }
+        }
+
+        return $flows;
     }
 
     /**
