@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Console\Commands;
 
-use Throwable;
 use Illuminate\Console\Command;
 use LaravelAtlas\Exporters\AtlasExportManager;
+use Throwable;
 
 class AtlasExportCommand extends Command
 {
