@@ -1143,7 +1143,11 @@
         </div>
         <div class="card-body">
             @if(isset($data['services']) && is_array($data['services']) && count($data['services']) > 0)
-                @foreach($data['services'] as $service)
+                @foreach($data['services'] as $key => $service)
+                <!-- DEBUG: Service key: {{ $key }}, Service type: {{ gettype($service) }} -->
+                @if(is_array($service))
+                <!-- DEBUG: Service keys: {{ implode(', ', array_keys($service)) }} -->
+                @endif
                 <div class="card" style="margin-bottom: 20px;">
                     <div class="card-header">
                         <h3>{{ class_basename($service['class_name']) }}</h3>
@@ -1152,8 +1156,13 @@
                     <div class="card-body">
                         @if(isset($service['methods']) && is_array($service['methods']) && count($service['methods']) > 0)
                         <h4>Methods</h4>
+                        <!-- DEBUG: Methods count: {{ count($service['methods']) }} -->
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 15px;">
-                            @foreach($service['methods'] as $method)
+                            @foreach($service['methods'] as $methodKey => $method)
+                            <!-- DEBUG: Method key: {{ $methodKey }}, Method type: {{ gettype($method) }} -->
+                            @if(is_array($method))
+                            <!-- DEBUG: Method keys: {{ implode(', ', array_keys($method)) }} -->
+                            @endif
                             <div style="padding: 15px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #17a2b8;">
                                 <div style="margin-bottom: 10px;">
                                     <strong style="font-size: 1.1em;">{{ $method['name'] ?? 'unknown' }}()</strong>
