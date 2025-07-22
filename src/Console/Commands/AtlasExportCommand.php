@@ -5,60 +5,45 @@ declare(strict_types=1);
 namespace LaravelAtlas\Console\Commands;
 
 use Illuminate\Console\Command;
-use LaravelAtlas\Exporters\Html\ModelHtmlExporter;
-use LaravelAtlas\Facades\Atlas;
+use LaravelAtlas\Exporters\AtlasExportManager;
 
 class AtlasExportCommand extends Command
 {
     protected $signature = 'atlas:export
         {type : The component type to scan (models, routes, etc.)}
-        {--format=html : Export format (html, json, etc.)}
-        {--output= : Output file path (default: public/atlas/{type}.html)}';
+        {--format=html : Export format (html, json, markdown, etc.)}
+        {--output= : Output file path (default: public/atlas/{type}.{format})}';
 
-    protected $description = 'Export the given component type to a chosen format (default: HTML)';
+    protected $description = 'Export a component type (models, routes, etc.) to a chosen format (HTML, JSON, Markdown, etc.)';
 
     public function handle(): int
     {
         $type = $this->argument('type');
-        $format = $this->option('format');
+        $format = $this->option('format') ?? 'html';
+
         $output = $this->option('output') ?? public_path("atlas/{$type}.{$format}");
 
-        $this->info("Scanning {$type}...");
-        $data = Atlas::scan($type);
+        $this->info("🔍 Exporting {$type} as {$format}...");
 
-        match ($format) {
-            'html' => $this->exportHtml($data, $output),
-            default => $this->error("Unsupported format: {$format}"),
-        };
+        try {
+            $content = AtlasExportManager::export($type, $format);
+        } catch (\Throwable $e) {
+            $this->error("❌ Export failed: " . $e->getMessage());
+            return self::FAILURE;
+        }
 
-        $this->info("✅ Exported to {$output}");
+        $this->ensureDirectory(dirname($output));
+        file_put_contents($output, $content);
+
+        $this->info("✅ Exported to: {$output}");
 
         return self::SUCCESS;
     }
 
-    /**
-     * @param array<string, mixed> $data
-     */
-    protected function exportHtml(array $data, string $output): void
+    protected function ensureDirectory(string $dir): void
     {
-        // pour l'instant, seul `models` est supporté
-        if ($data['type'] !== 'models') {
-            $this->error("HTML export is only implemented for 'models' for now.");
-
-            return;
-        }
-
-        $html = (new ModelHtmlExporter)->render($data);
-        ensureDirectoryExists(dirname($output));
-        file_put_contents($output, $html);
-    }
-}
-
-if (! function_exists('ensureDirectoryExists')) {
-    function ensureDirectoryExists(string $path): void
-    {
-        if (! is_dir($path)) {
-            mkdir($path, recursive: true);
+        if (!is_dir($dir)) {
+            mkdir($dir, recursive: true);
         }
     }
 }
