@@ -1289,22 +1289,40 @@
                         <p><strong>Properties:</strong> {{ implode(', ', $event['properties']) }}</p>
                         @endif
                         
-                        @if(isset($event['triggered_by']))
+                        @php
+                        // Dynamically find what triggers this event by checking actions
+                        $eventName = class_basename($event['class_name']);
+                        $triggers = [];
+                        if(isset($data['actions'])) {
+                            foreach($data['actions'] as $action) {
+                                if(isset($action['events']) && is_array($action['events'])) {
+                                    foreach($action['events'] as $actionEvent) {
+                                        if(class_basename($actionEvent) === $eventName) {
+                                            $triggers[] = $action['class_name'];
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        @endphp
+                        
+                        @if(!empty($triggers))
                         <h4>Triggered By</h4>
                         <div class="flow">
-                            @foreach($event['triggered_by'] as $trigger)
+                            @foreach($triggers as $trigger)
                             <div class="flow-step">
                                 <div class="flow-step-icon">{{ $loop->iteration }}</div>
-                                {{ is_array($trigger) ? implode(', ', $trigger) : class_basename($trigger) }}
+                                {{ class_basename($trigger) }}
                             </div>
                             @endforeach
                         </div>
                         @endif
                         
-                        @if(isset($event['listeners']))
+                        @if(isset($event['potential_listeners']) && !empty($event['potential_listeners']))
                         <h4>Event Listeners</h4>
                         <div class="flow">
-                            @foreach($event['listeners'] as $listener)
+                            @foreach($event['potential_listeners'] as $listener)
                             <div class="flow-step async">
                                 <div class="flow-step-icon">A{{ $loop->iteration }}</div>
                                 {{ class_basename($listener) }}
