@@ -214,7 +214,7 @@ class AtlasGenerateCommand extends Command
             mkdir($directory, 0755, true);
         }
 
-        // For HTML format, always use the intelligent consolidated template
+        // For HTML and PHP formats, always use the intelligent consolidated template and data transformation
         if ($format === 'html') {
             $atlasManager = new AtlasManager;
 
@@ -228,6 +228,26 @@ class AtlasGenerateCommand extends Command
             $content = $atlasManager->exportIntelligentHtml($transformedData);
             file_put_contents($path, $content);
             $this->info("💾 Output saved to: {$path} (using intelligent HTML consolidated template)");
+
+            return;
+        }
+
+        // For PHP format, also transform the data structure
+        if ($format === 'php') {
+            // Transform command data format to PHP exporter expected format
+            $transformedData = [];
+            foreach ($output['data'] ?? [] as $type => $typeData) {
+                // Extract just the 'data' portion, skip errors
+                $transformedData[$type] = $typeData['data'] ?? $typeData;
+            }
+
+            $exporterClass = $this->availableExporters[$format];
+            /** @var ExporterInterface $exporter */
+            $exporter = new $exporterClass;
+
+            $content = $exporter->export($transformedData);
+            file_put_contents($path, $content);
+            $this->info("💾 Output saved to: {$path}");
 
             return;
         }
