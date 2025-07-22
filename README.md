@@ -109,7 +109,7 @@ php artisan atlas:generate --format=json --output=docs/architecture.json
 php artisan atlas:generate --format=mermaid
 
 # Generate comprehensive markdown documentation
-php artisan atlas:generate --format=markdown --detailed
+php artisan atlas:generate --format=markdown
 
 # Generate interactive HTML map
 php artisan atlas:generate --format=html
@@ -275,7 +275,7 @@ For detailed documentation, examples, and advanced usage:
 php artisan atlas:generate --type=all --format=mermaid --output=docs/
 
 # Generate specific component maps
-php artisan atlas:generate --type=models --detailed
+php artisan atlas:generate --type=models --format=mermaid
 php artisan atlas:generate --type=services --format=markdown
 php artisan atlas:generate --type=routes --format=mermaid
 ```

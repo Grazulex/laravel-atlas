@@ -171,13 +171,43 @@ class CommandMapper extends BaseMapper
             'description' => null,
         ];
 
-        // Try to extract signature from $signature property
-        if (preg_match('/protected\s+\$signature\s*=\s*[\'"]([^\'"]+)[\'"]/', $content, $matches)) {
-            $signatureInfo['signature'] = $matches[1];
+        // Try to extract signature from $signature property (handle multiline signatures)
+        if (preg_match('/protected\s+\$signature\s*=\s*[\'"]([^\'";]*(?:\s+[^\'";]*)*)[\'"]/', $content, $matches)) {
+            // Clean up multiline signature - remove extra whitespace and newlines
+            $signature = preg_replace('/\s+/', ' ', trim($matches[1]));
+            if ($signature !== null) {
+                $signatureInfo['signature'] = $signature;
 
-            // Extract command name from signature
-            if (preg_match('/^([^\s{]+)/', $matches[1], $nameMatches)) {
-                $signatureInfo['name'] = $nameMatches[1];
+                // Extract command name from signature
+                if (preg_match('/^([^\s{]+)/', $signature, $nameMatches)) {
+                    $signatureInfo['name'] = $nameMatches[1];
+                }
+            }
+        }
+
+        // If multiline signature failed, try alternative regex for multiline
+        if (! $signatureInfo['signature']) {
+            // Match multiline signature with single quotes
+            if (preg_match("/protected\s+\\\$signature\s*=\s*'([^']*(?:\s+[^']*)*?)'/s", $content, $matches)) {
+                $signature = preg_replace('/\s+/', ' ', trim($matches[1]));
+                if ($signature !== null) {
+                    $signatureInfo['signature'] = $signature;
+                    
+                    if (preg_match('/^([^\s{]+)/', $signature, $nameMatches)) {
+                        $signatureInfo['name'] = $nameMatches[1];
+                    }
+                }
+            }
+            // Match multiline signature with double quotes
+            elseif (preg_match('/protected\s+\$signature\s*=\s*"([^"]*(?:\s+[^"]*)*?)"/s', $content, $matches)) {
+                $signature = preg_replace('/\s+/', ' ', trim($matches[1]));
+                if ($signature !== null) {
+                    $signatureInfo['signature'] = $signature;
+                    
+                    if (preg_match('/^([^\s{]+)/', $signature, $nameMatches)) {
+                        $signatureInfo['name'] = $nameMatches[1];
+                    }
+                }
             }
         }
 
@@ -211,11 +241,28 @@ class CommandMapper extends BaseMapper
     {
         $arguments = [];
 
-        // Look for argument definitions in signature
-        if (preg_match_all('/\{([^}]+)\}/', $content, $matches)) {
+        // Extract full signature first (handle multiline)
+        $fullSignature = '';
+        if (preg_match("/protected\s+\\\$signature\s*=\s*'([^']*?)'/s", $content, $matches)) {
+            $fullSignature = $matches[1];
+        } elseif (preg_match('/protected\s+\$signature\s*=\s*"([^"]*?)"/s', $content, $matches)) {
+            $fullSignature = $matches[1];
+        }
+
+        // Clean up signature - remove extra whitespace and line breaks
+        $fullSignature = preg_replace('/\s+/', ' ', trim($fullSignature));
+
+        // Look for argument definitions in signature (not starting with --)
+        if ($fullSignature && preg_match_all('/\{([^}]+)\}/', $fullSignature, $matches)) {
             foreach ($matches[1] as $argument) {
+                $argument = trim($argument);
+                // Skip if it starts with -- (it's an option)
+                if (str_starts_with($argument, '--')) {
+                    continue;
+                }
+                
                 $argInfo = $this->parseArgumentOrOption($argument);
-                if ($argInfo && ! str_starts_with((string) $argInfo['name'], '--')) {
+                if ($argInfo && isset($argInfo['name']) && is_string($argInfo['name'])) {
                     $arguments[] = $argInfo;
                 }
             }
@@ -233,11 +280,28 @@ class CommandMapper extends BaseMapper
     {
         $options = [];
 
-        // Look for option definitions in signature
-        if (preg_match_all('/\{([^}]+)\}/', $content, $matches)) {
+        // Extract full signature first (handle multiline)
+        $fullSignature = '';
+        if (preg_match("/protected\s+\\\$signature\s*=\s*'([^']*?)'/s", $content, $matches)) {
+            $fullSignature = $matches[1];
+        } elseif (preg_match('/protected\s+\$signature\s*=\s*"([^"]*?)"/s', $content, $matches)) {
+            $fullSignature = $matches[1];
+        }
+
+        // Clean up signature - remove extra whitespace and line breaks
+        $fullSignature = preg_replace('/\s+/', ' ', trim($fullSignature));
+
+        // Look for option definitions in signature (starting with --)
+        if ($fullSignature && preg_match_all('/\{([^}]+)\}/', $fullSignature, $matches)) {
             foreach ($matches[1] as $option) {
+                $option = trim($option);
+                // Only process if it starts with -- (it's an option)
+                if (! str_starts_with($option, '--')) {
+                    continue;
+                }
+                
                 $optInfo = $this->parseArgumentOrOption($option);
-                if ($optInfo && str_starts_with((string) $optInfo['name'], '--')) {
+                if ($optInfo && isset($optInfo['name']) && is_string($optInfo['name'])) {
                     $options[] = $optInfo;
                 }
             }

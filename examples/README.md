@@ -34,7 +34,7 @@ Generate a complete architecture map of your application:
 php artisan atlas:generate --format=json --output=docs/architecture.json
 
 # Generate readable documentation  
-php artisan atlas:generate --format=markdown --detailed --output=docs/ARCHITECTURE.md
+php artisan atlas:generate --format=markdown --output=docs/ARCHITECTURE.md
 
 # Generate visual diagram
 php artisan atlas:generate --format=mermaid --output=docs/architecture.mmd
@@ -45,7 +45,7 @@ php artisan atlas:generate --format=mermaid --output=docs/architecture.mmd
 ### 1. Documentation Generation
 ```bash
 # Generate comprehensive documentation
-php artisan atlas:generate --type=all --format=markdown --detailed --output=docs/
+php artisan atlas:generate --type=all --format=markdown --output=docs/
 ```
 
 ### 2. Architecture Review
