@@ -58,11 +58,17 @@ php artisan atlas:generate --type=controllers
 # Generate readable Markdown documentation
 php artisan atlas:generate --format=markdown
 
-# Generate Mermaid diagram
-php artisan atlas:generate --format=mermaid
+# Generate visual diagram as image
+php artisan atlas:generate --format=image
 
-# Generate interactive HTML
+# Generate interactive HTML with intelligent workflow
 php artisan atlas:generate --format=html
+
+# Generate PDF report
+php artisan atlas:generate --format=pdf
+
+# Generate PHP data for custom processing
+php artisan atlas:generate --format=php
 ```
 
 ### 4. Save to Files
@@ -74,18 +80,21 @@ php artisan atlas:generate --output=storage/architecture.json
 # Save Markdown documentation
 php artisan atlas:generate --format=markdown --output=docs/ARCHITECTURE.md
 
-# Save Mermaid diagram
-php artisan atlas:generate --format=mermaid --output=diagrams/app-structure.mmd
+# Save visual diagram as image
+php artisan atlas:generate --format=image --output=diagrams/app-structure.png
+
+# Save intelligent HTML report
+php artisan atlas:generate --format=html --output=public/architecture.html
 ```
 
 ### 5. Get Detailed Information
 
 ```bash
 # Include detailed information about components
-php artisan atlas:generate --detailed
+php artisan atlas:generate --type=models
 
 # Combine with specific type and format
-php artisan atlas:generate --type=models --format=markdown --detailed --output=docs/models.md
+php artisan atlas:generate --type=models --format=markdown --output=docs/models.md
 ```
 
 ## 💻 Programmatic Usage
@@ -235,21 +244,21 @@ php artisan atlas:generate --format=markdown | head -50
 
 ```bash
 # Create a visual diagram of model relationships
-php artisan atlas:generate --type=models --format=mermaid --output=models.mmd
+php artisan atlas:generate --type=models --format=image --output=models.png
 ```
 
 ### 3. Route Documentation
 
 ```bash
 # Generate route documentation for API docs
-php artisan atlas:generate --type=routes --format=markdown --detailed --output=API_ROUTES.md
+php artisan atlas:generate --type=routes --format=markdown --output=API_ROUTES.md
 ```
 
 ### 4. Architecture Review Preparation
 
 ```bash
 # Generate comprehensive documentation for code review
-php artisan atlas:generate --format=html --detailed --output=public/architecture-review.html
+php artisan atlas:generate --type=all --format=html --output=public/architecture-review.html
 ```
 
 ### 5. CI/CD Documentation
@@ -304,6 +313,6 @@ After mastering these basics, explore:
 
 1. **Start Simple**: Begin with basic scans before using detailed options
 2. **Save Everything**: Always output to files for easier sharing and version control
-3. **Pick the Right Format**: JSON for processing, Markdown for documentation, Mermaid for visuals
+3. **Pick the Right Format**: JSON for processing, Markdown for documentation, HTML for intelligent interactive exploration, Image for visual presentations
 4. **Use Version Control**: Commit generated documentation to track architectural changes
 5. **Automate**: Include documentation generation in your build/deployment process

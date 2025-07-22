@@ -13,12 +13,17 @@ This directory contains practical examples demonstrating how to use Laravel Atla
 - [Model Analysis](models.md) - Analyzing Eloquent models and relationships
 - [Route Mapping](routes.md) - Mapping application routes and middleware
 - [Service Discovery](services.md) - Analyzing service layer architecture
+- [Observer Analysis](observers.md) - Analyzing Eloquent model observers
+- [Listener Analysis](listeners.md) - Analyzing event listeners
+- [Action Analysis](actions.md) - Analyzing action classes
 
 ### Export Format Examples
 - [JSON Exports](exports/json.md) - Working with JSON output
 - [Markdown Documentation](exports/markdown.md) - Generating readable documentation
-- [Mermaid Diagrams](exports/mermaid.md) - Creating visual architecture diagrams
-- [HTML Reports](exports/html.md) - Interactive documentation
+- [HTML Reports](exports/html.md) - Interactive documentation with intelligent workflow
+- [Image Diagrams](exports/image.md) - Creating visual architecture diagrams
+- [PDF Reports](exports/pdf.md) - Printable documentation reports
+- [PHP Data](exports/php.md) - Raw PHP data for custom processing
 
 ### Advanced Examples
 - [Custom Analysis](advanced/custom-analysis.md) - Building custom architectural analysis
@@ -37,7 +42,10 @@ php artisan atlas:generate --format=json --output=docs/architecture.json
 php artisan atlas:generate --format=markdown --output=docs/ARCHITECTURE.md
 
 # Generate visual diagram
-php artisan atlas:generate --format=mermaid --output=docs/architecture.mmd
+php artisan atlas:generate --format=image --output=docs/architecture.png
+
+# Generate interactive HTML with intelligent workflow
+php artisan atlas:generate --format=html --output=public/architecture.html
 ```
 
 ## 🔧 Common Use Cases
@@ -51,7 +59,7 @@ php artisan atlas:generate --type=all --format=markdown --output=docs/
 ### 2. Architecture Review
 ```bash
 # Focus on key architectural components
-php artisan atlas:generate --type=models --format=mermaid --output=diagrams/models.mmd
+php artisan atlas:generate --type=models --format=image --output=diagrams/models.png
 php artisan atlas:generate --type=services --format=markdown --output=docs/services.md
 ```
 
@@ -90,9 +98,10 @@ php artisan atlas:generate --type=controllers
 ### Use Appropriate Formats
 - **JSON** - For data processing and API integration
 - **Markdown** - For documentation and README files
-- **Mermaid** - For visual diagrams and presentations
-- **HTML** - For interactive exploration and sharing
+- **HTML** - For interactive exploration with intelligent workflow
+- **Image** - For visual diagrams and presentations
 - **PDF** - For reports and compliance documentation
+- **PHP** - For advanced programmatic processing
 
 ### Combine with Version Control
 ```bash
