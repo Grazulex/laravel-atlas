@@ -5,29 +5,8 @@
             <h2>🔧 Business Services</h2>
         </div>
         <div class="card-body">
-            <!-- Debug: voir la structure des données services -->
-            @if(isset($data['services']))
-                <div style="background: #f0f0f0; padding: 10px; margin-bottom: 20px; font-size: 0.8em;">
-                    <strong>DEBUG - Services structure:</strong><br>
-                    Type: {{ gettype($data['services']) }}<br>
-                    @if(is_array($data['services']))
-                        Keys: {{ implode(', ', array_keys($data['services'])) }}<br>
-                        @if(isset($data['services']['data']))
-                            Services data type: {{ gettype($data['services']['data']) }}<br>
-                            @if(is_array($data['services']['data']))
-                                Services count: {{ count($data['services']['data']) }}
-                            @endif
-                        @endif
-                    @endif
-                </div>
-            @else
-                <div style="background: #ffe6e6; padding: 10px; margin-bottom: 20px; font-size: 0.8em;">
-                    <strong>DEBUG:</strong> $data['services'] not found
-                </div>
-            @endif
-            
-            @if(isset($data['services']['data']))
-                @foreach($data['services']['data'] as $service)
+            @if(isset($data['services']) && is_array($data['services']) && count($data['services']) > 0)
+                @foreach($data['services'] as $service)
                 <div class="card" style="margin-bottom: 20px;">
                     <div class="card-header">
                         <h3>{{ class_basename($service['class_name']) }}</h3>
