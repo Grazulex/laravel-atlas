@@ -1142,8 +1142,18 @@
             <h2>🔧 Business Services</h2>
         </div>
         <div class="card-body">
-            @if(isset($data['services']['data']) && is_array($data['services']['data']) && count($data['services']['data']) > 0)
-                @foreach($data['services']['data'] as $key => $service)
+            <!-- DEBUG: Services keys in data: {{ implode(', ', array_keys($data)) }} -->
+            @if(isset($data['services']))
+                <!-- DEBUG: Services type: {{ gettype($data['services']) }}, Keys: {{ is_array($data['services']) ? implode(', ', array_keys($data['services'])) : 'not array' }} -->
+            @else
+                <!-- DEBUG: No services key found in data -->
+            @endif
+            
+            @if((isset($data['services']['data']) && is_array($data['services']['data']) && count($data['services']['data']) > 0) || (isset($data['services']) && is_array($data['services']) && count($data['services']) > 0))
+                @php
+                    $services = $data['services']['data'] ?? $data['services'] ?? [];
+                @endphp
+                @foreach($services as $key => $service)
                 <div class="card" style="margin-bottom: 20px;">
                     <div class="card-header">
                         <h3>{{ class_basename($service['class_name']) }}</h3>
