@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Mappers;
 
-use Throwable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\File;
@@ -12,6 +11,7 @@ use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
 use ReflectionClass;
 use ReflectionMethod;
+use Throwable;
 
 class ModelMapper implements ComponentMapper
 {
@@ -84,6 +84,8 @@ class ModelMapper implements ComponentMapper
             'guarded' => $model->getGuarded(),
             'casts' => $model->getCasts(),
             'relations' => $this->guessRelations($model),
+            'scopes' => $this->guessScopes($model),
+            'booted_hooks' => $this->guessBootHooks($model),
         ];
     }
 
@@ -133,5 +135,51 @@ class ModelMapper implements ComponentMapper
         }
 
         return $relations;
+    }
+
+    protected function guessScopes(Model $model): array
+    {
+        $scopes = [];
+        $class = get_class($model);
+        $reflection = new ReflectionClass($class);
+
+        foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+            if (
+                $method->class === $class &&
+                str_starts_with($method->getName(), 'scope')
+            ) {
+                $scopeName = lcfirst(substr($method->getName(), 5));
+                $scopes[] = [
+                    'name' => $scopeName,
+                    'parameters' => array_map(fn ($p) => '$' . $p->getName(), $method->getParameters()),
+                ];
+            }
+        }
+
+        return $scopes;
+    }
+
+    protected function guessBootHooks(Model $model): array
+    {
+        $class = get_class($model);
+        $reflection = new ReflectionClass($class);
+
+        if (! $reflection->hasMethod('boot')) {
+            return [];
+        }
+
+        $method = $reflection->getMethod('boot');
+
+        if ($method->class !== $class || ! $method->isStatic()) {
+            return [];
+        }
+
+        $contents = file_get_contents($reflection->getFileName());
+
+        // Extraire les hooks Laravel statiques appelés dans boot()
+        $matches = [];
+        preg_match_all('/static::(saving|creating|updating|deleting|restoring|retrieved)\(/', $contents, $matches);
+
+        return array_unique($matches[1] ?? []);
     }
 }
