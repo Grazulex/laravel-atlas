@@ -29,21 +29,31 @@
                         @endif
                         
                         @if(isset($event['triggered_by']))
-                        <p><strong>Triggered by:</strong></p>
-                        <ul>
+                        <h4>Event Trigger Flow</h4>
+                        <div class="flow">
+                            <h5>Triggered By</h5>
                             @foreach($event['triggered_by'] as $trigger)
-                            <li>{{ is_array($trigger) ? implode(', ', $trigger) : $trigger }}</li>
+                            <div class="flow-step">
+                                <div class="flow-step-icon">T{{ $loop->iteration }}</div>
+                                <span class="flow-step-text">{{ is_array($trigger) ? implode(', ', $trigger) : class_basename($trigger) }}</span>
+                                <span style="background: #ffc107; color: #212529; padding: 2px 6px; border-radius: 10px; font-size: 0.75em; margin-left: 8px;">Trigger</span>
+                            </div>
                             @endforeach
-                        </ul>
+                        </div>
                         @endif
                         
                         @if(isset($event['listeners']))
-                        <p><strong>Listeners:</strong></p>
-                        <ul>
+                        <h4>Listener Chain</h4>
+                        <div class="flow">
+                            <h5>Event Listeners</h5>
                             @foreach($event['listeners'] as $listener)
-                            <li>{{ class_basename($listener) }}</li>
+                            <div class="flow-step async">
+                                <div class="flow-step-icon">L{{ $loop->iteration }}</div>
+                                <span class="flow-step-text">{{ class_basename($listener) }}</span>
+                                <span style="background: #6f42c1; color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.75em; margin-left: 8px;">Async</span>
+                            </div>
                             @endforeach
-                        </ul>
+                        </div>
                         @endif
                     </div>
                 </div>

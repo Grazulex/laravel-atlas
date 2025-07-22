@@ -48,26 +48,30 @@
                         @endif
                         
                         @if(isset($action['dependencies']) && count($action['dependencies']) > 0)
-                        <h4>Dependencies</h4>
-                        <div class="component-connections">
-                            <div class="connection-group">
-                                <h4>Injected Dependencies</h4>
-                                @foreach($action['dependencies'] as $dependency)
-                                <span class="connection-item">{{ class_basename($dependency) }}</span>
-                                @endforeach
+                        <h4>Dependency Injection Flow</h4>
+                        <div class="flow">
+                            <h5>Injected Services</h5>
+                            @foreach($action['dependencies'] as $dependency)
+                            <div class="flow-step dependency">
+                                <div class="flow-step-icon">D{{ $loop->iteration }}</div>
+                                <span class="flow-step-text">{{ class_basename($dependency) }}</span>
+                                <span style="background: #17a2b8; color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.75em; margin-left: 8px;">Service</span>
                             </div>
+                            @endforeach
                         </div>
                         @endif
                         
                         @if(isset($action['events']) && count($action['events']) > 0)
-                        <h4>Events Dispatched</h4>
-                        <div class="component-connections">
-                            <div class="connection-group">
-                                <h4>Events</h4>
-                                @foreach($action['events'] as $event)
-                                <span class="connection-item">{{ class_basename($event) }}</span>
-                                @endforeach
+                        <h4>Events & Dispatch Flow</h4>
+                        <div class="flow">
+                            <h5>Synchronous Events</h5>
+                            @foreach($action['events'] as $event)
+                            <div class="flow-step">
+                                <div class="flow-step-icon">{{ $loop->iteration }}</div>
+                                <span class="flow-step-text">{{ class_basename($event) }}</span>
+                                <span style="background: #28a745; color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.75em; margin-left: 8px;">Sync</span>
                             </div>
+                            @endforeach
                         </div>
                         @endif
                         
