@@ -893,6 +893,9 @@ class PhpExporter extends BaseExporter
         $flows = [];
         $models = $data['models'] ?? [];
         $observers = $data['observers'] ?? [];
+        $events = $data['events'] ?? [];
+        $listeners = $data['listeners'] ?? [];
+        $jobs = $data['jobs'] ?? [];
 
         // Créer un mapping des observers par modèle
         $observersByModel = [];
@@ -912,7 +915,7 @@ class PhpExporter extends BaseExporter
                 $modelObservers = $observersByModel[$modelClass] ?? $observersByModel[$modelName] ?? [];
 
                 $steps = [];
-                $steps[] = "$modelName model lifecycle event";
+                $steps[] = "$modelName model lifecycle event (creating, created, updating, updated, etc.)";
 
                 foreach ($modelObservers as $observer) {
                     $observerName = class_basename($observer['class_name'] ?? '');
@@ -931,6 +934,43 @@ class PhpExporter extends BaseExporter
                         foreach ($observer['events'] as $event) {
                             $eventName = class_basename($event);
                             $steps[] = "$eventName event dispatched (async)";
+                            
+                            // Chercher les listeners pour cet événement
+                            $eventListeners = $this->findListenersForEvent($event, $listeners);
+                            foreach ($eventListeners as $listener) {
+                                $listenerName = class_basename($listener['class_name'] ?? '');
+                                $steps[] = "$listenerName listener - Handle $eventName";
+                                
+                                // Chercher les jobs dispatchés par ce listener
+                                $listenerJobs = $listener['jobs'] ?? [];
+                                foreach ($listenerJobs as $job) {
+                                    $jobName = class_basename($job);
+                                    $steps[] = "$jobName job queued (async)";
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Chercher les événements liés au modèle par convention de nommage
+                $modelEvents = $this->findModelEvents($modelName, $events);
+                foreach ($modelEvents as $event) {
+                    $eventName = class_basename($event['class_name'] ?? '');
+                    if (!in_array("$eventName event dispatched (async)", $steps)) {
+                        $steps[] = "$eventName event dispatched (async)";
+                        
+                        // Chercher les listeners pour cet événement
+                        $eventListeners = $this->findListenersForEvent($event['class_name'], $listeners);
+                        foreach ($eventListeners as $listener) {
+                            $listenerName = class_basename($listener['class_name'] ?? '');
+                            $steps[] = "$listenerName listener - Handle $eventName";
+                            
+                            // Chercher les jobs dispatchés par ce listener
+                            $listenerJobs = $listener['jobs'] ?? [];
+                            foreach ($listenerJobs as $job) {
+                                $jobName = class_basename($job);
+                                $steps[] = "$jobName job queued (async)";
+                            }
                         }
                     }
                 }
@@ -939,13 +979,56 @@ class PhpExporter extends BaseExporter
                     'name' => "$modelName Lifecycle Flow",
                     'entry_point' => "$modelName model operations",
                     'type' => 'mixed',
-                    'description' => "Automatic handling of $modelName model lifecycle events through observers",
+                    'description' => "Complete lifecycle handling for $modelName including observers, events, listeners, and background jobs",
                     'steps' => $steps,
                 ];
             }
         }
 
         return $flows;
+    }
+
+    /**
+     * Trouve les listeners pour un événement donné
+     *
+     * @param string $eventClass
+     * @param array<string, mixed> $listeners
+     * @return array<int, array<string, mixed>>
+     */
+    private function findListenersForEvent(string $eventClass, array $listeners): array
+    {
+        $eventListeners = [];
+        
+        foreach ($listeners as $listener) {
+            $listenerEvent = $listener['event'] ?? '';
+            if ($listenerEvent === $eventClass || class_basename($listenerEvent) === class_basename($eventClass)) {
+                $eventListeners[] = $listener;
+            }
+        }
+        
+        return $eventListeners;
+    }
+
+    /**
+     * Trouve les événements liés à un modèle par convention de nommage
+     *
+     * @param string $modelName
+     * @param array<string, mixed> $events
+     * @return array<int, array<string, mixed>>
+     */
+    private function findModelEvents(string $modelName, array $events): array
+    {
+        $modelEvents = [];
+        
+        foreach ($events as $event) {
+            $eventName = class_basename($event['class_name'] ?? '');
+            // Chercher les événements qui contiennent le nom du modèle
+            if (str_contains($eventName, $modelName)) {
+                $modelEvents[] = $event;
+            }
+        }
+        
+        return $modelEvents;
     }
 
     /**
