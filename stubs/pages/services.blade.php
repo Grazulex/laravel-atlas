@@ -17,22 +17,27 @@
                         <h4>Methods</h4>
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 15px;">
                             @foreach($service['methods'] as $methodKey => $method)
+                            @php
+                                // Handle both formats: indexed array with 'name' property or associative array
+                                $methodName = is_array($method) ? ($method['name'] ?? $methodKey) : $methodKey;
+                                $methodData = is_array($method) ? $method : [];
+                            @endphp
                             <div style="padding: 15px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #17a2b8;">
                                 <div style="margin-bottom: 10px;">
-                                    <strong style="font-size: 1.1em;">{{ $method['name'] ?? 'unknown' }}()</strong>
-                                    @if(isset($method['visibility']))
-                                        <span style="background: {{ $method['visibility'] === 'public' ? '#28a745' : ($method['visibility'] === 'protected' ? '#ffc107' : '#6c757d') }}; color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.75em; margin-left: 8px;">{{ ucfirst($method['visibility']) }}</span>
+                                    <strong style="font-size: 1.1em;">{{ $methodName ?? 'unknown' }}()</strong>
+                                    @if(isset($methodData['visibility']))
+                                        <span style="background: {{ $methodData['visibility'] === 'public' ? '#28a745' : ($methodData['visibility'] === 'protected' ? '#ffc107' : '#6c757d') }}; color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.75em; margin-left: 8px;">{{ ucfirst($methodData['visibility']) }}</span>
                                     @endif
-                                    @if(isset($method['is_static']) && $method['is_static'])
+                                    @if(isset($methodData['is_static']) && $methodData['is_static'])
                                         <span style="background: #6f42c1; color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.75em; margin-left: 8px;">Static</span>
                                     @endif
                                 </div>
                                 
-                                @if(isset($method['parameters']) && is_array($method['parameters']) && count($method['parameters']) > 0)
+                                @if(isset($methodData['parameters']) && is_array($methodData['parameters']) && count($methodData['parameters']) > 0)
                                 <div style="margin-bottom: 10px;">
                                     <small style="color: #6c757d; font-weight: bold;">Parameters:</small>
                                     <ul style="margin: 5px 0 0 20px; font-size: 0.9em;">
-                                        @foreach($method['parameters'] as $param)
+                                        @foreach($methodData['parameters'] as $param)
                                         <li>
                                             <code>${{ $param['name'] }}</code>: {{ $param['type'] ?? 'mixed' }}
                                             @if(isset($param['optional']) && $param['optional'])
@@ -44,10 +49,10 @@
                                 </div>
                                 @endif
                                 
-                                @if(isset($method['return_type']) && $method['return_type'])
+                                @if(isset($methodData['return_type']) && $methodData['return_type'])
                                 <div style="margin-bottom: 10px;">
                                     <small style="color: #6c757d; font-weight: bold;">Returns:</small>
-                                    <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; margin-left: 5px;">{{ $method['return_type'] }}</code>
+                                    <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; margin-left: 5px;">{{ $methodData['return_type'] }}</code>
                                 </div>
                                 @endif
                             </div>
