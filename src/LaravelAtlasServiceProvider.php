@@ -3,6 +3,7 @@
 namespace LaravelAtlas;
 
 use Illuminate\Support\ServiceProvider;
+use LaravelAtlas\Console\Commands\AtlasDebugModelsCommand;
 use Override;
 
 class LaravelAtlasServiceProvider extends ServiceProvider
@@ -16,7 +17,7 @@ class LaravelAtlasServiceProvider extends ServiceProvider
             ], 'atlas-config');
 
             $this->commands([
-                //
+                AtlasDebugModelsCommand::class,
             ]);
         }
     }
