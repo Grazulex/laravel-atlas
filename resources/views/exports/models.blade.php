@@ -27,10 +27,25 @@
                 <code>{{ implode(', ', $model['fillable']) }}</code>
             </div>
 
-            <div class="section">
-                <strong>Casts:</strong>
-                <pre>{{ json_encode($model['casts'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) }}</pre>
-            </div>
+            @if (!empty($model['casts']))
+                <div class="section">
+                    <strong>Casts:</strong>
+                    <table>
+                        <thead>
+                            <tr><th>Field</th><th>Type</th></tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($model['casts'] as $field => $type)
+                                <tr>
+                                    <td><code>{{ $field }}</code></td>
+                                    <td>{{ $type }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+
 
             @if (!empty($model['relations']))
                 <div class="section">
