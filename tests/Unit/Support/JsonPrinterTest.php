@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use LaravelAtlas\Support\JsonPrinter;
 
-it('formats array data to pretty JSON', function () {
+it('formats array data to pretty JSON', function (): void {
     $data = [
         'name' => 'Test',
         'values' => [1, 2, 3],
@@ -26,14 +26,14 @@ it('formats array data to pretty JSON', function () {
     expect($decoded)->toEqual($data);
 });
 
-it('handles empty array', function () {
+it('handles empty array', function (): void {
     $data = [];
 
     $result = JsonPrinter::pretty($data);
 
     expect($result)->toBe('[]');
 });
-it('handles complex nested data', function () {
+it('handles complex nested data', function (): void {
     $data = [
         'models' => [
             [
@@ -61,13 +61,13 @@ it('handles complex nested data', function () {
     expect($decoded)->toEqual($data);
 });
 
-it('throws exception for invalid JSON encoding', function () {
+it('throws exception for invalid JSON encoding', function (): void {
     // Create data that cannot be JSON encoded (resources can't be encoded)
     $resource = fopen('php://memory', 'r');
     $data = ['resource' => $resource];
 
-    expect(fn () => JsonPrinter::pretty($data))
-        ->toThrow(\RuntimeException::class, 'Failed to encode data to JSON');
+    expect(fn (): string => JsonPrinter::pretty($data))
+        ->toThrow(RuntimeException::class, 'Failed to encode data to JSON');
 
     fclose($resource);
 });

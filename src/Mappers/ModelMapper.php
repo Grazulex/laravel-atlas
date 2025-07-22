@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Mappers;
 
+use Throwable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\File;
@@ -92,34 +93,41 @@ class ModelMapper implements ComponentMapper
     protected function guessRelations(Model $model): array
     {
         $relations = [];
-        $class = get_class($model);
+        $class = $model::class;
         $reflection = new ReflectionClass($class);
 
         foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
             // Exclure les scopes, hérités, statiques, magiques, etc.
-            if (
-                $method->class !== $class ||
-                $method->isStatic() ||
-                $method->isConstructor() ||
-                $method->getNumberOfParameters() > 0 ||
-                str_starts_with($method->name, '__') ||
-                str_starts_with($method->name, 'scope')
-            ) {
+            if ($method->class !== $class) {
                 continue;
             }
-
+            if ($method->isStatic()) {
+                continue;
+            }
+            if ($method->isConstructor()) {
+                continue;
+            }
+            if ($method->getNumberOfParameters() > 0) {
+                continue;
+            }
+            if (str_starts_with($method->name, '__')) {
+                continue;
+            }
+            if (str_starts_with($method->name, 'scope')) {
+                continue;
+            }
             try {
                 $result = $method->invoke($model);
                 if ($result instanceof Relation) {
                     $relations[$method->getName()] = [
                         'type' => class_basename($result),
-                        'related' => get_class($result->getRelated()),
+                        'related' => $result->getRelated()::class,
                         'foreignKey' => method_exists($result, 'getForeignKeyName')
                             ? $result->getForeignKeyName()
                             : null,
                     ];
                 }
-            } catch (\Throwable) {
+            } catch (Throwable) {
                 // ne rien faire
             }
         }
