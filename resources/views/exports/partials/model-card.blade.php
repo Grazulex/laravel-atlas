@@ -8,15 +8,15 @@
         </span>
     </div>
 
-    <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mt-3 text-sm text-gray-700">
+    <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mt-2 text-sm text-gray-700">
         <div>
-            <span class="block text-xs text-gray-400 font-semibold">🆔 Primary key</span>
+            <span class="block text-xs text-gray-400 font-semibold mb-1">🆔 Primary key</span>
             <code>{{ $model['primary_key'] }}</code>
         </div>
 
         {{-- Fillable --}}
         <div>
-            <span class="block text-xs text-gray-400 font-semibold">📝 Fillable</span>
+            <span class="block text-xs text-gray-400 font-semibold mb-1">📝 Fillable</span>
             <div class="text-xs bg-gray-50 rounded p-2 text-gray-800 leading-tight">
                 {{ implode(', ', $model['fillable']) }}
             </div>
@@ -25,7 +25,7 @@
         {{-- Guarded --}}
         @if (!empty($model['guarded']))
             <div>
-                <span class="block text-xs text-gray-400 font-semibold">⛔ Guarded</span>
+                <span class="block text-xs text-gray-400 font-semibold mb-1">⛔ Guarded</span>
                 <div class="text-xs bg-gray-50 rounded p-2 text-gray-800 leading-tight">
                     {{ implode(', ', $model['guarded']) }}
                 </div>
@@ -35,7 +35,7 @@
         {{-- Casts --}}
         @if (!empty($model['casts']))
             <div class="sm:col-span-2 md:col-span-1">
-                <span class="block text-xs text-gray-400 font-semibold">🔣 Casts</span>
+                <span class="block text-xs text-gray-400 font-semibold mb-1">🔣 Casts</span>
                 <table class="w-full text-xs border rounded overflow-hidden">
                     <thead class="bg-gray-100 text-left">
                         <tr>
@@ -58,7 +58,7 @@
         {{-- Boot Hooks --}}
         @if (!empty($model['booted_hooks']))
             <div>
-                <span class="block text-xs text-gray-400 font-semibold">🧷 Boot Hooks</span>
+                <span class="block text-xs text-gray-400 font-semibold mb-1">🧷 Boot Hooks</span>
                 <div class="text-xs bg-gray-50 rounded p-2 text-gray-800 leading-tight">
                     {{ implode(', ', $model['booted_hooks']) }}
                 </div>
