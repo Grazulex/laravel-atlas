@@ -97,6 +97,12 @@
                     {{ count($notifications) }}
                 </span>
             </button>
+            <button data-section="middlewares" class="block text-left px-3 py-2 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900 w-full">
+                🛡️ Middlewares
+                <span class="ml-2 text-xs bg-gray-200 dark:bg-gray-700 dark:text-gray-100 text-gray-800 px-1.5 py-0.5 rounded">
+                    {{ count($middlewares) }}
+                </span>
+            </button>
             <button onclick="toggleDarkMode()" class="block text-left px-3 py-2 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900 w-full">
                 🌓 Toggle Theme
             </button>
@@ -136,6 +142,13 @@
             <h2 class="text-xl font-bold">📢 Notifications</h2>
             @foreach ($notifications as $notification)
                 @include('atlas::exports.partials.notification-card', ['notification' => $notification])
+            @endforeach
+        </div>
+
+        <div id="section-middlewares" class="content-section hidden">
+            <h2 class="text-xl font-bold">🛡️ Middlewares</h2>
+            @foreach ($middlewares as $middleware)
+                @include('atlas::exports.partials.middleware-card', ['middleware' => $middleware])
             @endforeach
         </div>
     </div>
