@@ -202,81 +202,96 @@ class ModelMapper implements ComponentMapper
     }
 
     protected function analyzeFlow(Model $model): array
-{
-    $flow = [
-        'jobs' => [],
-        'events' => [],
-        'observers' => [],
-        'dependencies' => [],
-    ];
+    {
+        $flow = [
+            'jobs' => [],
+            'events' => [],
+            'observers' => [],
+            'dependencies' => [],
+        ];
 
-    $reflection = new \ReflectionClass($model);
-    $source = file_get_contents($reflection->getFileName());
+        $reflection = new \ReflectionClass($model);
+        $source = file_get_contents($reflection->getFileName());
 
-    // Detect dispatched jobs
-    if (preg_match_all('/dispatch(?:Now)?\(\s*([A-Z][\w\\\\]+)::class/', $source, $matches)) {
-        foreach ($matches[1] as $fqcn) {
-            $flow['jobs'][] = [
-                'class' => $fqcn,
-                'async' => !str_contains($source, "dispatchNow({$fqcn}"),
-            ];
-        }
-    }
-
-    // Detect events
-    if (preg_match_all('/event\(\s*([A-Z][\w\\\\]+)::class/', $source, $matches)) {
-        foreach ($matches[1] as $fqcn) {
-            $flow['events'][] = ['class' => $fqcn];
-        }
-    }
-
-    // Detect dependencies (new X / X::)
-    if (preg_match_all('/new\s+([A-Z][\w\\\\]+)|([A-Z][\w\\\\]+)::/', $source, $matches)) {
-        $found = array_filter(array_merge($matches[1], $matches[2]));
-        $flow['dependencies'] = array_values(array_unique(array_filter($found)));
-    }
-
-    // Detect model-level observers (static::observe(...))
-    if (preg_match_all('/static::observe\(\s*([A-Z][\w\\\\]+)::class/', $source, $matches)) {
-        foreach ($matches[1] as $fqcn) {
-            $flow['observers'][] = $fqcn;
-        }
-    }
-
-    // Add global observers (declared in Service Providers)
-    $global = $this->extractGlobalObservers();
-    $class = get_class($model);
-    if (isset($global[$class])) {
-        $flow['observers'] = array_values(array_unique(array_merge(
-            $flow['observers'],
-            $global[$class]
-        )));
-    }
-
-    return $flow;
-}
-
-
-
-protected function extractGlobalObservers(): array
-{
-    $observers = [];
-
-    $providerFiles = glob(app_path('Providers/*.php'));
-
-    foreach ($providerFiles as $file) {
-        $content = file_get_contents($file);
-
-        if (preg_match_all('/([A-Z][\w\\\\]+)::observe\(\s*([A-Z][\w\\\\]+)::class/', $content, $matches, PREG_SET_ORDER)) {
-            foreach ($matches as $match) {
-                [$_, $model, $observer] = $match;
-                $observers[$model][] = $observer;
+        // Detect dispatched jobs
+        if (preg_match_all('/dispatch(?:Now)?\(\s*([A-Z][\w\\\\]+)::class/', $source, $matches)) {
+            foreach ($matches[1] as $fqcn) {
+                $flow['jobs'][] = [
+                    'class' => $fqcn,
+                    'async' => ! str_contains($source, "dispatchNow({$fqcn}"),
+                ];
             }
         }
+
+        // Detect events
+        if (preg_match_all('/event\(\s*([A-Z][\w\\\\]+)::class/', $source, $matches)) {
+            foreach ($matches[1] as $fqcn) {
+                $flow['events'][] = ['class' => $fqcn];
+            }
+        }
+
+        // Detect dependencies (new X / X::)
+        if (preg_match_all('/new\s+([A-Z][\w\\\\]+)|([A-Z][\w\\\\]+)::/', $source, $matches)) {
+            $found = array_filter(array_merge($matches[1], $matches[2]));
+            $flow['dependencies'] = array_values(array_unique(array_filter($found)));
+        }
+
+        // Detect model-level observers (static::observe(...))
+        if (preg_match_all('/static::observe\(\s*([A-Z][\w\\\\]+)::class/', $source, $matches)) {
+            foreach ($matches[1] as $fqcn) {
+                $flow['observers'][] = $fqcn;
+            }
+        }
+
+        // Add global observers (declared in Service Providers)
+        $global = $this->extractGlobalObservers();
+        $class = get_class($model);
+        $shortClass = class_basename($class);
+        
+        // Check both full class name and short class name
+        $globalObservers = [];
+        if (isset($global[$class])) {
+            $globalObservers = array_merge($globalObservers, $global[$class]);
+        }
+        if (isset($global[$shortClass])) {
+            $globalObservers = array_merge($globalObservers, $global[$shortClass]);
+        }
+        
+        if (!empty($globalObservers)) {
+            $flow['observers'] = array_values(array_unique(array_merge(
+                $flow['observers'],
+                $globalObservers
+            )));
+        }
+
+        return $flow;
     }
 
-    return $observers;
-}
+    protected function extractGlobalObservers(): array
+    {
+        $observers = [];
 
+        $providerFiles = glob(app_path('Providers/*.php'));
 
+        foreach ($providerFiles as $file) {
+            $content = file_get_contents($file);
+
+            // Pattern: Model::observe(Observer::class)
+            if (preg_match_all('/([A-Z][\w\\\\]+)::observe\(\s*([A-Z][\w\\\\]+)::class/', $content, $matches, PREG_SET_ORDER)) {
+                foreach ($matches as $match) {
+                    [$_, $model, $observer] = $match;
+                    // Le premier groupe est le modèle, le second est l'observer
+                    $observers[$model][] = $observer;
+                    
+                    // Debug: ajouter aussi le nom complet si c'est un nom court
+                    if (!str_contains($model, '\\')) {
+                        $fullModelName = 'App\\Models\\' . $model;
+                        $observers[$fullModelName][] = $observer;
+                    }
+                }
+            }
+        }
+
+        return $observers;
+    }
 }
