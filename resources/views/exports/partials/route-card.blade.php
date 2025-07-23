@@ -21,11 +21,16 @@
         {{-- Controller / Closure --}}
         <div>
             <span class="block text-xs text-gray-400 font-semibold">⚙️ Handler</span>
-            @if ($route['is_closure'])
-                <span class="italic text-gray-500">Closure</span>
-            @else
-                <code>{{ $route['controller'] }}@{{ $route['uses'] }}</code>
-            @endif
+                @if ($route['is_closure'])
+                    <span class="italic text-gray-500">Closure</span>
+                @elseif (!empty($route['controller']) && !empty($route['uses']))
+                    <code>{{ class_basename($route['controller']) }}@{{ $route['uses'] }}</code>
+                @elseif (!empty($route['controller']))
+                    <code>{{ class_basename($route['controller']) }}</code>
+                @else
+                    <span class="text-red-500 text-xs">⚠️ Undefined handler</span>
+                @endif
+
         </div>
 
         {{-- Methods --}}
