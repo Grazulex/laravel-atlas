@@ -1,6 +1,13 @@
 <div class="bg-white rounded-xl shadow-md p-6 mb-6">
     <h2 class="text-xl font-semibold text-indigo-800 mb-1">💬 {{ $command['class'] }}</h2>
     <p class="text-sm text-gray-600 mb-3">
+        @if (!empty($command['description']))
+            Description: <span class="text-gray-800 italic">{{ $command['description'] }}</span><br>
+        @endif
+        @if (!empty($command['aliases']))
+            Aliases:
+            <code>{{ implode(', ', $command['aliases']) }}</code>
+        @endif
         @if (!empty($command['parsed_signature']))
             <div class="mt-4">
                 <h4 class="font-semibold text-xs text-gray-400 mb-1">🧾 Signature breakdown</h4>
@@ -35,14 +42,6 @@
                     </tbody>
                 </table>
             </div>
-        @endif
-
-        @if (!empty($command['description']))
-            Description: <span class="text-gray-800 italic">{{ $command['description'] }}</span><br>
-        @endif
-        @if (!empty($command['aliases']))
-            Aliases:
-            <code>{{ implode(', ', $command['aliases']) }}</code>
         @endif
     </p>
 
