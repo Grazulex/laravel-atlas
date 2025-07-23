@@ -27,6 +27,9 @@ class RouteMapper implements ComponentMapper
             $routes[] = $this->analyzeRoute($route);
         }
 
+        usort($routes, fn ($a, $b) => strcmp($a['uri'], $b['uri']));
+
+
         return [
             'type' => $this->type(),
             'count' => count($routes),
