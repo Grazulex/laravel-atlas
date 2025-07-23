@@ -70,10 +70,14 @@ class CommandMapper implements ComponentMapper
         $file = $reflection->getFileName();
         $source = ($file && file_exists($file)) ? file_get_contents($file) : '';
 
+        // Get signature from property instead of method
+        $signature = $this->getCommandSignature($command);
+        $description = $this->getCommandDescription($command);
+
         return [
             'class' => $class,
-            'signature' => $command->getSignature(),
-            'description' => $command->getDescription(),
+            'signature' => $signature,
+            'description' => $description,
             'aliases' => method_exists($command, 'getAliases') ? $command->getAliases() : [],
             'flow' => $this->analyzeFlow($source),
         ];
@@ -126,5 +130,57 @@ class CommandMapper implements ComponentMapper
         }
 
         return $flow;
+    }
+
+    /**
+     * Get command signature safely
+     */
+    protected function getCommandSignature(Command $command): string
+    {
+        // Try getSignature method first
+        if (method_exists($command, 'getSignature')) {
+            try {
+                return $command->getSignature();
+            } catch (\Throwable) {
+                // Fall back to property
+            }
+        }
+
+        // Access signature property via reflection
+        $reflection = new ReflectionClass($command);
+        if ($reflection->hasProperty('signature')) {
+            $property = $reflection->getProperty('signature');
+            $property->setAccessible(true);
+            $signature = $property->getValue($command);
+            return is_string($signature) ? $signature : '';
+        }
+
+        return '';
+    }
+
+    /**
+     * Get command description safely
+     */
+    protected function getCommandDescription(Command $command): string
+    {
+        // Try getDescription method first
+        if (method_exists($command, 'getDescription')) {
+            try {
+                return $command->getDescription();
+            } catch (\Throwable) {
+                // Fall back to property
+            }
+        }
+
+        // Access description property via reflection
+        $reflection = new ReflectionClass($command);
+        if ($reflection->hasProperty('description')) {
+            $property = $reflection->getProperty('description');
+            $property->setAccessible(true);
+            $description = $property->getValue($command);
+            return is_string($description) ? $description : '';
+        }
+
+        return '';
     }
 }
