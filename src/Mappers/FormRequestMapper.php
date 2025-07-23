@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Mappers;
 
-use ReflectionType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\File;
 use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
 use ReflectionClass;
 use ReflectionMethod;
+use ReflectionType;
 
 class FormRequestMapper implements ComponentMapper
 {
@@ -331,6 +331,6 @@ class FormRequestMapper implements ComponentMapper
         }
         $flow['validations'] = array_unique($validationTypes);
 
-        return array_filter($flow, fn ($items): bool => ! empty($items));
+        return array_filter($flow, fn ($items): bool => $items !== []);
     }
 }

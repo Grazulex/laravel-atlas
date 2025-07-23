@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Mappers;
 
-use ReflectionType;
 use Illuminate\Support\Facades\File;
 use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionParameter;
+use ReflectionType;
 
 class MiddlewareMapper implements ComponentMapper
 {
@@ -148,7 +148,6 @@ class MiddlewareMapper implements ComponentMapper
             if (method_exists($type, 'isBuiltin') && ! $type->isBuiltin()) {
                 return (string) $type;
             }
-
         }, $method->getParameters());
     }
 
@@ -250,6 +249,6 @@ class MiddlewareMapper implements ComponentMapper
             $flow['notifications'] = array_unique($matches[1]);
         }
 
-        return array_filter($flow, fn ($items): bool => ! empty($items));
+        return array_filter($flow, fn ($items): bool => $items !== []);
     }
 }
