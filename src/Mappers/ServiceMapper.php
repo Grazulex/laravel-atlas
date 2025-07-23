@@ -25,7 +25,7 @@ class ServiceMapper implements ComponentMapper
         $seen = [];
 
         foreach ($paths as $path) {
-            if (!is_dir($path)) {
+            if (! is_dir($path)) {
                 continue;
             }
 
@@ -37,7 +37,7 @@ class ServiceMapper implements ComponentMapper
                 if (
                     $fqcn &&
                     class_exists($fqcn) &&
-                    !isset($seen[$fqcn])
+                    ! isset($seen[$fqcn])
                 ) {
                     $seen[$fqcn] = true;
                     $services[] = $this->analyzeService($fqcn, $file->getRealPath());
@@ -52,10 +52,26 @@ class ServiceMapper implements ComponentMapper
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function analyzeService(string $fqcn, string $filePath): array
     {
+        if (! class_exists($fqcn)) {
+            return [
+                'class' => $fqcn,
+                'methods' => [],
+                'dependencies' => [],
+                'flow' => [],
+            ];
+        }
+
         $reflection = new ReflectionClass($fqcn);
         $source = file_get_contents($filePath);
+
+        if ($source === false) {
+            $source = null;
+        }
 
         return [
             'class' => $fqcn,
@@ -65,6 +81,9 @@ class ServiceMapper implements ComponentMapper
         ];
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     protected function extractPublicMethods(ReflectionClass $reflection): array
     {
         $methods = [];
@@ -77,7 +96,7 @@ class ServiceMapper implements ComponentMapper
             $methods[] = [
                 'name' => $method->getName(),
                 'parameters' => array_map(
-                    fn($param) => '$' . $param->getName(),
+                    fn ($param): string => '$' . $param->getName(),
                     $method->getParameters()
                 ),
             ];
@@ -86,6 +105,9 @@ class ServiceMapper implements ComponentMapper
         return $methods;
     }
 
+    /**
+     * @return array<int, string|null>
+     */
     protected function extractConstructorDependencies(ReflectionClass $reflection): array
     {
         if (! $reflection->hasMethod('__construct')) {
@@ -96,10 +118,22 @@ class ServiceMapper implements ComponentMapper
 
         return array_map(function ($param) {
             $type = $param->getType();
-            return $type && !$type->isBuiltin() ? (string) $type : null;
+
+            if ($type === null) {
+                return;
+            }
+
+            // PHPStan needs us to check if type has isBuiltin method
+            if (method_exists($type, 'isBuiltin') && ! $type->isBuiltin()) {
+                return (string) $type;
+            }
+
         }, $method->getParameters());
     }
 
+    /**
+     * @return array<string, array<int, mixed>|array<int, string>>
+     */
     protected function analyzeFlow(?string $source): array
     {
         if (! $source) {
@@ -120,7 +154,7 @@ class ServiceMapper implements ComponentMapper
             foreach ($matches[1] as $fqcn) {
                 $flow['jobs'][] = [
                     'class' => $fqcn,
-                    'async' => !str_contains($source, "dispatchNow({$fqcn}"),
+                    'async' => ! str_contains($source, "dispatchNow({$fqcn}"),
                 ];
             }
         }

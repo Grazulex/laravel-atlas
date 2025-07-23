@@ -8,7 +8,6 @@ use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Route as RouteFacade;
 use LaravelAtlas\Contracts\ComponentMapper;
 use ReflectionClass;
-use Illuminate\Support\Str;
 use Throwable;
 
 class RouteMapper implements ComponentMapper
@@ -27,8 +26,7 @@ class RouteMapper implements ComponentMapper
             $routes[] = $this->analyzeRoute($route);
         }
 
-        usort($routes, fn ($a, $b) => strcmp($a['uri'], $b['uri']));
-
+        usort($routes, fn ($a, $b): int => strcmp((string) $a['uri'], (string) $b['uri']));
 
         return [
             'type' => $this->type(),
@@ -37,6 +35,9 @@ class RouteMapper implements ComponentMapper
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function analyzeRoute(Route $route): array
     {
         $action = $route->getActionName();
@@ -75,6 +76,9 @@ class RouteMapper implements ComponentMapper
         };
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function analyzeControllerFlow(Route $route): array
     {
         $controllerClass = $route->getAction('controller');
@@ -88,6 +92,9 @@ class RouteMapper implements ComponentMapper
 
         try {
             $file = $reflection->getFileName();
+            if ($file === false) {
+                return ['jobs' => [], 'events' => [], 'dependencies' => []];
+            }
             $contents = file_get_contents($file);
         } catch (Throwable) {
             return ['jobs' => [], 'events' => [], 'dependencies' => []];
@@ -109,23 +116,32 @@ class RouteMapper implements ComponentMapper
         ];
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     protected function extractDispatches(string $source): array
     {
         preg_match_all('/dispatch(?:Now)?\(\s*([A-Z][\w\\\\]+)::class/', $source, $matches);
 
-        return array_map(fn ($fqcn) => [
+        return array_map(fn ($fqcn): array => [
             'class' => $fqcn,
             'async' => ! str_contains($source, "dispatchNow({$fqcn}"),
-        ], $matches[1] ?? []);
+        ], $matches[1]);
     }
 
+    /**
+     * @return array<int, array<string, string>>
+     */
     protected function extractEvents(string $source): array
     {
         preg_match_all('/event\(\s*([A-Z][\w\\\\]+)::class/', $source, $matches);
 
-        return array_map(fn ($fqcn) => ['class' => $fqcn], $matches[1] ?? []);
+        return array_map(fn ($fqcn): array => ['class' => $fqcn], $matches[1]);
     }
 
+    /**
+     * @return array<int, string>
+     */
     protected function extractDependencies(string $source): array
     {
         preg_match_all('/new\s+([A-Z][\w\\\\]+)|([A-Z][\w\\\\]+)::/', $source, $matches);

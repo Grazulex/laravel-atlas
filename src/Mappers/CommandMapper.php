@@ -24,7 +24,9 @@ class CommandMapper implements ComponentMapper
         $recursive = $options['recursive'] ?? true;
 
         foreach ($paths as $path) {
-            if (!is_dir($path)) continue;
+            if (! is_dir($path)) {
+                continue;
+            }
 
             $files = $recursive ? File::allFiles($path) : File::files($path);
 
@@ -49,6 +51,9 @@ class CommandMapper implements ComponentMapper
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function analyzeCommand(Command $command): array
     {
         $class = $command::class;
@@ -71,6 +76,9 @@ class CommandMapper implements ComponentMapper
         ];
     }
 
+    /**
+     * @return array<string, array<int|string, mixed>>
+     */
     protected function analyzeFlow(?string $source): array
     {
         $flow = [
@@ -87,14 +95,16 @@ class CommandMapper implements ComponentMapper
             ],
         ];
 
-        if (! $source) return $flow;
+        if (! $source) {
+            return $flow;
+        }
 
         // Jobs
         if (preg_match_all('/dispatch(?:Now)?\(\s*([A-Z][\w\\\\]+)::class/', $source, $matches)) {
             foreach ($matches[1] as $fqcn) {
                 $flow['jobs'][] = [
                     'class' => $fqcn,
-                    'async' => !str_contains($source, "dispatchNow({$fqcn}"),
+                    'async' => ! str_contains($source, "dispatchNow({$fqcn}"),
                 ];
             }
         }
@@ -156,6 +166,7 @@ class CommandMapper implements ComponentMapper
         if ($reflection->hasProperty('signature')) {
             $property = $reflection->getProperty('signature');
             $property->setAccessible(true);
+
             return (string) $property->getValue($command);
         }
 
@@ -168,12 +179,16 @@ class CommandMapper implements ComponentMapper
         if ($reflection->hasProperty('description')) {
             $property = $reflection->getProperty('description');
             $property->setAccessible(true);
+
             return (string) $property->getValue($command);
         }
 
         return '';
     }
 
+    /**
+     * @return array<int, array<string, string>>
+     */
     protected function parseSignature(Command $command): array
     {
         $signature = $this->getSignature($command);
@@ -186,7 +201,7 @@ class CommandMapper implements ComponentMapper
                     'type' => $isOption ? 'option' : 'argument',
                     'name' => $match[2],
                     'modifier' => $match[3] ?? '',
-                    'description' => $match[4] ?? null,
+                    'description' => $match[4] ?? '',
                 ];
             }
         }
