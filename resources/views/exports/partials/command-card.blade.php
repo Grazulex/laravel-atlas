@@ -1,6 +1,6 @@
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-4 border border-gray-200 dark:border-gray-700">
+<div class="bg-white rounded-lg shadow-sm p-4 mb-4 border border-gray-200">
     <div class="flex items-center justify-between mb-2">
-        <h2 class="text-sm font-semibold text-indigo-700 dark:text-indigo-300 truncate max-w-[80%]">
+        <h2 class="text-sm font-semibold text-indigo-700 truncate max-w-[80%]">
             💬 {{ class_basename($command['class']) }}
         </h2>
         @if (!empty($command['aliases']))

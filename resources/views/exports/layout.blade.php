@@ -87,6 +87,9 @@
             </button>
             <button data-section="services" class="block text-left px-3 py-2 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900 w-full">
                 🔧 Services
+                <span class="ml-2 text-xs bg-gray-200 dark:bg-gray-700 dark:text-gray-100 text-gray-800 px-1.5 py-0.5 rounded">
+                    {{ count($services) }}
+                </span>
             </button>
             <button onclick="toggleDarkMode()" class="block text-left px-3 py-2 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900 w-full">
                 🌓 Toggle Theme
@@ -118,7 +121,9 @@
 
         <div id="section-services" class="content-section hidden">
             <h2 class="text-xl font-bold mb-4">🔧 Services</h2>
-            <p class="text-sm text-gray-500 dark:text-gray-400">No service data yet.</p>
+            @foreach ($services as $service)
+                @include('atlas::exports.partials.service-card', ['service' => $service])
+            @endforeach
         </div>
     </div>
 </div>

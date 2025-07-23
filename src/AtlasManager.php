@@ -9,6 +9,7 @@ use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Mappers\CommandMapper;
 use LaravelAtlas\Mappers\ModelMapper;
 use LaravelAtlas\Mappers\RouteMapper;
+use LaravelAtlas\Mappers\ServiceMapper;
 use LaravelAtlas\Registry\MapperRegistry;
 
 class AtlasManager
@@ -23,7 +24,7 @@ class AtlasManager
         $this->registry->register(new ModelMapper);
         $this->registry->register(new CommandMapper);
         $this->registry->register(new RouteMapper);
-
+        $this->registry->register(new ServiceMapper);
     }
 
     /**
