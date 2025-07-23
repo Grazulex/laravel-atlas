@@ -1,60 +1,89 @@
-<div class="bg-white rounded-xl shadow-md p-6 mb-6">
-    <h2 class="text-xl font-semibold text-indigo-800 mb-1">🧱 {{ $model['class'] }}</h2>
-    <p class="text-sm text-gray-600 mb-3">
-        Table: <code>{{ $model['table'] }}</code> — Primary Key: <code>{{ $model['primary_key'] }}</code>
-    </p>
+<div class="bg-white rounded-lg shadow-sm p-4 mb-4 border border-gray-200">
+    <div class="flex items-center justify-between mb-2">
+        <h2 class="text-sm font-semibold text-indigo-700 truncate max-w-[80%]">
+            🧱 {{ class_basename($model['class']) }}
+        </h2>
+        <span class="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
+            <code>{{ $model['table'] }}</code>
+        </span>
+    </div>
 
-    <div class="grid md:grid-cols-2 gap-6">
+    <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4 text-sm text-gray-700">
+        <div>
+            <span class="block text-xs text-gray-400 font-semibold">🆔 Primary key</span>
+            <code>{{ $model['primary_key'] }}</code>
+        </div>
+
         {{-- Fillable --}}
         <div>
-            <h3 class="font-semibold text-sm text-gray-500 mb-1">Fillable</h3>
-            <div class="bg-gray-100 rounded p-2 text-sm text-gray-800">
+            <span class="block text-xs text-gray-400 font-semibold">📝 Fillable</span>
+            <div class="text-xs bg-gray-50 rounded p-2 text-gray-800 leading-tight">
                 {{ implode(', ', $model['fillable']) }}
             </div>
         </div>
 
+        {{-- Guarded --}}
+        @if (!empty($model['guarded']))
+            <div>
+                <span class="block text-xs text-gray-400 font-semibold">⛔ Guarded</span>
+                <div class="text-xs bg-gray-50 rounded p-2 text-gray-800 leading-tight">
+                    {{ implode(', ', $model['guarded']) }}
+                </div>
+            </div>
+        @endif
+
         {{-- Casts --}}
         @if (!empty($model['casts']))
-            <div>
-                <h3 class="font-semibold text-sm text-gray-500 mb-1">Casts</h3>
-                <table class="w-full text-sm border rounded overflow-hidden">
-                    <thead class="bg-gray-200 text-left">
+            <div class="sm:col-span-2 md:col-span-1">
+                <span class="block text-xs text-gray-400 font-semibold">🔣 Casts</span>
+                <table class="w-full text-xs border rounded overflow-hidden">
+                    <thead class="bg-gray-100 text-left">
                         <tr>
-                            <th class="p-2">Field</th>
-                            <th class="p-2">Type</th>
+                            <th class="p-1">Field</th>
+                            <th class="p-1">Type</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($model['casts'] as $field => $type)
                             <tr class="border-t">
-                                <td class="p-2"><code>{{ $field }}</code></td>
-                                <td class="p-2">{{ $type }}</td>
+                                <td class="p-1"><code>{{ $field }}</code></td>
+                                <td class="p-1 text-gray-600">{{ $type }}</td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
         @endif
+
+        {{-- Boot Hooks --}}
+        @if (!empty($model['booted_hooks']))
+            <div>
+                <span class="block text-xs text-gray-400 font-semibold">🧷 Boot Hooks</span>
+                <div class="text-xs bg-gray-50 rounded p-2 text-gray-800 leading-tight">
+                    {{ implode(', ', $model['booted_hooks']) }}
+                </div>
+            </div>
+        @endif
     </div>
 
     {{-- Relations --}}
     @if (!empty($model['relations']))
-        <div class="mt-6">
-            <h3 class="font-semibold text-sm text-gray-500 mb-1">Relations</h3>
-            <table class="w-full text-sm border rounded overflow-hidden">
-                <thead class="bg-gray-200 text-left">
+        <div class="mt-4">
+            <h3 class="text-xs text-gray-400 font-semibold mb-1">🔗 Relations</h3>
+            <table class="w-full text-xs border rounded overflow-hidden">
+                <thead class="bg-gray-100 text-left">
                     <tr>
-                        <th class="p-2">Name</th>
-                        <th class="p-2">Type</th>
-                        <th class="p-2">Target</th>
+                        <th class="p-1">Name</th>
+                        <th class="p-1">Type</th>
+                        <th class="p-1">Target</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($model['relations'] as $name => $rel)
                         <tr class="border-t">
-                            <td class="p-2"><code>{{ $name }}</code></td>
-                            <td class="p-2">{{ $rel['type'] }}</td>
-                            <td class="p-2"><code>{{ $rel['related'] }}</code></td>
+                            <td class="p-1"><code>{{ $name }}</code></td>
+                            <td class="p-1">{{ $rel['type'] }}</td>
+                            <td class="p-1"><code>{{ class_basename($rel['related']) }}</code></td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -64,98 +93,73 @@
 
     {{-- Scopes --}}
     @if (!empty($model['scopes']))
-        <div class="mt-6">
-            <h3 class="font-semibold text-sm text-gray-500 mb-1">Scopes</h3>
-            <table class="w-full text-sm border rounded overflow-hidden">
-                <thead class="bg-gray-200 text-left">
-                    <tr>
-                        <th class="p-2">Name</th>
-                        <th class="p-2">Parameters</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($model['scopes'] as $scope)
-                        <tr class="border-t">
-                            <td class="p-2"><code>{{ $scope['name'] }}</code></td>
-                            <td class="p-2">{{ implode(', ', $scope['parameters']) }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    @endif
-
-    {{-- Boot Hooks --}}
-    @if (!empty($model['booted_hooks']))
-        <div class="mt-6">
-            <h3 class="font-semibold text-sm text-gray-500 mb-1">Boot Hooks</h3>
-            <div class="bg-gray-100 rounded p-2 text-sm text-gray-800">
-                {{ implode(', ', $model['booted_hooks']) }}
-            </div>
+        <div class="mt-4">
+            <h3 class="text-xs text-gray-400 font-semibold mb-1">🔍 Scopes</h3>
+            <ul class="text-xs space-y-0.5 bg-gray-50 rounded p-2 text-gray-800">
+                @foreach ($model['scopes'] as $scope)
+                    <li>
+                        <code>{{ $scope['name'] }}({{ implode(', ', $scope['parameters']) }})</code>
+                    </li>
+                @endforeach
+            </ul>
         </div>
     @endif
 
     {{-- Flow --}}
     @if (!empty($model['flow']))
-        <div class="mt-6">
-            <h3 class="font-semibold text-sm text-gray-500 mb-1">Flow</h3>
-            <div class="grid md:grid-cols-2 gap-6">
+        <div class="mt-4 grid sm:grid-cols-2 gap-4">
+            {{-- 📬 Jobs --}}
+            @if (!empty($model['flow']['jobs']))
+                <div>
+                    <span class="block text-xs text-gray-400 font-semibold mb-1">📬 Jobs</span>
+                    <ul class="text-xs space-y-0.5">
+                        @foreach ($model['flow']['jobs'] as $job)
+                            <li>
+                                <code>{{ class_basename($job['class']) }}</code>
+                                @if (!empty($job['async']) && !$job['async'])
+                                    <span class="text-[10px] text-red-500 ml-1">(sync)</span>
+                                @else
+                                    <span class="text-[10px] text-green-600 ml-1">(queued)</span>
+                                @endif
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-                {{-- 📬 Jobs --}}
-                @if (!empty($model['flow']['jobs']))
-                    <div>
-                        <h4 class="font-semibold text-xs text-gray-400 mb-1">📬 Jobs</h4>
-                        <ul class="text-sm bg-gray-100 rounded p-2 space-y-1">
-                            @foreach ($model['flow']['jobs'] as $job)
-                                <li>
-                                    <code>{{ $job['class'] }}</code>
-                                    @if (!empty($job['async']) && !$job['async'])
-                                        <span class="text-red-500 text-xs ml-2">(sync)</span>
-                                    @else
-                                        <span class="text-green-600 text-xs ml-2">(queued)</span>
-                                    @endif
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
+            {{-- 🔔 Events --}}
+            @if (!empty($model['flow']['events']))
+                <div>
+                    <span class="block text-xs text-gray-400 font-semibold mb-1">🔔 Events</span>
+                    <ul class="text-xs space-y-0.5">
+                        @foreach ($model['flow']['events'] as $event)
+                            <li><code>{{ class_basename($event['class']) }}</code></li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-                {{-- 🔔 Events --}}
-                @if (!empty($model['flow']['events']))
-                    <div>
-                        <h4 class="font-semibold text-xs text-gray-400 mb-1">🔔 Events</h4>
-                        <ul class="text-sm bg-gray-100 rounded p-2 space-y-1">
-                            @foreach ($model['flow']['events'] as $event)
-                                <li><code>{{ $event['class'] }}</code></li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
+            {{-- 👁 Observers --}}
+            @if (!empty($model['flow']['observers']))
+                <div>
+                    <span class="block text-xs text-gray-400 font-semibold mb-1">👁 Observers</span>
+                    <ul class="text-xs space-y-0.5">
+                        @foreach ($model['flow']['observers'] as $observer)
+                            <li><code>{{ class_basename($observer) }}</code></li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-                {{-- 👁 Observers --}}
-                @if (!empty($model['flow']['observers']))
-                    <div>
-                        <h4 class="font-semibold text-xs text-gray-400 mb-1">👁 Observers</h4>
-                        <ul class="text-sm bg-gray-100 rounded p-2 space-y-1">
-                            @foreach ($model['flow']['observers'] as $observer)
-                                <li><code>{{ $observer }}</code></li>
-                            @endforeach
-                        </ul>
+            {{-- 🧩 Dependencies --}}
+            @if (!empty($model['flow']['dependencies']))
+                <div class="sm:col-span-2">
+                    <span class="block text-xs text-gray-400 font-semibold mb-1">🧩 Dependencies</span>
+                    <div class="text-xs bg-gray-50 rounded p-2 text-gray-800 leading-tight">
+                        {{ implode(', ', array_map('class_basename', $model['flow']['dependencies'])) }}
                     </div>
-                @endif
-
-                {{-- 🔗 Dependencies --}}
-                @if (!empty($model['flow']['dependencies']))
-                    <div>
-                        <h4 class="font-semibold text-xs text-gray-400 mb-1">🔗 Dependencies</h4>
-                        <ul class="text-sm bg-gray-100 rounded p-2 space-y-1">
-                            @foreach ($model['flow']['dependencies'] as $dep)
-                                <li><code>{{ $dep }}</code></li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-            </div>
+                </div>
+            @endif
         </div>
     @endif
 </div>
