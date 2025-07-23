@@ -230,6 +230,26 @@ php artisan atlas:generate --format=html --output=public/atlas/map.html
 php artisan atlas:generate --format=php --output=storage/atlas/map.php
 ```
 
+### HTML Export Features
+
+The HTML export format provides an **interactive, responsive dashboard** with advanced features:
+
+- **🌓 Dark Mode Support** - Toggle between light and dark themes
+- **📱 Responsive Design** - Works on desktop, tablet, and mobile devices
+- **🔍 Component Navigation** - Easy sidebar navigation between component types
+- **📊 Visual Component Cards** - Rich cards showing detailed component information
+- **📈 Real-time Counts** - Live component counts in navigation sidebar
+- **🎨 Modern UI** - Built with Tailwind CSS for a professional appearance
+
+**Component Sections Available:**
+- 🧱 **Models** - with relationships, attributes, and metadata
+- 🛣️ **Routes** - with middleware, controllers, and HTTP methods  
+- 💬 **Commands** - with signatures, arguments, and options
+- 🔧 **Services** - with methods, dependencies, and flow analysis
+- 📢 **Notifications** - with channels, methods, and dependencies
+- 🛡️ **Middlewares** - with parameters, dependencies, and flow patterns
+- 📋 **Form Requests** - with validation rules, authorization, and attributes
+
 ### Programmatic Export
 
 ```php
@@ -425,7 +445,7 @@ php artisan atlas:generate --type=form_requests --format=markdown --output=docs/
 ```php
 use LaravelAtlas\Facades\Atlas;
 
-// Generate comprehensive documentation for available components
+// Generate comprehensive HTML documentation for available components
 $htmlReport = Atlas::export('all', 'html');
 file_put_contents('reports/architecture-review.html', $htmlReport);
 
@@ -436,6 +456,13 @@ file_put_contents('storage/atlas/models-data.php', $phpData);
 // Generate JSON reports for API consumption
 $jsonData = Atlas::export('routes', 'json');
 file_put_contents('public/api/routes.json', $jsonData);
+
+// Generate interactive HTML reports for specific components
+$servicesHtml = Atlas::export('services', 'html');
+file_put_contents('public/docs/services.html', $servicesHtml);
+
+$notificationsHtml = Atlas::export('notifications', 'html');
+file_put_contents('public/docs/notifications.html', $notificationsHtml);
 ```
 
 Check out the [examples directory](examples/) for working examples of all current features.
