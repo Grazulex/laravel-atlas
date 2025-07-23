@@ -1,0 +1,169 @@
+{
+  "type": "models",
+  "timestamp": "2024-07-23T03:00:00Z",
+  "generated_by": "Laravel Atlas",
+  "application": {
+    "name": "Sample Laravel App",
+    "version": "1.0.0",
+    "environment": "local"
+  },
+  "summary": {
+    "total_models": 5,
+    "total_relationships": 8,
+    "total_scopes": 3,
+    "total_observers": 2
+  },
+  "data": [
+    {
+      "class": "App\\Models\\User",
+      "table": "users",
+      "primary_key": "id",
+      "fillable": [
+        "name",
+        "email",
+        "password"
+      ],
+      "hidden": [
+        "password",
+        "remember_token"
+      ],
+      "casts": {
+        "email_verified_at": "datetime",
+        "password": "hashed"
+      },
+      "relationships": {
+        "posts": {
+          "type": "hasMany",
+          "related": "App\\Models\\Post",
+          "foreign_key": "user_id"
+        },
+        "profile": {
+          "type": "hasOne",
+          "related": "App\\Models\\Profile",
+          "foreign_key": "user_id"
+        }
+      },
+      "scopes": [
+        {
+          "name": "active",
+          "parameters": []
+        },
+        {
+          "name": "byRole",
+          "parameters": ["role"]
+        }
+      ],
+      "observers": [
+        "App\\Observers\\UserObserver"
+      ]
+    },
+    {
+      "class": "App\\Models\\Post",
+      "table": "posts",
+      "primary_key": "id",
+      "fillable": [
+        "title",
+        "content",
+        "user_id",
+        "published_at"
+      ],
+      "hidden": [],
+      "casts": {
+        "published_at": "datetime",
+        "is_featured": "boolean"
+      },
+      "relationships": {
+        "user": {
+          "type": "belongsTo",
+          "related": "App\\Models\\User",
+          "foreign_key": "user_id"
+        },
+        "comments": {
+          "type": "hasMany",
+          "related": "App\\Models\\Comment",
+          "foreign_key": "post_id"
+        },
+        "tags": {
+          "type": "belongsToMany",
+          "related": "App\\Models\\Tag",
+          "pivot_table": "post_tag"
+        }
+      },
+      "scopes": [
+        {
+          "name": "published",
+          "parameters": []
+        }
+      ]
+    },
+    {
+      "class": "App\\Models\\Comment",
+      "table": "comments",
+      "primary_key": "id",
+      "fillable": [
+        "content",
+        "user_id",
+        "post_id"
+      ],
+      "hidden": [],
+      "casts": {
+        "created_at": "datetime",
+        "updated_at": "datetime"
+      },
+      "relationships": {
+        "user": {
+          "type": "belongsTo",
+          "related": "App\\Models\\User",
+          "foreign_key": "user_id"
+        },
+        "post": {
+          "type": "belongsTo",
+          "related": "App\\Models\\Post",
+          "foreign_key": "post_id"
+        }
+      }
+    },
+    {
+      "class": "App\\Models\\Tag",
+      "table": "tags",
+      "primary_key": "id",
+      "fillable": [
+        "name",
+        "slug"
+      ],
+      "hidden": [],
+      "casts": {
+        "created_at": "datetime"
+      },
+      "relationships": {
+        "posts": {
+          "type": "belongsToMany",
+          "related": "App\\Models\\Post",
+          "pivot_table": "post_tag"
+        }
+      }
+    },
+    {
+      "class": "App\\Models\\Profile",
+      "table": "profiles",
+      "primary_key": "id",
+      "fillable": [
+        "user_id",
+        "bio",
+        "avatar",
+        "website"
+      ],
+      "hidden": [],
+      "casts": {
+        "is_public": "boolean"
+      },
+      "relationships": {
+        "user": {
+          "type": "belongsTo",
+          "related": "App\\Models\\User",
+          "foreign_key": "user_id"
+        }
+      }
+    }
+  ]
+}
