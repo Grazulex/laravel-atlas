@@ -8,9 +8,9 @@ use InvalidArgumentException;
 use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Mappers\CommandMapper;
 use LaravelAtlas\Mappers\ModelMapper;
+use LaravelAtlas\Mappers\NotificationMapper;
 use LaravelAtlas\Mappers\RouteMapper;
 use LaravelAtlas\Mappers\ServiceMapper;
-use LaravelAtlas\Mappers\NotificationMapper;
 use LaravelAtlas\Registry\MapperRegistry;
 
 class AtlasManager

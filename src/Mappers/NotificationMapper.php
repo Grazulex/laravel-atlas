@@ -24,7 +24,7 @@ class NotificationMapper implements ComponentMapper
         $recursive = $options['recursive'] ?? true;
 
         foreach ($paths as $path) {
-            if (!is_dir($path)) {
+            if (! is_dir($path)) {
                 continue;
             }
 
@@ -55,9 +55,23 @@ class NotificationMapper implements ComponentMapper
      */
     protected function analyzeNotification(string $fqcn): array
     {
+        if (! class_exists($fqcn)) {
+            return [
+                'class' => $fqcn,
+                'channels' => [],
+                'methods' => [],
+                'flow' => [],
+            ];
+        }
+
         $reflection = new ReflectionClass($fqcn);
         $file = $reflection->getFileName();
-        $source = ($file && file_exists($file)) ? file_get_contents($file) : null;
+        $source = null;
+
+        if ($file && file_exists($file)) {
+            $fileContents = file_get_contents($file);
+            $source = $fileContents !== false ? $fileContents : null;
+        }
 
         return [
             'class' => $fqcn,
@@ -78,6 +92,7 @@ class NotificationMapper implements ComponentMapper
 
         if (preg_match('/function\s+via\s*\(.*?\)\s*:\s*array\s*\{(.+?)\}/s', $source, $match)) {
             preg_match_all('/[\'"](\w+)[\'"]/', $match[1], $channels);
+
             return array_unique($channels[1]);
         }
 
@@ -94,6 +109,7 @@ class NotificationMapper implements ComponentMapper
         }
 
         preg_match_all('/function\s+(to[A-Z][a-zA-Z]*)\s*\(/', $source, $matches);
+
         return array_unique($matches[1]);
     }
 
