@@ -3,7 +3,7 @@
     @param array $flow - Flow data
     @param string $type - Component type for conditional rendering
 --}}
-@if (!empty($flow['jobs']) || !empty($flow['events']) || !empty($flow['notifications']) || !empty($flow['mails']) || !empty($flow['logs']) || !empty($flow['dependencies']) || !empty($flow['calls']) || !empty($flow['observers']) || !empty($flow['facades']) || !empty($flow['cache']) || !empty($flow['auth']) || !empty($flow['exceptions']) || !empty($flow['services']))
+@if (!empty($flow['jobs']) || !empty($flow['events']) || !empty($flow['notifications']) || !empty($flow['mails']) || !empty($flow['logs']) || !empty($flow['dependencies']) || !empty($flow['calls']) || !empty($flow['observers']) || !empty($flow['facades']) || !empty($flow['cache']) || !empty($flow['auth']) || !empty($flow['exceptions']) || !empty($flow['services']) || !empty($flow['uses']) || !empty($flow['models']) || !empty($flow['rules']) || !empty($flow['policies']) || !empty($flow['validations']))
     <div class="mt-4">
         <h3 class="text-xs text-gray-400 font-semibold mb-2">🔄 Flow & Dependencies</h3>
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -199,6 +199,52 @@
                             <li><code>{{ $service }}</code></li>
                         @endforeach
                     </ul>
+                </div>
+            @endif
+
+            {{-- Models (Form Request specific) --}}
+            @if (!empty($flow['models']))
+                <div class="min-h-[3rem]">
+                    <span class="block text-xs text-gray-400 font-semibold mb-1">🧱 Models</span>
+                    <ul class="text-xs space-y-0.5">
+                        @foreach ($flow['models'] as $model)
+                            <li><code>{{ $model }}</code></li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            {{-- Custom Rules (Form Request specific) --}}
+            @if (!empty($flow['rules']))
+                <div class="min-h-[3rem]">
+                    <span class="block text-xs text-gray-400 font-semibold mb-1">📏 Custom Rules</span>
+                    <ul class="text-xs space-y-0.5">
+                        @foreach ($flow['rules'] as $rule)
+                            <li><code>{{ $rule }}</code></li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            {{-- Policies (Form Request specific) --}}
+            @if (!empty($flow['policies']))
+                <div class="min-h-[3rem]">
+                    <span class="block text-xs text-gray-400 font-semibold mb-1">🛡️ Policies</span>
+                    <ul class="text-xs space-y-0.5">
+                        @foreach ($flow['policies'] as $policy)
+                            <li><code>{{ $policy }}</code></li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            {{-- Validation Types (Form Request specific) --}}
+            @if (!empty($flow['validations']))
+                <div class="min-h-[3rem]">
+                    <span class="block text-xs text-gray-400 font-semibold mb-1">✅ Validation Types</span>
+                    <div class="text-xs bg-gray-50 dark:bg-gray-700 rounded p-2 text-gray-800 dark:text-gray-200 leading-tight">
+                        {{ implode(', ', $flow['validations']) }}
+                    </div>
                 </div>
             @endif
 

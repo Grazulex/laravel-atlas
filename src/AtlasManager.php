@@ -12,6 +12,7 @@ use LaravelAtlas\Mappers\NotificationMapper;
 use LaravelAtlas\Mappers\RouteMapper;
 use LaravelAtlas\Mappers\ServiceMapper;
 use LaravelAtlas\Mappers\MiddlewareMapper;
+use LaravelAtlas\Mappers\FormRequestMapper;
 use LaravelAtlas\Registry\MapperRegistry;
 
 class AtlasManager
@@ -29,6 +30,7 @@ class AtlasManager
         $this->registry->register(new ServiceMapper);
         $this->registry->register(new NotificationMapper);
         $this->registry->register(new MiddlewareMapper);
+        $this->registry->register(new FormRequestMapper);
     }
 
     /**
