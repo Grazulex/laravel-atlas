@@ -39,7 +39,7 @@
     {{-- Flow --}}
     @php $flow = $service['flow']; @endphp
     @if (!empty($flow['jobs']) || !empty($flow['events']) || !empty($flow['notifications']) || !empty($flow['mails']) || !empty($flow['logs']) || !empty($flow['dependencies']))
-        <div class="grid sm:grid-cols-2 gap-4 mt-2">
+        <div class="grid sm:grid-cols-2 gap-4">
 
             {{-- 📬 Jobs --}}
             @if (!empty($flow['jobs']))

@@ -8,7 +8,7 @@
         </span>
     </div>
 
-    <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mt-2 text-sm text-gray-700">
+    <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4 text-sm text-gray-700">
         <div>
             <span class="block text-xs text-gray-400 font-semibold mb-1">🆔 Primary key</span>
             <code>{{ $model['primary_key'] }}</code>
@@ -68,7 +68,7 @@
 
     {{-- Relations --}}
     @if (!empty($model['relations']))
-        <div class="mt-4">
+        <div>
             <h3 class="text-xs text-gray-400 font-semibold mb-1">🔗 Relations</h3>
             <table class="w-full text-xs border rounded overflow-hidden">
                 <thead class="bg-gray-100 text-left">
@@ -93,7 +93,7 @@
 
     {{-- Scopes --}}
     @if (!empty($model['scopes']))
-        <div class="mt-4">
+        <div>
             <h3 class="text-xs text-gray-400 font-semibold mb-1">🔍 Scopes</h3>
             <ul class="text-xs space-y-0.5 bg-gray-50 rounded p-2 text-gray-800">
                 @foreach ($model['scopes'] as $scope)
@@ -107,7 +107,7 @@
 
     {{-- Flow --}}
     @if (!empty($model['flow']))
-        <div class="mt-4 grid sm:grid-cols-2 gap-4">
+        <div class="grid sm:grid-cols-2 gap-4">
             {{-- 📬 Jobs --}}
             @if (!empty($model['flow']['jobs']))
                 <div>

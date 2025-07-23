@@ -75,7 +75,7 @@
 
     {{-- Flow --}}
     @if (!empty($route['flow']['jobs']) || !empty($route['flow']['events']) || !empty($route['flow']['dependencies']))
-        <div class="mt-4 grid sm:grid-cols-2 gap-4">
+        <div class="grid sm:grid-cols-2 gap-4">
             {{-- Jobs --}}
             @if (!empty($route['flow']['jobs']))
                 <div>

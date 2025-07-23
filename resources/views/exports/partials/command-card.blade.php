@@ -16,7 +16,7 @@
 
     {{-- Signature --}}
     @if (!empty($command['parsed_signature']))
-        <div class="mt-2">
+        <div>
             <h4 class="text-xs text-gray-400 font-semibold mb-1">🧾 Signature</h4>
             <table class="w-full text-xs border rounded overflow-hidden">
                 <thead class="bg-gray-100 dark:bg-gray-700 text-left">
@@ -52,7 +52,7 @@
     {{-- Flow --}}
     @php $flow = $command['flow'] ?? []; @endphp
     @if (!empty($flow['jobs']) || !empty($flow['events']) || !empty($flow['calls']) || array_filter($flow['dependencies']))
-        <div class="mt-4 grid sm:grid-cols-2 gap-4">
+        <div class="grid sm:grid-cols-2 gap-4">
             {{-- Jobs --}}
             @if (!empty($flow['jobs']))
                 <div>
