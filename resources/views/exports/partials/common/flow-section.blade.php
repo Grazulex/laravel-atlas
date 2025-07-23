@@ -3,7 +3,7 @@
     @param array $flow - Flow data
     @param string $type - Component type for conditional rendering
 --}}
-@if (!empty($flow['jobs']) || !empty($flow['events']) || !empty($flow['notifications']) || !empty($flow['mails']) || !empty($flow['logs']) || !empty($flow['dependencies']) || !empty($flow['calls']) || !empty($flow['observers']))
+@if (!empty($flow['jobs']) || !empty($flow['events']) || !empty($flow['notifications']) || !empty($flow['mails']) || !empty($flow['logs']) || !empty($flow['dependencies']) || !empty($flow['calls']) || !empty($flow['observers']) || !empty($flow['facades']) || !empty($flow['cache']) || !empty($flow['auth']) || !empty($flow['exceptions']) || !empty($flow['services']))
     <div class="mt-4">
         <h3 class="text-xs text-gray-400 font-semibold mb-2">🔄 Flow & Dependencies</h3>
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -15,11 +15,15 @@
                     <ul class="text-xs space-y-0.5">
                         @foreach ($flow['jobs'] as $job)
                             <li>
-                                <code>{{ class_basename($job['class']) }}</code>
-                                @if (isset($job['async']))
-                                    <span class="text-[10px] {{ $job['async'] ? 'text-green-600' : 'text-red-500' }} ml-1">
-                                        ({{ $job['async'] ? 'queued' : 'sync' }})
-                                    </span>
+                                @if (is_array($job))
+                                    <code>{{ class_basename($job['class']) }}</code>
+                                    @if (isset($job['async']))
+                                        <span class="text-[10px] {{ $job['async'] ? 'text-green-600' : 'text-red-500' }} ml-1">
+                                            ({{ $job['async'] ? 'queued' : 'sync' }})
+                                        </span>
+                                    @endif
+                                @else
+                                    <code>{{ class_basename($job) }}</code>
                                 @endif
                             </li>
                         @endforeach
@@ -38,7 +42,13 @@
                     <span class="block text-xs text-gray-400 font-semibold mb-1">🔔 Events</span>
                     <ul class="text-xs space-y-0.5">
                         @foreach ($flow['events'] as $event)
-                            <li><code>{{ class_basename($event['class']) }}</code></li>
+                            <li>
+                                @if (is_array($event))
+                                    <code>{{ class_basename($event['class']) }}</code>
+                                @else
+                                    <code>{{ class_basename($event) }}</code>
+                                @endif
+                            </li>
                         @endforeach
                     </ul>
                 </div>
@@ -127,6 +137,66 @@
                     <ul class="text-xs space-y-0.5">
                         @foreach ($flow['logs'] as $log)
                             <li><code>{{ $log }}</code></li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            {{-- Facades (Middleware specific) --}}
+            @if (!empty($flow['facades']))
+                <div class="min-h-[3rem]">
+                    <span class="block text-xs text-gray-400 font-semibold mb-1">🏛️ Facades</span>
+                    <ul class="text-xs space-y-0.5">
+                        @foreach ($flow['facades'] as $facade)
+                            <li><code>{{ $facade }}</code></li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            {{-- Cache (Middleware specific) --}}
+            @if (!empty($flow['cache']))
+                <div class="min-h-[3rem]">
+                    <span class="block text-xs text-gray-400 font-semibold mb-1">💾 Cache</span>
+                    <ul class="text-xs space-y-0.5">
+                        @foreach ($flow['cache'] as $cacheOp)
+                            <li><code>{{ $cacheOp }}</code></li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            {{-- Auth (Middleware specific) --}}
+            @if (!empty($flow['auth']))
+                <div class="min-h-[3rem]">
+                    <span class="block text-xs text-gray-400 font-semibold mb-1">🔐 Auth</span>
+                    <ul class="text-xs space-y-0.5">
+                        @foreach ($flow['auth'] as $authOp)
+                            <li><code>{{ $authOp }}</code></li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            {{-- Exceptions (Middleware specific) --}}
+            @if (!empty($flow['exceptions']))
+                <div class="min-h-[3rem]">
+                    <span class="block text-xs text-gray-400 font-semibold mb-1">⚠️ Exceptions</span>
+                    <ul class="text-xs space-y-0.5">
+                        @foreach ($flow['exceptions'] as $exception)
+                            <li><code>{{ $exception }}</code></li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            {{-- Services (Middleware specific) --}}
+            @if (!empty($flow['services']))
+                <div class="min-h-[3rem]">
+                    <span class="block text-xs text-gray-400 font-semibold mb-1">🔧 Services</span>
+                    <ul class="text-xs space-y-0.5">
+                        @foreach ($flow['services'] as $service)
+                            <li><code>{{ $service }}</code></li>
                         @endforeach
                     </ul>
                 </div>
