@@ -67,4 +67,45 @@
             </div>
         @endif
     </div>
+    {{-- Flow (jobs, events, dependencies) --}}
+@if (!empty($route['flow']['jobs']) || !empty($route['flow']['events']) || !empty($route['flow']['dependencies']))
+    <div class="mt-6">
+        <h3 class="font-semibold text-sm text-gray-500 mb-1">📦 Flow</h3>
+
+        @if (!empty($route['flow']['jobs']))
+            <div class="mb-2">
+                <h4 class="text-xs text-gray-400 font-semibold">📬 Jobs</h4>
+                <ul class="text-sm bg-indigo-50 rounded p-2 space-y-1">
+                    @foreach ($route['flow']['jobs'] as $job)
+                        <li>
+                            <code>{{ $job['class'] }}</code>
+                            @if ($job['async']) <span class="text-xs text-gray-500">(async)</span> @endif
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        @if (!empty($route['flow']['events']))
+            <div class="mb-2">
+                <h4 class="text-xs text-gray-400 font-semibold">🔔 Events</h4>
+                <ul class="text-sm bg-blue-50 rounded p-2 space-y-1">
+                    @foreach ($route['flow']['events'] as $event)
+                        <li><code>{{ $event['class'] }}</code></li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        @if (!empty($route['flow']['dependencies']))
+            <div class="mb-2">
+                <h4 class="text-xs text-gray-400 font-semibold">🧩 Dependencies</h4>
+                <div class="text-sm bg-gray-100 rounded p-2 text-gray-800">
+                    {{ implode(', ', $route['flow']['dependencies']) }}
+                </div>
+            </div>
+        @endif
+    </div>
+@endif
+
 </div>
