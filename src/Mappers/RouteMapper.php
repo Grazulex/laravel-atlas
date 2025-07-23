@@ -46,11 +46,27 @@ class RouteMapper implements ComponentMapper
         return [
             'uri' => $route->uri(),
             'name' => $route->getName(),
-            'methods' => $route->methods(),
+            'methods' => array_values(array_diff($route->methods(), ['HEAD'])),
             'middleware' => $route->gatherMiddleware(),
             'action' => $action,
             'controller' => $usesController ? explode('@', $action)[0] : null,
             'uses' => $usesController ? explode('@', $action)[1] ?? null : null,
+            'prefix' => $route->getPrefix(),
+            'domain' => $route->getDomain(),
+            'is_closure' => $action === 'Closure',
+            'type' => $this->guessRouteType($route),
         ];
+    }
+
+    protected function guessRouteType(Route $route): string
+    {
+        $uri = $route->uri();
+        return match (true) {
+            str_starts_with($uri, 'api/') => 'api',
+            str_starts_with($uri, 'admin/') => 'admin',
+            str_starts_with($uri, 'webhooks') => 'webhook',
+            str_starts_with($uri, 'health') || str_starts_with($uri, 'status') => 'system',
+            default => 'web',
+        };
     }
 }
