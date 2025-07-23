@@ -24,7 +24,7 @@
             @if ($route['is_closure'])
                 <span class="italic text-gray-500 text-sm">Closure</span>
             @elseif (!empty($route['controller']) && !empty($route['uses']))
-                <code class="text-sm">{{ class_basename($route['controller']) }} . '@' .{{ $route['uses'] }}</code>
+                <code class="text-sm">{{ class_basename($route['controller']) }}|{{ $route['uses'] }}</code>
             @elseif (!empty($route['controller']))
                 <code class="text-sm">{{ class_basename($route['controller']) }}</code>
             @else
