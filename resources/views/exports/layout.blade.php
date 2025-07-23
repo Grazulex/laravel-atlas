@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Laravel Atlas – {{ count($models) }} Models, {{ count($commands) }} Commands, {{ count($routes) }} Routes, {{ count($services) }} Services, {{ count($notifications) }} Notifications, {{ count($middlewares) }} Middlewares</title>
+    <title>Laravel Atlas – {{ count($models) }} Models, {{ count($commands) }} Commands, {{ count($routes) }} Routes, {{ count($services) }} Services, {{ count($notifications) }} Notifications, {{ count($middlewares) }} Middlewares, {{ count($form_requests) }} Form Requests</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
@@ -106,7 +106,7 @@
             <button data-section="form_requests" class="block text-left px-3 py-2 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900 w-full">
                 📋 Form Requests
                 <span class="ml-2 text-xs bg-gray-200 dark:bg-gray-700 dark:text-gray-100 text-gray-800 px-1.5 py-0.5 rounded">
-                    {{ count($formRequests) }}
+                    {{ count($form_requests) }}
                 </span>
             </button>
             <button onclick="toggleDarkMode()" class="block text-left px-3 py-2 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900 w-full">
@@ -160,7 +160,7 @@
 
         <div id="section-form_requests" class="content-section hidden">
             <h2 class="text-xl font-bold">📋 Form Requests</h2>
-            @foreach ($formRequests as $formRequest)
+            @foreach ($form_requests as $formRequest)
                 @include('atlas::exports.partials.form-request-card', ['formRequest' => $formRequest])
             @endforeach
         </div>
