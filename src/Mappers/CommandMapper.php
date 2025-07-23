@@ -82,6 +82,7 @@ class CommandMapper implements ComponentMapper
         return [
             'class' => $class,
             'signature' => $signature,
+            'parsed_signature' => $this->parseSignature($signature),
             'description' => $description,
             'aliases' => $command->getAliases(),
             'flow' => $this->analyzeFlow($source),
@@ -170,4 +171,28 @@ class CommandMapper implements ComponentMapper
 
         return '';
     }
+
+    protected function parseSignature(string $signature): array
+{
+    $parts = [];
+
+    if (preg_match_all('/{(--)?([\w\-\:]+)([=*]?)?(?:\s*:\s*([^}]+))?}/', $signature, $matches, PREG_SET_ORDER)) {
+        foreach ($matches as $match) {
+            $isOption = $match[1] === '--';
+            $name = $match[2];
+            $modifier = $match[3] ?? '';
+            $description = $match[4] ?? null;
+
+            $parts[] = [
+                'type' => $isOption ? 'option' : 'argument',
+                'name' => $name,
+                'modifier' => $modifier,
+                'description' => $description,
+            ];
+        }
+    }
+
+    return $parts;
+}
+
 }
