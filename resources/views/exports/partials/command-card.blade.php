@@ -1,7 +1,42 @@
 <div class="bg-white rounded-xl shadow-md p-6 mb-6">
     <h2 class="text-xl font-semibold text-indigo-800 mb-1">💬 {{ $command['class'] }}</h2>
     <p class="text-sm text-gray-600 mb-3">
-        Signature: <code>{{ $command['signature'] }}</code><br>
+        @if (!empty($command['parsed_signature']))
+            <div class="mt-4">
+                <h4 class="font-semibold text-xs text-gray-400 mb-1">🧾 Signature breakdown</h4>
+                <table class="w-full text-sm border rounded overflow-hidden">
+                    <thead class="bg-gray-200 text-left">
+                        <tr>
+                            <th class="p-2">Name</th>
+                            <th class="p-2">Type</th>
+                            <th class="p-2">Details</th>
+                            <th class="p-2">Modifier</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($command['parsed_signature'] as $sig)
+                            <tr class="border-t">
+                                <td class="p-2"><code>{{ $sig['name'] }}</code></td>
+                                <td class="p-2">{{ ucfirst($sig['type']) }}</td>
+                                <td class="p-2 text-gray-600">{{ $sig['description'] ?? '-' }}</td>
+                                <td class="p-2">
+                                    @if ($sig['modifier'] === '*')
+                                        <span class="text-xs text-blue-600">[array]</span>
+                                    @elseif ($sig['modifier'] === '=')
+                                        <span class="text-xs text-yellow-600">[default]</span>
+                                    @elseif ($sig['modifier'] === '')
+                                        <span class="text-xs text-gray-400">[required]</span>
+                                    @else
+                                        <span class="text-xs text-gray-400">{{ $sig['modifier'] }}</span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
+
         @if (!empty($command['description']))
             Description: <span class="text-gray-800 italic">{{ $command['description'] }}</span><br>
         @endif
