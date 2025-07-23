@@ -16,6 +16,7 @@ class HtmlLayoutExporter
         // Extraire les données selon le type
         $modelsData = [];
         $commandsData = [];
+        $routesData = [];
         $servicesData = [];
 
         if (isset($data['models']) && is_array($data['models']) && isset($data['models']['data'])) {
@@ -26,6 +27,10 @@ class HtmlLayoutExporter
             $commandsData = $data['commands']['data'];
         }
 
+        if (isset($data['routes']) && is_array($data['routes']) && isset($data['routes']['data'])) {
+            $routesData = $data['routes']['data'];
+        }
+
         if (isset($data['services']) && is_array($data['services']) && isset($data['services']['data'])) {
             $servicesData = $data['services']['data'];
         }
@@ -33,6 +38,7 @@ class HtmlLayoutExporter
         return View::make('atlas::exports.layout', [
             'models' => $modelsData,
             'commands' => $commandsData,
+            'routes' => $routesData,
             'services' => $servicesData,
         ])->render();
     }

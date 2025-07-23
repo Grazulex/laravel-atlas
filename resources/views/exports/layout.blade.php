@@ -24,6 +24,7 @@
         <h1 class="text-2xl font-bold text-indigo-700 mb-4">Laravel Atlas</h1>
         <button data-section="models" class="block w-full text-left px-3 py-2 rounded hover:bg-indigo-100">🧱 Models</button>
         <button data-section="commands" class="block w-full text-left px-3 py-2 rounded hover:bg-indigo-100">💬 Commands</button>
+        <button data-section="routes" class="block w-full text-left px-3 py-2 rounded hover:bg-indigo-100">🛣️ Routes</button>
         <button data-section="services" class="block w-full text-left px-3 py-2 rounded hover:bg-indigo-100">🔧 Services</button>
     </nav>
 
@@ -39,6 +40,13 @@
             <h2 class="text-xl font-bold mb-4">💬 Commands</h2>
             @foreach ($commands as $command)
                 @include('atlas::exports.partials.command-card', ['command' => $command])
+            @endforeach
+        </div>
+
+        <div id="section-routes" class="content-section hidden">
+            <h2 class="text-xl font-bold mb-4">🛣️ Routes</h2>
+            @foreach ($routes as $route)
+                @include('atlas::exports.partials.route-card', ['route' => $route])
             @endforeach
         </div>
 

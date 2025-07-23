@@ -8,6 +8,7 @@ use InvalidArgumentException;
 use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Mappers\CommandMapper;
 use LaravelAtlas\Mappers\ModelMapper;
+use LaravelAtlas\Mappers\RouteMapper;
 use LaravelAtlas\Registry\MapperRegistry;
 
 class AtlasManager
@@ -21,6 +22,8 @@ class AtlasManager
         // 🔧 Enregistrement statique (à améliorer via auto-discovery plus tard)
         $this->registry->register(new ModelMapper);
         $this->registry->register(new CommandMapper);
+        $this->registry->register(new RouteMapper);
+
     }
 
     /**
