@@ -37,7 +37,7 @@
 
         <div id="section-commands" class="content-section hidden">
             <h2 class="text-xl font-bold mb-4">💬 Commands</h2>
-            @foreach ($commands['data'] ?? [] as $command)
+            @foreach ($commands as $command)
                 @include('atlas::exports.partials.command-card', ['command' => $command])
             @endforeach
         </div>
