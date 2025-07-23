@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaravelAtlas\Mappers;
 
-use Illuminate\Support\Str;
-use LaravelAtlas\Support\ClassFinder;
+use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\File;
 use LaravelAtlas\Contracts\ComponentMapper;
+use LaravelAtlas\Support\ClassResolver;
+use ReflectionClass;
 
 class NotificationMapper implements ComponentMapper
 {
@@ -13,84 +17,142 @@ class NotificationMapper implements ComponentMapper
         return 'notifications';
     }
 
-    public function map(array $options = []): array
+    public function scan(array $options = []): array
     {
         $notifications = [];
-        $classes = ClassFinder::inAppNamespace('Notifications');
+        $paths = $options['paths'] ?? [app_path('Notifications')];
+        $recursive = $options['recursive'] ?? true;
 
-        foreach ($classes as $class) {
-            if (!is_subclass_of($class, \Illuminate\Notifications\Notification::class)) {
+        foreach ($paths as $path) {
+            if (!is_dir($path)) {
                 continue;
             }
 
-            $reflection = new \ReflectionClass($class);
-            $channels = [];
-            $methods = [];
-            $jobs = [];
-            $events = [];
-            $dependencies = [];
+            $files = $recursive ? File::allFiles($path) : File::files($path);
 
-            // via() detection
-            if ($reflection->hasMethod('via')) {
-                $channels = $this->extractChannels($class);
-            }
+            foreach ($files as $file) {
+                $fqcn = ClassResolver::resolveFromPath($file->getRealPath());
 
-            // toMail(), toDatabase(), toBroadcast(), etc.
-            foreach ($reflection->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
-                if (Str::startsWith($method->getName(), 'to')) {
-                    $methods[] = $method->getName();
+                if (
+                    $fqcn &&
+                    class_exists($fqcn) &&
+                    is_subclass_of($fqcn, Notification::class)
+                ) {
+                    $notifications[] = $this->analyzeNotification($fqcn);
                 }
             }
-
-            // Flow detection (basic)
-            $source = file_get_contents($reflection->getFileName());
-            preg_match_all('/\b(new|dispatch|dispatchSync|event|broadcast|Log::|Mail::to)\s*\(([^;]*)\)/', $source, $matches);
-
-            foreach ($matches[0] as $match) {
-                if (Str::contains($match, 'dispatch') && preg_match('/new\s+([A-Z][\w\\\\]+)/', $match, $jobMatch)) {
-                    $jobs[] = ['class' => $jobMatch[1], 'async' => !Str::contains($match, 'dispatchSync')];
-                }
-                if (Str::contains($match, 'event') && preg_match('/\(([^;$]+)/', $match, $eventMatch)) {
-                    $events[] = ['class' => trim($eventMatch[1], " ()")];
-                }
-            }
-
-            // Dependencies via constructor
-            $constructor = $reflection->getConstructor();
-            if ($constructor) {
-                foreach ($constructor->getParameters() as $param) {
-                    if ($param->getType() && class_exists((string) $param->getType())) {
-                        $dependencies[] = (string) $param->getType();
-                    }
-                }
-            }
-
-            $notifications[] = [
-                'class' => $class,
-                'channels' => $channels,
-                'methods' => $methods,
-                'flow' => [
-                    'jobs' => $jobs,
-                    'events' => $events,
-                    'dependencies' => $dependencies,
-                ],
-            ];
         }
 
-        return $notifications;
+        return [
+            'type' => $this->type(),
+            'count' => count($notifications),
+            'data' => $notifications,
+        ];
     }
 
-    protected function extractChannels(string $class): array
+    /**
+     * @return array<string, mixed>
+     */
+    protected function analyzeNotification(string $fqcn): array
     {
-        try {
-            $instance = new $class(...array_fill(0, (new \ReflectionClass($class))->getConstructor()?->getNumberOfParameters() ?? 0, null));
-            return method_exists($instance, 'via') ? $instance->via(new class {
-                public $notification_preferences = ['email_notifications' => true];
-                public function following() { return new class { public function where() { return new class { public function exists() { return true; } }; } }; }
-                public function subscribedCategories() { return new class { public function where() { return new class { public function exists() { return true; } }; } }; }
-            }) : [];
-        } catch (\Throwable) {
+        $reflection = new ReflectionClass($fqcn);
+        $file = $reflection->getFileName();
+        $source = ($file && file_exists($file)) ? file_get_contents($file) : null;
+
+        return [
+            'class' => $fqcn,
+            'channels' => $this->detectChannels($source),
+            'methods' => $this->detectDefinedMethods($source),
+            'flow' => $this->analyzeFlow($source),
+        ];
+    }
+
+    /**
+     * @return array<string>
+     */
+    protected function detectChannels(?string $source): array
+    {
+        if (! $source) {
             return [];
         }
+
+        if (preg_match('/function\s+via\s*\(.*?\)\s*:\s*array\s*\{(.+?)\}/s', $source, $match)) {
+            preg_match_all('/[\'"](\w+)[\'"]/', $match[1], $channels);
+            return array_unique($channels[1]);
+        }
+
+        return [];
+    }
+
+    /**
+     * @return array<string>
+     */
+    protected function detectDefinedMethods(?string $source): array
+    {
+        if (! $source) {
+            return [];
+        }
+
+        preg_match_all('/function\s+(to[A-Z][a-zA-Z]*)\s*\(/', $source, $matches);
+        return array_unique($matches[1]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function analyzeFlow(?string $source): array
+    {
+        $flow = [
+            'jobs' => [],
+            'events' => [],
+            'calls' => [],
+            'notifications' => [],
+            'dependencies' => [
+                'models' => [],
+                'services' => [],
+                'notifications' => [],
+                'facades' => [],
+                'classes' => [],
+            ],
+        ];
+
+        if (! $source) {
+            return $flow;
+        }
+
+        // Notifications used
+        if (preg_match_all('/->notify\(\s*new\s+([A-Z][\w\\\\]+)/', $source, $matches)) {
+            foreach ($matches[1] as $fqcn) {
+                $flow['notifications'][] = ['class' => $fqcn];
+                $flow['dependencies']['notifications'][] = $fqcn;
+            }
+        }
+
+        // Class usage (new or static calls)
+        if (preg_match_all('/new\s+([A-Z][\w\\\\]+)|([A-Z][\w\\\\]+)::/', $source, $matches)) {
+            $found = array_filter(array_merge($matches[1], $matches[2]));
+            $classes = array_values(array_unique(array_filter($found)));
+
+            foreach ($classes as $fqcn) {
+                $basename = class_basename($fqcn);
+                if (str_contains($fqcn, 'App\\Models\\')) {
+                    $flow['dependencies']['models'][] = $fqcn;
+                } elseif (str_contains($fqcn, 'App\\Services\\')) {
+                    $flow['dependencies']['services'][] = $fqcn;
+                } elseif (str_contains($fqcn, 'Notification')) {
+                    $flow['dependencies']['notifications'][] = $fqcn;
+                } elseif (in_array($basename, ['Log', 'Queue', 'Bus', 'Mail', 'DB', 'Cache', 'Event', 'Artisan'])) {
+                    $flow['dependencies']['facades'][] = $basename;
+                } else {
+                    $flow['dependencies']['classes'][] = $fqcn;
+                }
+            }
+        }
+
+        foreach ($flow['dependencies'] as &$deps) {
+            $deps = array_values(array_unique($deps));
+        }
+
+        return $flow;
     }
 }
