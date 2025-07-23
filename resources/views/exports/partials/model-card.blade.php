@@ -1,4 +1,4 @@
-<div class="bg-white rounded-lg shadow-sm p-4 mb-4 border border-gray-200">
+<div class="bg-white mt-4 rounded-lg shadow-sm p-4 mb-4 border border-gray-200">
     <div class="flex items-center justify-between mb-2">
         <h2 class="text-sm font-semibold text-indigo-700 truncate max-w-[80%]">
             🧱 {{ class_basename($model['class']) }}
