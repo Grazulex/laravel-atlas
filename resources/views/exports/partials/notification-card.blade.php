@@ -1,42 +1,47 @@
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-4 border border-gray-200 dark:border-gray-700">
+<div class="bg-white rounded-lg shadow-sm p-4 mb-4 border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
     {{-- Header --}}
-    <x-atlas::card-header icon="📢" :title="class_basename($notification['class'])" />
+    @include('atlas::exports.partials.common.card-header', [
+        'icon' => '📬',
+        'title' => class_basename($notification['class']),
+        'badge' => 'Notification',
+        'badgeColor' => 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-200'
+    ])
 
-    {{-- Channels --}}
-    @if (!empty($notification['channels']))
-        <x-atlas::property-item label="Channels">
-            <div class="flex flex-wrap gap-1">
-                @foreach ($notification['channels'] as $channel)
-                    <span class="text-xs bg-indigo-100 dark:bg-indigo-900 dark:text-white text-indigo-800 font-mono px-2 py-0.5 rounded">{{ $channel }}</span>
-                @endforeach
-            </div>
-        </x-atlas::property-item>
+    {{-- Description --}}
+    @if (!empty($notification['description']))
+        <p class="text-xs text-gray-600 dark:text-gray-300 italic mb-3">{{ $notification['description'] }}</p>
     @endif
 
-    {{-- Methods --}}
-    @if (!empty($notification['methods']))
-        <x-atlas::property-item label="Defined methods">
-            <ul class="text-xs space-y-0.5">
-                @foreach ($notification['methods'] as $method)
-                    <li><code>{{ $method }}</code></li>
-                @endforeach
-            </ul>
-        </x-atlas::property-item>
-    @endif
+    {{-- Properties Grid --}}
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+        {{-- Channels --}}
+        @include('atlas::exports.partials.common.property-item', [
+            'icon' => '📡',
+            'label' => 'Channels',
+            'type' => 'list',
+            'items' => !empty($notification['channels']) ? $notification['channels'] : []
+        ])
 
-    {{-- Queues --}}
-    @if (!empty($notification['queues']))
-        <x-atlas::property-item label="Queue per channel">
-            <ul class="text-xs space-y-0.5">
-                @foreach ($notification['queues'] as $channel => $queue)
-                    <li><span class="font-mono text-indigo-600 dark:text-indigo-300">{{ $channel }}</span> → <code>{{ $queue }}</code></li>
-                @endforeach
-            </ul>
-        </x-atlas::property-item>
-    @endif
+        {{-- Methods --}}
+        @include('atlas::exports.partials.common.property-item', [
+            'icon' => '⚙️',
+            'label' => 'Defined Methods',
+            'type' => 'list',
+            'items' => !empty($notification['methods']) ? $notification['methods'] : []
+        ])
 
-    {{-- Flow --}}
-    @if (!empty($notification['flow']))
-        <x-atlas::flow-section :flow="$notification['flow']" />
-    @endif
+        {{-- Full Class Name --}}
+        @include('atlas::exports.partials.common.property-item', [
+            'icon' => '🏷️',
+            'label' => 'Full Class Name',
+            'value' => $notification['class'],
+            'type' => 'code'
+        ])
+    </div>
+
+    {{-- Flow Section --}}
+    @include('atlas::exports.partials.common.flow-section', [
+        'flow' => $notification['flow'] ?? [],
+        'type' => 'notification'
+    ])
 </div>

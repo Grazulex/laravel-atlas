@@ -80,6 +80,18 @@
                 </div>
             @endif
 
+            {{-- Notifications Used (Notification type only) --}}
+            @if ($type === 'notification' && !empty($flow['notifications']))
+                <div class="min-h-[3rem]">
+                    <span class="block text-xs text-gray-400 font-semibold mb-1">📬 Notifications Used</span>
+                    <ul class="text-xs space-y-0.5">
+                        @foreach ($flow['notifications'] as $notif)
+                            <li><code>{{ class_basename($notif['class']) }}</code></li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             {{-- Notifications --}}
             @if (!empty($flow['notifications']))
                 <div class="min-h-[3rem]">
