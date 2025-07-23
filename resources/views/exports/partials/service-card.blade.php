@@ -10,7 +10,7 @@
 
     {{-- Public Methods --}}
     @if (!empty($service['methods']))
-        <div class="mb-3">
+        <div>
             <span class="block text-xs text-gray-400 dark:text-gray-500 font-semibold mb-1">⚙️ Public Methods</span>
             <ul class="text-xs space-y-0.5">
                 @foreach ($service['methods'] as $method)
@@ -24,7 +24,7 @@
 
     {{-- Constructor Dependencies --}}
     @if (!empty($service['dependencies']))
-        <div class="mb-3">
+        <div>
             <span class="block text-xs text-gray-400 dark:text-gray-500 font-semibold mb-1">🧩 Constructor Dependencies</span>
             <ul class="text-xs space-y-0.5">
                 @foreach ($service['dependencies'] as $dep)

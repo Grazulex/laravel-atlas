@@ -11,7 +11,7 @@
     </div>
 
     @if (!empty($command['description']))
-        <p class="text-xs text-gray-600 dark:text-gray-300 italic mb-2">{{ $command['description'] }}</p>
+        <p class="text-xs text-gray-600 dark:text-gray-300 italic">{{ $command['description'] }}</p>
     @endif
 
     {{-- Signature --}}
