@@ -97,30 +97,30 @@
         </nav>
     </div>
 
-    <div class="flex-1 p-6 space-y-8">
+    <div class="flex-1 p-6">
         <div id="section-models" class="content-section hidden">
-            <h2 class="text-xl font-bold mb-4">🧱 Models</h2>
+            <h2 class="text-xl font-bold">🧱 Models</h2>
             @foreach ($models as $model)
                 @include('atlas::exports.partials.model-card', ['model' => $model])
             @endforeach
         </div>
 
         <div id="section-commands" class="content-section hidden">
-            <h2 class="text-xl font-bold mb-4">💬 Commands</h2>
+            <h2 class="text-xl font-bold">💬 Commands</h2>
             @foreach ($commands as $command)
                 @include('atlas::exports.partials.command-card', ['command' => $command])
             @endforeach
         </div>
 
         <div id="section-routes" class="content-section hidden">
-            <h2 class="text-xl font-bold mb-4">🛣️ Routes</h2>
+            <h2 class="text-xl font-bold">🛣️ Routes</h2>
             @foreach ($routes as $route)
                 @include('atlas::exports.partials.route-card', ['route' => $route])
             @endforeach
         </div>
 
         <div id="section-services" class="content-section hidden">
-            <h2 class="text-xl font-bold mb-4">🔧 Services</h2>
+            <h2 class="text-xl font-bold">🔧 Services</h2>
             @foreach ($services as $service)
                 @include('atlas::exports.partials.service-card', ['service' => $service])
             @endforeach
