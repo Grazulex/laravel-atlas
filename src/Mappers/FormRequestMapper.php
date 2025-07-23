@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Mappers;
 
+use ReflectionType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\File;
 use LaravelAtlas\Contracts\ComponentMapper;
@@ -28,7 +29,7 @@ class FormRequestMapper implements ComponentMapper
         $formRequests = [];
 
         $paths = $options['paths'] ?? [app_path('Http/Requests')];
-        
+
         foreach ($paths as $path) {
             if (! is_dir($path)) {
                 continue;
@@ -106,37 +107,37 @@ class FormRequestMapper implements ComponentMapper
         // Extract rules method content
         if (preg_match('/function\s+rules\s*\(\s*\)\s*:\s*array\s*\{(.+?)\}/s', $source, $match)) {
             $rulesContent = $match[1];
-            
+
             // Extract return array content
             if (preg_match('/return\s*\[(.+?)\];/s', $rulesContent, $returnMatch)) {
                 $arrayContent = $returnMatch[1];
-                
+
                 // Parse field rules
                 if (preg_match_all('/[\'"]([^\'"]+)[\'"]\s*=>\s*\[(.+?)\]/s', $arrayContent, $matches, PREG_SET_ORDER)) {
                     foreach ($matches as $match) {
                         $field = $match[1];
                         $fieldRules = $match[2];
-                        
+
                         // Extract individual rules
                         $parsedRules = [];
                         if (preg_match_all('/[\'"]([^\'"]+)[\'"]/', $fieldRules, $ruleMatches)) {
                             $parsedRules = array_merge($parsedRules, $ruleMatches[1]);
                         }
-                        
+
                         // Extract Rule:: patterns
                         if (preg_match_all('/Rule::(\w+)\([^)]*\)/', $fieldRules, $ruleClassMatches)) {
                             foreach ($ruleClassMatches[0] as $ruleClass) {
                                 $parsedRules[] = $ruleClass;
                             }
                         }
-                        
+
                         // Extract custom rule classes (new SomeRule())
                         if (preg_match_all('/new\s+([A-Z]\w+)\([^)]*\)/', $fieldRules, $customRuleMatches)) {
                             foreach ($customRuleMatches[1] as $customRule) {
                                 $parsedRules[] = "new {$customRule}()";
                             }
                         }
-                        
+
                         $rules[$field] = $parsedRules;
                     }
                 }
@@ -157,11 +158,11 @@ class FormRequestMapper implements ComponentMapper
 
         if (preg_match('/function\s+authorize\s*\(\s*\)\s*:\s*bool\s*\{(.+?)\}/s', $source, $match)) {
             $authContent = trim($match[1]);
-            
+
             // Check for return statement
             if (preg_match('/return\s+(.+?);/', $authContent, $returnMatch)) {
                 $returnStatement = trim($returnMatch[1]);
-                
+
                 return [
                     'method_exists' => true,
                     'return_statement' => $returnStatement,
@@ -189,10 +190,10 @@ class FormRequestMapper implements ComponentMapper
 
         if (preg_match('/function\s+attributes\s*\(\s*\)\s*:\s*array\s*\{(.+?)\}/s', $source, $match)) {
             $attributesContent = $match[1];
-            
+
             if (preg_match('/return\s*\[(.+?)\];/s', $attributesContent, $returnMatch)) {
                 $arrayContent = $returnMatch[1];
-                
+
                 if (preg_match_all('/[\'"]([^\'"]+)[\'"]\s*=>\s*[\'"]([^\'"]+)[\'"]/', $arrayContent, $matches, PREG_SET_ORDER)) {
                     foreach ($matches as $match) {
                         $attributes[$match[1]] = $match[2];
@@ -217,10 +218,10 @@ class FormRequestMapper implements ComponentMapper
 
         if (preg_match('/function\s+messages\s*\(\s*\)\s*:\s*array\s*\{(.+?)\}/s', $source, $match)) {
             $messagesContent = $match[1];
-            
+
             if (preg_match('/return\s*\[(.+?)\];/s', $messagesContent, $returnMatch)) {
                 $arrayContent = $returnMatch[1];
-                
+
                 if (preg_match_all('/[\'"]([^\'"]+)[\'"]\s*=>\s*[\'"]([^\'"]*)[\'"]/', $arrayContent, $matches, PREG_SET_ORDER)) {
                     foreach ($matches as $match) {
                         $messages[$match[1]] = $match[2];
@@ -246,16 +247,16 @@ class FormRequestMapper implements ComponentMapper
             }
 
             $isImportant = in_array($method->getName(), $importantMethods);
-            
+
             $methods[] = [
                 'name' => $method->getName(),
                 'visibility' => $method->isPublic() ? 'public' : ($method->isProtected() ? 'protected' : 'private'),
                 'is_important' => $isImportant,
-                'return_type' => $method->getReturnType() ? (string) $method->getReturnType() : null,
+                'return_type' => $method->getReturnType() instanceof ReflectionType ? (string) $method->getReturnType() : null,
                 'parameters' => array_map(
                     fn ($param): array => [
                         'name' => '$' . $param->getName(),
-                        'type' => $param->getType() ? (string) $param->getType() : null,
+                        'type' => $param->getType() instanceof ReflectionType ? (string) $param->getType() : null,
                     ],
                     $method->getParameters()
                 ),
@@ -330,6 +331,6 @@ class FormRequestMapper implements ComponentMapper
         }
         $flow['validations'] = array_unique($validationTypes);
 
-        return array_filter($flow, fn ($items) => ! empty($items));
+        return array_filter($flow, fn ($items): bool => ! empty($items));
     }
 }

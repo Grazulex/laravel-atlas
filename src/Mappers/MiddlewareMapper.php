@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Mappers;
 
+use ReflectionType;
 use Illuminate\Support\Facades\File;
 use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
@@ -29,7 +30,7 @@ class MiddlewareMapper implements ComponentMapper
 
         // Find middleware files in app/Http/Middleware
         $paths = $options['paths'] ?? [app_path('Http/Middleware')];
-        
+
         foreach ($paths as $path) {
             if (! is_dir($path)) {
                 continue;
@@ -105,7 +106,7 @@ class MiddlewareMapper implements ComponentMapper
             }
 
             $isImportant = in_array($method->getName(), $importantMethods);
-            
+
             $methods[] = [
                 'name' => $method->getName(),
                 'visibility' => $method->isPublic() ? 'public' : ($method->isProtected() ? 'protected' : 'private'),
@@ -113,7 +114,7 @@ class MiddlewareMapper implements ComponentMapper
                 'parameters' => array_map(
                     fn (ReflectionParameter $param): array => [
                         'name' => '$' . $param->getName(),
-                        'type' => $param->getType() ? (string) $param->getType() : null,
+                        'type' => $param->getType() instanceof ReflectionType ? (string) $param->getType() : null,
                         'has_default' => $param->isDefaultValueAvailable(),
                         'default' => $param->isDefaultValueAvailable() ? $param->getDefaultValue() : null,
                     ],
@@ -140,7 +141,7 @@ class MiddlewareMapper implements ComponentMapper
             $type = $param->getType();
 
             if ($type === null) {
-                return null;
+                return;
             }
 
             // PHPStan needs us to check if type has isBuiltin method
@@ -148,7 +149,6 @@ class MiddlewareMapper implements ComponentMapper
                 return (string) $type;
             }
 
-            return null;
         }, $method->getParameters());
     }
 
@@ -172,7 +172,7 @@ class MiddlewareMapper implements ComponentMapper
 
             $parameters[] = [
                 'name' => '$' . $param->getName(),
-                'type' => $param->getType() ? (string) $param->getType() : 'mixed',
+                'type' => $param->getType() instanceof ReflectionType ? (string) $param->getType() : 'mixed',
                 'has_default' => $param->isDefaultValueAvailable(),
                 'default' => $param->isDefaultValueAvailable() ? $param->getDefaultValue() : null,
                 'is_variadic' => $param->isVariadic(),
@@ -215,7 +215,7 @@ class MiddlewareMapper implements ComponentMapper
         if (preg_match_all('/Log::(?:channel\([\'"]([^\'"]+)[\'"]\)->)?(\w+)\(/', $source, $matches)) {
             foreach ($matches[1] as $index => $channel) {
                 $level = $matches[2][$index];
-                $flow['logs'][] = $channel ? "$channel.$level" : $level;
+                $flow['logs'][] = $channel !== '' && $channel !== '0' ? "$channel.$level" : $level;
             }
             $flow['logs'] = array_unique($flow['logs']);
         }
@@ -250,6 +250,6 @@ class MiddlewareMapper implements ComponentMapper
             $flow['notifications'] = array_unique($matches[1]);
         }
 
-        return array_filter($flow, fn ($items) => ! empty($items));
+        return array_filter($flow, fn ($items): bool => ! empty($items));
     }
 }
