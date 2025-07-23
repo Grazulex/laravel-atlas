@@ -68,7 +68,12 @@ class CommandMapper implements ComponentMapper
         $class = $command::class;
         $reflection = new ReflectionClass($command);
         $file = $reflection->getFileName();
-        $source = ($file && file_exists($file)) ? file_get_contents($file) : '';
+        
+        $source = null;
+        if ($file && file_exists($file)) {
+            $content = file_get_contents($file);
+            $source = $content !== false ? $content : null;
+        }
 
         // Get signature from property instead of method
         $signature = $this->getCommandSignature($command);
@@ -78,7 +83,7 @@ class CommandMapper implements ComponentMapper
             'class' => $class,
             'signature' => $signature,
             'description' => $description,
-            'aliases' => method_exists($command, 'getAliases') ? $command->getAliases() : [],
+            'aliases' => $command->getAliases(),
             'flow' => $this->analyzeFlow($source),
         ];
     }
@@ -137,15 +142,6 @@ class CommandMapper implements ComponentMapper
      */
     protected function getCommandSignature(Command $command): string
     {
-        // Try getSignature method first
-        if (method_exists($command, 'getSignature')) {
-            try {
-                return $command->getSignature();
-            } catch (\Throwable) {
-                // Fall back to property
-            }
-        }
-
         // Access signature property via reflection
         $reflection = new ReflectionClass($command);
         if ($reflection->hasProperty('signature')) {
@@ -163,15 +159,6 @@ class CommandMapper implements ComponentMapper
      */
     protected function getCommandDescription(Command $command): string
     {
-        // Try getDescription method first
-        if (method_exists($command, 'getDescription')) {
-            try {
-                return $command->getDescription();
-            } catch (\Throwable) {
-                // Fall back to property
-            }
-        }
-
         // Access description property via reflection
         $reflection = new ReflectionClass($command);
         if ($reflection->hasProperty('description')) {
