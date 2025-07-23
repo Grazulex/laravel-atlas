@@ -127,7 +127,6 @@ class ServiceMapper implements ComponentMapper
             if (method_exists($type, 'isBuiltin') && ! $type->isBuiltin()) {
                 return (string) $type;
             }
-
         }, $method->getParameters());
     }
 
