@@ -3,8 +3,8 @@
 namespace LaravelAtlas;
 
 use Illuminate\Support\ServiceProvider;
-use LaravelAtlas\Console\Commands\AtlasDebugModelsCommand;
 use LaravelAtlas\Console\Commands\AtlasDebugCommandsCommand;
+use LaravelAtlas\Console\Commands\AtlasDebugModelsCommand;
 use LaravelAtlas\Console\Commands\AtlasExportCommand;
 use Override;
 

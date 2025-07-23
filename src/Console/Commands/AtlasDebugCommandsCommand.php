@@ -21,7 +21,7 @@ class AtlasDebugCommandsCommand extends Command
         $path = $this->option('path');
         $recursive = ! $this->option('no-recursive');
 
-        $mapper = new CommandMapper();
+        $mapper = new CommandMapper;
 
         $result = $mapper->scan([
             'paths' => $path ? [base_path($path)] : [app_path('Console/Commands')],

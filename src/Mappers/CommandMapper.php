@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\File;
 use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
 use ReflectionClass;
-use LaravelAtlas\Support\Utils;
 
 class CommandMapper implements ComponentMapper
 {
@@ -20,6 +19,7 @@ class CommandMapper implements ComponentMapper
 
     /**
      * @param  array<string, mixed>  $options
+     *
      * @return array<string, mixed>
      */
     public function scan(array $options = []): array
@@ -31,7 +31,7 @@ class CommandMapper implements ComponentMapper
         $seen = [];
 
         foreach ($paths as $path) {
-            if (!is_dir($path)) {
+            if (! is_dir($path)) {
                 continue;
             }
 
@@ -44,7 +44,7 @@ class CommandMapper implements ComponentMapper
                     $fqcn &&
                     class_exists($fqcn) &&
                     is_subclass_of($fqcn, Command::class) &&
-                    !isset($seen[$fqcn])
+                    ! isset($seen[$fqcn])
                 ) {
                     $seen[$fqcn] = true;
                     $instance = app($fqcn);
@@ -68,7 +68,7 @@ class CommandMapper implements ComponentMapper
         $class = $command::class;
         $reflection = new ReflectionClass($command);
         $file = $reflection->getFileName();
-        
+
         $source = null;
         if ($file && file_exists($file)) {
             $content = file_get_contents($file);
@@ -101,7 +101,7 @@ class CommandMapper implements ComponentMapper
             'dependencies' => [],
         ];
 
-        if (!$source) {
+        if (! $source) {
             return $flow;
         }
 
@@ -110,7 +110,7 @@ class CommandMapper implements ComponentMapper
             foreach ($matches[1] as $fqcn) {
                 $flow['jobs'][] = [
                     'class' => $fqcn,
-                    'async' => !str_contains($source, "dispatchNow({$fqcn}"),
+                    'async' => ! str_contains($source, "dispatchNow({$fqcn}"),
                 ];
             }
         }
@@ -149,6 +149,7 @@ class CommandMapper implements ComponentMapper
             $property = $reflection->getProperty('signature');
             $property->setAccessible(true);
             $signature = $property->getValue($command);
+
             return is_string($signature) ? $signature : '';
         }
 
@@ -166,33 +167,36 @@ class CommandMapper implements ComponentMapper
             $property = $reflection->getProperty('description');
             $property->setAccessible(true);
             $description = $property->getValue($command);
+
             return is_string($description) ? $description : '';
         }
 
         return '';
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     protected function parseSignature(string $signature): array
-{
-    $parts = [];
+    {
+        $parts = [];
 
-    if (preg_match_all('/{(--)?([\w\-\:]+)([=*]?)?(?:\s*:\s*([^}]+))?}/', $signature, $matches, PREG_SET_ORDER)) {
-        foreach ($matches as $match) {
-            $isOption = $match[1] === '--';
-            $name = $match[2];
-            $modifier = $match[3] ?? '';
-            $description = $match[4] ?? null;
+        if (preg_match_all('/{(--)?([\w\-\:]+)([=*]?)?(?:\s*:\s*([^}]+))?}/', $signature, $matches, PREG_SET_ORDER)) {
+            foreach ($matches as $match) {
+                $isOption = $match[1] === '--';
+                $name = $match[2];
+                $modifier = $match[3] ?? '';
+                $description = $match[4] ?? null;
 
-            $parts[] = [
-                'type' => $isOption ? 'option' : 'argument',
-                'name' => $name,
-                'modifier' => $modifier,
-                'description' => $description,
-            ];
+                $parts[] = [
+                    'type' => $isOption ? 'option' : 'argument',
+                    'name' => $name,
+                    'modifier' => $modifier,
+                    'description' => $description,
+                ];
+            }
         }
+
+        return $parts;
     }
-
-    return $parts;
-}
-
 }
