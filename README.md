@@ -49,7 +49,7 @@ Laravel Atlas is perfect for:
 
 ## ✨ Features
 
-- 🚀 **Comprehensive Scanning** - Analyze 3 core Laravel component types
+- 🚀 **Comprehensive Scanning** - Analyze 7 Laravel component types
 - 🗺️ **Architecture Mapping** - Generate detailed application structure maps
 - 📊 **Multiple Export Formats** - Export to JSON, HTML, Markdown, and PHP
 - 🔍 **Dependency Analysis** - Track relationships and dependencies between components
@@ -99,6 +99,18 @@ php artisan atlas:generate --type=routes --format=html
 # Generate commands map  
 php artisan atlas:generate --type=commands --format=json
 
+# Generate services map
+php artisan atlas:generate --type=services --format=markdown
+
+# Generate notifications map
+php artisan atlas:generate --type=notifications --format=html
+
+# Generate middlewares map
+php artisan atlas:generate --type=middlewares --format=json
+
+# Generate form requests map
+php artisan atlas:generate --type=form_requests --format=markdown
+
 # Generate complete application map (all available components)
 php artisan atlas:generate --type=all --format=json --output=docs/architecture.json
 ```
@@ -125,6 +137,10 @@ use LaravelAtlas\Facades\Atlas;
 $modelData = Atlas::scan('models');
 $routeData = Atlas::scan('routes');
 $commandData = Atlas::scan('commands');
+$serviceData = Atlas::scan('services');
+$notificationData = Atlas::scan('notifications');
+$middlewareData = Atlas::scan('middlewares');
+$formRequestData = Atlas::scan('form_requests');
 
 // Export to different formats
 $jsonOutput = Atlas::export('models', 'json');
@@ -158,17 +174,43 @@ $commandData = Atlas::scan('commands', [
     'include_signatures' => true,
     'include_descriptions' => true,
 ]);
+
+// Service mapping
+$serviceData = Atlas::scan('services', [
+    'include_dependencies' => true,
+    'include_methods' => true,
+]);
+
+// Notification mapping
+$notificationData = Atlas::scan('notifications', [
+    'include_channels' => true,
+    'include_flow' => true,
+]);
+
+// Middleware mapping
+$middlewareData = Atlas::scan('middlewares', [
+    'include_parameters' => true,
+    'include_dependencies' => true,
+]);
+
+// Form Request mapping
+$formRequestData = Atlas::scan('form_requests', [
+    'include_rules' => true,
+    'include_authorization' => true,
+]);
 ```
 
 ### Available Component Types
 
-Laravel Atlas can analyze **3 core component types**:
+Laravel Atlas can analyze **7 component types**:
 
 - **models** - Eloquent models with relationships, observers, and factories
 - **routes** - Application routes with middleware and controllers  
 - **commands** - Artisan commands with their signatures and descriptions
-
-> **Note:** Additional component mappers are planned for future releases, including services, controllers, events, jobs, middleware, policies, resources, notifications, requests, rules, observers, listeners, and actions.
+- **services** - Application service classes with methods and dependencies
+- **notifications** - Laravel notification classes with channels and methods
+- **middlewares** - HTTP middleware with parameters and dependencies
+- **form_requests** - Form request validation classes with rules and authorization
 
 ## 📊 Export Formats
 
@@ -181,12 +223,32 @@ php artisan atlas:generate --format=json --output=storage/atlas/map.json
 # Markdown documentation for README files
 php artisan atlas:generate --format=markdown --output=docs/ARCHITECTURE.md
 
-# Interactive HTML maps
+# Interactive HTML maps with full component visualization
 php artisan atlas:generate --format=html --output=public/atlas/map.html
 
 # PHP code for advanced processing
 php artisan atlas:generate --format=php --output=storage/atlas/map.php
 ```
+
+### HTML Export Features
+
+The HTML export format provides an **interactive, responsive dashboard** with advanced features:
+
+- **🌓 Dark Mode Support** - Toggle between light and dark themes
+- **📱 Responsive Design** - Works on desktop, tablet, and mobile devices
+- **🔍 Component Navigation** - Easy sidebar navigation between component types
+- **📊 Visual Component Cards** - Rich cards showing detailed component information
+- **📈 Real-time Counts** - Live component counts in navigation sidebar
+- **🎨 Modern UI** - Built with Tailwind CSS for a professional appearance
+
+**Component Sections Available:**
+- 🧱 **Models** - with relationships, attributes, and metadata
+- 🛣️ **Routes** - with middleware, controllers, and HTTP methods  
+- 💬 **Commands** - with signatures, arguments, and options
+- 🔧 **Services** - with methods, dependencies, and flow analysis
+- 📢 **Notifications** - with channels, methods, and dependencies
+- 🛡️ **Middlewares** - with parameters, dependencies, and flow patterns
+- 📋 **Form Requests** - with validation rules, authorization, and attributes
 
 ### Programmatic Export
 
@@ -220,6 +282,27 @@ $routeAnalysis = Atlas::scan('routes', [
 $commandAnalysis = Atlas::scan('commands', [
     'include_signatures' => true,
     'include_descriptions' => true
+]);
+
+$serviceAnalysis = Atlas::scan('services', [
+    'include_dependencies' => true,
+    'include_methods' => true
+]);
+
+$notificationAnalysis = Atlas::scan('notifications', [
+    'include_channels' => true,
+    'include_flow' => true
+]);
+
+$middlewareAnalysis = Atlas::scan('middlewares', [
+    'include_parameters' => true,
+    'include_dependencies' => true
+]);
+
+$formRequestAnalysis = Atlas::scan('form_requests', [
+    'include_rules' => true,
+    'include_authorization' => true,
+    'include_attributes' => true
 ]);
 
 // Generate detailed reports
@@ -285,6 +368,10 @@ return [
 - **[Models Analysis](examples/models-example.php)** - Detailed model mapping
 - **[Routes Analysis](examples/routes-example.php)** - Route mapping with middleware
 - **[Commands Analysis](examples/commands-example.php)** - Artisan command analysis
+- **[Services Analysis](examples/services-example.php)** - Service class mapping with dependencies
+- **[Notifications Analysis](examples/notifications-example.php)** - Notification mapping with channels
+- **[Middlewares Analysis](examples/middlewares-example.php)** - Middleware analysis with parameters
+- **[Form Requests Analysis](examples/form-requests-example.php)** - Form request validation mapping
 - **[Complete Analysis](examples/complete-analysis.php)** - Full application documentation
 
 ## 💡 Examples
@@ -299,6 +386,10 @@ php artisan atlas:generate --type=all --format=html --output=docs/architecture.h
 php artisan atlas:generate --type=models --format=markdown --output=docs/models.md
 php artisan atlas:generate --type=routes --format=json --output=docs/routes.json
 php artisan atlas:generate --type=commands --format=html --output=docs/commands.html
+php artisan atlas:generate --type=services --format=markdown --output=docs/services.md
+php artisan atlas:generate --type=notifications --format=html --output=docs/notifications.html
+php artisan atlas:generate --type=middlewares --format=json --output=docs/middlewares.json
+php artisan atlas:generate --type=form_requests --format=markdown --output=docs/form-requests.md
 ```
 
 ### Custom Architecture Analysis
@@ -310,6 +401,10 @@ use LaravelAtlas\Facades\Atlas;
 $modelData = Atlas::scan('models', ['include_relationships' => true]);
 $routeData = Atlas::scan('routes', ['include_middleware' => true]);
 $commandData = Atlas::scan('commands', ['include_signatures' => true]);
+$serviceData = Atlas::scan('services', ['include_dependencies' => true]);
+$notificationData = Atlas::scan('notifications', ['include_channels' => true]);
+$middlewareData = Atlas::scan('middlewares', ['include_parameters' => true]);
+$formRequestData = Atlas::scan('form_requests', ['include_rules' => true]);
 
 $markdownReport = Atlas::export('models', 'markdown', [
     'include_stats' => true,
@@ -339,6 +434,10 @@ php artisan atlas:generate --type=all --format=html --output=public/docs/archite
 php artisan atlas:generate --type=models --format=markdown --output=docs/models.md
 php artisan atlas:generate --type=routes --format=json --output=api/routes.json
 php artisan atlas:generate --type=commands --format=html --output=docs/commands.html
+php artisan atlas:generate --type=services --format=markdown --output=docs/services.md
+php artisan atlas:generate --type=notifications --format=html --output=docs/notifications.html
+php artisan atlas:generate --type=middlewares --format=json --output=docs/middlewares.json
+php artisan atlas:generate --type=form_requests --format=markdown --output=docs/form-requests.md
 ```
 
 ### Advanced Export Examples
@@ -346,7 +445,7 @@ php artisan atlas:generate --type=commands --format=html --output=docs/commands.
 ```php
 use LaravelAtlas\Facades\Atlas;
 
-// Generate comprehensive documentation for available components
+// Generate comprehensive HTML documentation for available components
 $htmlReport = Atlas::export('all', 'html');
 file_put_contents('reports/architecture-review.html', $htmlReport);
 
@@ -357,6 +456,13 @@ file_put_contents('storage/atlas/models-data.php', $phpData);
 // Generate JSON reports for API consumption
 $jsonData = Atlas::export('routes', 'json');
 file_put_contents('public/api/routes.json', $jsonData);
+
+// Generate interactive HTML reports for specific components
+$servicesHtml = Atlas::export('services', 'html');
+file_put_contents('public/docs/services.html', $servicesHtml);
+
+$notificationsHtml = Atlas::export('notifications', 'html');
+file_put_contents('public/docs/notifications.html', $notificationsHtml);
 ```
 
 Check out the [examples directory](examples/) for working examples of all current features.
@@ -401,6 +507,46 @@ class ArchitectureTest extends TestCase
         $this->assertArrayHasKey('data', $data);
     }
 
+    public function test_services_can_be_scanned(): void
+    {
+        $data = Atlas::scan('services');
+        
+        $this->assertIsArray($data);
+        $this->assertArrayHasKey('type', $data);
+        $this->assertEquals('services', $data['type']);
+        $this->assertArrayHasKey('data', $data);
+    }
+
+    public function test_notifications_can_be_scanned(): void
+    {
+        $data = Atlas::scan('notifications');
+        
+        $this->assertIsArray($data);
+        $this->assertArrayHasKey('type', $data);
+        $this->assertEquals('notifications', $data['type']);
+        $this->assertArrayHasKey('data', $data);
+    }
+
+    public function test_middlewares_can_be_scanned(): void
+    {
+        $data = Atlas::scan('middlewares');
+        
+        $this->assertIsArray($data);
+        $this->assertArrayHasKey('type', $data);
+        $this->assertEquals('middlewares', $data['type']);
+        $this->assertArrayHasKey('data', $data);
+    }
+
+    public function test_form_requests_can_be_scanned(): void
+    {
+        $data = Atlas::scan('form_requests');
+        
+        $this->assertIsArray($data);
+        $this->assertArrayHasKey('type', $data);
+        $this->assertEquals('form_requests', $data['type']);
+        $this->assertArrayHasKey('data', $data);
+    }
+
     public function test_json_export_is_valid(): void
     {
         $json = Atlas::export('models', 'json');
@@ -414,10 +560,14 @@ class ArchitectureTest extends TestCase
         $data = Atlas::scan('all');
         
         $this->assertIsArray($data);
-        // Should contain the 3 implemented component types
+        // Should contain the 7 implemented component types
         $this->assertArrayHasKey('models', $data);
         $this->assertArrayHasKey('routes', $data);
         $this->assertArrayHasKey('commands', $data);
+        $this->assertArrayHasKey('services', $data);
+        $this->assertArrayHasKey('notifications', $data);
+        $this->assertArrayHasKey('middlewares', $data);
+        $this->assertArrayHasKey('form_requests', $data);
     }
 }
 ```
