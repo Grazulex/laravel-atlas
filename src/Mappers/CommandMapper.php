@@ -17,23 +17,14 @@ class CommandMapper implements ComponentMapper
         return 'commands';
     }
 
-    /**
-     * @param  array<string, mixed>  $options
-     *
-     * @return array<string, mixed>
-     */
     public function scan(array $options = []): array
     {
         $commands = [];
         $paths = $options['paths'] ?? [app_path('Console/Commands')];
         $recursive = $options['recursive'] ?? true;
 
-        $seen = [];
-
         foreach ($paths as $path) {
-            if (! is_dir($path)) {
-                continue;
-            }
+            if (!is_dir($path)) continue;
 
             $files = $recursive ? File::allFiles($path) : File::files($path);
 
@@ -43,10 +34,8 @@ class CommandMapper implements ComponentMapper
                 if (
                     $fqcn &&
                     class_exists($fqcn) &&
-                    is_subclass_of($fqcn, Command::class) &&
-                    ! isset($seen[$fqcn])
+                    is_subclass_of($fqcn, Command::class)
                 ) {
-                    $seen[$fqcn] = true;
                     $instance = app($fqcn);
                     $commands[] = $this->analyzeCommand($instance);
                 }
@@ -60,9 +49,6 @@ class CommandMapper implements ComponentMapper
         ];
     }
 
-    /**
-     * @return array<string, mixed>
-     */
     protected function analyzeCommand(Command $command): array
     {
         $class = $command::class;
@@ -75,124 +61,132 @@ class CommandMapper implements ComponentMapper
             $source = $content !== false ? $content : null;
         }
 
-        // Get signature from property instead of method
-        $signature = $this->getCommandSignature($command);
-        $description = $this->getCommandDescription($command);
-
         return [
             'class' => $class,
-            'signature' => $signature,
-            'parsed_signature' => $this->parseSignature($signature),
-            'description' => $description,
+            'signature' => $this->getSignature($command),
+            'parsed_signature' => $this->parseSignature($command),
+            'description' => $this->getDescription($command),
             'aliases' => $command->getAliases(),
             'flow' => $this->analyzeFlow($source),
         ];
     }
 
-    /**
-     * @return array<string, array<int|string, mixed>>
-     */
     protected function analyzeFlow(?string $source): array
     {
         $flow = [
             'jobs' => [],
             'events' => [],
             'calls' => [],
-            'dependencies' => [],
+            'notifications' => [],
+            'dependencies' => [
+                'models' => [],
+                'services' => [],
+                'notifications' => [],
+                'facades' => [],
+                'classes' => [],
+            ],
         ];
 
-        if (! $source) {
-            return $flow;
-        }
+        if (! $source) return $flow;
 
-        // detect jobs
+        // Jobs
         if (preg_match_all('/dispatch(?:Now)?\(\s*([A-Z][\w\\\\]+)::class/', $source, $matches)) {
             foreach ($matches[1] as $fqcn) {
                 $flow['jobs'][] = [
                     'class' => $fqcn,
-                    'async' => ! str_contains($source, "dispatchNow({$fqcn}"),
+                    'async' => !str_contains($source, "dispatchNow({$fqcn}"),
                 ];
             }
         }
 
-        // detect events
+        // Events
         if (preg_match_all('/event\(\s*([A-Z][\w\\\\]+)::class/', $source, $matches)) {
             foreach ($matches[1] as $fqcn) {
                 $flow['events'][] = ['class' => $fqcn];
             }
         }
 
-        // detect other artisan calls
+        // Artisan calls
         if (preg_match_all('/\$this->call\(\s*[\'"]([\w:-]+)[\'"]/', $source, $matches)) {
             foreach ($matches[1] as $signature) {
                 $flow['calls'][] = $signature;
             }
         }
 
-        // detect dependencies (via new X or X::)
+        // Notifications
+        if (preg_match_all('/->notify\(\s*new\s+([A-Z][\w\\\\]+)/', $source, $matches)) {
+            foreach ($matches[1] as $fqcn) {
+                $flow['notifications'][] = ['class' => $fqcn];
+                $flow['dependencies']['notifications'][] = $fqcn;
+            }
+        }
+
+        // Class usage (new or static calls)
         if (preg_match_all('/new\s+([A-Z][\w\\\\]+)|([A-Z][\w\\\\]+)::/', $source, $matches)) {
             $found = array_filter(array_merge($matches[1], $matches[2]));
-            $flow['dependencies'] = array_values(array_unique(array_filter($found)));
+            $classes = array_values(array_unique(array_filter($found)));
+
+            foreach ($classes as $fqcn) {
+                $basename = class_basename($fqcn);
+                if (str_contains($fqcn, 'App\\Models\\')) {
+                    $flow['dependencies']['models'][] = $fqcn;
+                } elseif (str_contains($fqcn, 'App\\Services\\')) {
+                    $flow['dependencies']['services'][] = $fqcn;
+                } elseif (str_contains($fqcn, 'Notification')) {
+                    $flow['dependencies']['notifications'][] = $fqcn;
+                } elseif (in_array($basename, ['Log', 'Queue', 'Bus', 'Mail', 'DB', 'Cache', 'Event', 'Artisan'])) {
+                    $flow['dependencies']['facades'][] = $basename;
+                } else {
+                    $flow['dependencies']['classes'][] = $fqcn;
+                }
+            }
+        }
+
+        // Remove duplicates
+        foreach ($flow['dependencies'] as &$dep) {
+            $dep = array_values(array_unique($dep));
         }
 
         return $flow;
     }
 
-    /**
-     * Get command signature safely
-     */
-    protected function getCommandSignature(Command $command): string
+    protected function getSignature(Command $command): string
     {
-        // Access signature property via reflection
         $reflection = new ReflectionClass($command);
         if ($reflection->hasProperty('signature')) {
             $property = $reflection->getProperty('signature');
             $property->setAccessible(true);
-            $signature = $property->getValue($command);
-
-            return is_string($signature) ? $signature : '';
+            return (string) $property->getValue($command);
         }
 
         return '';
     }
 
-    /**
-     * Get command description safely
-     */
-    protected function getCommandDescription(Command $command): string
+    protected function getDescription(Command $command): string
     {
-        // Access description property via reflection
         $reflection = new ReflectionClass($command);
         if ($reflection->hasProperty('description')) {
             $property = $reflection->getProperty('description');
             $property->setAccessible(true);
-            $description = $property->getValue($command);
-
-            return is_string($description) ? $description : '';
+            return (string) $property->getValue($command);
         }
 
         return '';
     }
 
-    /**
-     * @return array<int, array<string, mixed>>
-     */
-    protected function parseSignature(string $signature): array
+    protected function parseSignature(Command $command): array
     {
+        $signature = $this->getSignature($command);
         $parts = [];
 
         if (preg_match_all('/{(--)?([\w\-\:]+)([=*]?)?(?:\s*:\s*([^}]+))?}/', $signature, $matches, PREG_SET_ORDER)) {
             foreach ($matches as $match) {
                 $isOption = $match[1] === '--';
-                $name = $match[2];
-                $modifier = $match[3] ?? '';
-                $description = $match[4] ?? null;
-
                 $parts[] = [
                     'type' => $isOption ? 'option' : 'argument',
-                    'name' => $name,
-                    'modifier' => $modifier,
-                    'description' => $description,
+                    'name' => $match[2],
+                    'modifier' => $match[3] ?? '',
+                    'description' => $match[4] ?? null,
                 ];
             }
         }
