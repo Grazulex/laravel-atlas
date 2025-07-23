@@ -8,7 +8,7 @@
         </span>
     </div>
 
-    <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4 text-sm text-gray-700">
+    <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mt-3 text-sm text-gray-700">
         <div>
             <span class="block text-xs text-gray-400 font-semibold">🆔 Primary key</span>
             <code>{{ $model['primary_key'] }}</code>
