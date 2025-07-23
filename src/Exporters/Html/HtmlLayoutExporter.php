@@ -19,6 +19,7 @@ class HtmlLayoutExporter
         $routesData = [];
         $servicesData = [];
         $notificationsData = [];
+        $middlewaresData = [];
 
         if (isset($data['models']) && is_array($data['models']) && isset($data['models']['data'])) {
             $modelsData = $data['models']['data'];
@@ -40,12 +41,17 @@ class HtmlLayoutExporter
             $notificationsData = $data['notifications']['data'];
         }
 
+        if (isset($data['middlewares']) && is_array($data['middlewares']) && isset($data['middlewares']['data'])) {
+            $middlewaresData = $data['middlewares']['data'];
+        }
+
         return View::make('atlas::exports.layout', [
             'models' => $modelsData,
             'commands' => $commandsData,
             'routes' => $routesData,
             'services' => $servicesData,
             'notifications' => $notificationsData,
+            'middlewares' => $middlewaresData,
         ])->render();
     }
 }
