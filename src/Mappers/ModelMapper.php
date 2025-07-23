@@ -87,6 +87,7 @@ class ModelMapper implements ComponentMapper
             'relations' => $this->guessRelations($model),
             'scopes' => $this->guessScopes($model),
             'booted_hooks' => $this->guessBootHooks($model),
+            'flow' => $this->analyzeFlow($model),
         ];
     }
 
@@ -198,5 +199,48 @@ class ModelMapper implements ComponentMapper
         preg_match_all('/static::(saving|creating|updating|deleting|restoring|retrieved)\(/', $contents, $matches);
 
         return array_unique($matches[1]);
+    }
+
+    protected function analyzeFlow(Model $model): array
+    {
+        $flow = [
+            'jobs' => [],
+            'events' => [],
+            'observers' => [],
+            'dependencies' => [],
+        ];
+
+        $reflection = new ReflectionClass($model);
+        $source = file_get_contents($reflection->getFileName());
+
+        // Jobs dispatch
+        if (preg_match_all('/dispatch(?:Now)?\((.*?)::class/', $source, $matches)) {
+            foreach ($matches[1] as $class) {
+                $flow['jobs'][] = [
+                    'class' => trim($class),
+                    'async' => ! str_contains($source, 'dispatchNow(' . $class),
+                ];
+            }
+        }
+
+        // Events
+        if (preg_match_all('/event\((.*?)::class/', $source, $matches)) {
+            foreach ($matches[1] as $class) {
+                $flow['events'][] = ['class' => trim($class)];
+            }
+        }
+
+        // Dependencies (naïve : via use ou new)
+        if (preg_match_all('/new ([A-Z][\w\\\\]+)|([A-Z][\w\\\\]+)::/', $source, $matches)) {
+            $deps = array_filter(array_merge($matches[1], $matches[2]));
+            $flow['dependencies'] = array_values(array_unique(array_filter($deps)));
+        }
+
+        // Observers (via booted static::observe)
+        if (preg_match_all('/static::observe\((.*?)::class/', $source, $matches)) {
+            $flow['observers'] = array_map('trim', $matches[1]);
+        }
+
+        return $flow;
     }
 }
