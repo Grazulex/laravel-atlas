@@ -201,6 +201,9 @@ class ModelMapper implements ComponentMapper
         return array_unique($matches[1]);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function analyzeFlow(Model $model): array
     {
         $flow = [
@@ -210,8 +213,18 @@ class ModelMapper implements ComponentMapper
             'dependencies' => [],
         ];
 
-        $reflection = new \ReflectionClass($model);
-        $source = file_get_contents($reflection->getFileName());
+        $reflection = new ReflectionClass($model);
+        $fileName = $reflection->getFileName();
+
+        if ($fileName === false) {
+            return $flow;
+        }
+
+        $source = file_get_contents($fileName);
+
+        if ($source === false) {
+            return $flow;
+        }
 
         // Detect dispatched jobs
         if (preg_match_all('/dispatch(?:Now)?\(\s*([A-Z][\w\\\\]+)::class/', $source, $matches)) {
@@ -245,9 +258,9 @@ class ModelMapper implements ComponentMapper
 
         // Add global observers (declared in Service Providers)
         $global = $this->extractGlobalObservers();
-        $class = get_class($model);
+        $class = $model::class;
         $shortClass = class_basename($class);
-        
+
         // Check both full class name and short class name
         $globalObservers = [];
         if (isset($global[$class])) {
@@ -256,8 +269,8 @@ class ModelMapper implements ComponentMapper
         if (isset($global[$shortClass])) {
             $globalObservers = array_merge($globalObservers, $global[$shortClass]);
         }
-        
-        if (!empty($globalObservers)) {
+
+        if ($globalObservers !== []) {
             $flow['observers'] = array_values(array_unique(array_merge(
                 $flow['observers'],
                 $globalObservers
@@ -267,14 +280,25 @@ class ModelMapper implements ComponentMapper
         return $flow;
     }
 
+    /**
+     * @return array<string, array<int, string>>
+     */
     protected function extractGlobalObservers(): array
     {
         $observers = [];
 
         $providerFiles = glob(app_path('Providers/*.php'));
 
+        if ($providerFiles === false) {
+            return $observers;
+        }
+
         foreach ($providerFiles as $file) {
             $content = file_get_contents($file);
+
+            if ($content === false) {
+                continue;
+            }
 
             // Pattern: Model::observe(Observer::class)
             if (preg_match_all('/([A-Z][\w\\\\]+)::observe\(\s*([A-Z][\w\\\\]+)::class/', $content, $matches, PREG_SET_ORDER)) {
@@ -282,9 +306,9 @@ class ModelMapper implements ComponentMapper
                     [$_, $model, $observer] = $match;
                     // Le premier groupe est le modèle, le second est l'observer
                     $observers[$model][] = $observer;
-                    
+
                     // Debug: ajouter aussi le nom complet si c'est un nom court
-                    if (!str_contains($model, '\\')) {
+                    if (! str_contains($model, '\\')) {
                         $fullModelName = 'App\\Models\\' . $model;
                         $observers[$fullModelName][] = $observer;
                     }
