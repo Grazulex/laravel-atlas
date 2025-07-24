@@ -52,8 +52,8 @@
         /* Statistics summary */
         .stats-summary {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 8px;
             margin-bottom: 30px;
             padding: 15px;
             background: #f8fafc;
@@ -66,16 +66,16 @@
         }
 
         .stat-number {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             color: #4f46e5;
         }
 
         .stat-label {
-            font-size: 10px;
+            font-size: 9px;
             color: #666;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
         }
 
         /* Sections */
@@ -256,8 +256,40 @@
                 <div class="stat-label">Events</div>
             </div>
             <div class="stat-item">
+                <div class="stat-number">{{ count($listeners) }}</div>
+                <div class="stat-label">Listeners</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">{{ count($notifications) }}</div>
+                <div class="stat-label">Notifications</div>
+            </div>
+            <div class="stat-item">
                 <div class="stat-number">{{ count($middlewares) }}</div>
                 <div class="stat-label">Middlewares</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">{{ count($form_requests) }}</div>
+                <div class="stat-label">Form Requests</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">{{ count($resources) }}</div>
+                <div class="stat-label">Resources</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">{{ count($policies) }}</div>
+                <div class="stat-label">Policies</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">{{ count($rules) }}</div>
+                <div class="stat-label">Rules</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">{{ count($observers) }}</div>
+                <div class="stat-label">Observers</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">{{ count($actions) }}</div>
+                <div class="stat-label">Actions</div>
             </div>
         </div>
 
