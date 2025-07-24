@@ -40,3 +40,5 @@ examples/*test*.php
 examples/atlas-*
 examples/workflow-*
 examples/realistic-app-data.php
+
+/beta_app
