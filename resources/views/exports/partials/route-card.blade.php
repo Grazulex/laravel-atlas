@@ -140,7 +140,7 @@
 
     {{-- Footer --}}
     @include('atlas::exports.partials.common.card-footer', [
-        'class' => $item['class'] ?? 'N/A',
-        'file' => $item['file'] ?? 'N/A'
+        'class' => $item['is_closure'] ? 'Closure' : ($item['controller'] ?? 'N/A'),
+        'file' => $item['is_closure'] ? 'Inline Closure' : ($item['file'] ?? 'N/A')
     ])
 </div>
