@@ -9,6 +9,15 @@
         'class' => $event['class']
     ])
 
+    {{-- Description --}}
+    @if (!empty($event['description']))
+        <div class="mb-4">
+            <p class="text-xs text-gray-600 dark:text-gray-300 italic bg-gray-50 dark:bg-gray-700/50 rounded p-3">
+                {{ $event['description'] }}
+            </p>
+        </div>
+    @endif
+
     {{-- Key Properties Grid (Always 3 columns on large screens) --}}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         {{-- Broadcastable Status --}}
