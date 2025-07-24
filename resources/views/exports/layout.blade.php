@@ -25,13 +25,25 @@
                 $('.content-section').hide();
                 $('#section-' + section).show();
 
-                $('[data-section]')
-                    .removeClass('bg-indigo-600 text-white border-l-4 border-indigo-800 pl-2')
-                    .addClass('hover:bg-indigo-100 dark:hover:bg-indigo-900');
+                // Remove active state from all nav items
+                $('.nav-item')
+                    .removeClass('bg-indigo-600 dark:bg-indigo-600 text-white border-l-4 border-indigo-800')
+                    .addClass('text-gray-900 dark:text-gray-100');
 
+                // Add active state to clicked item
                 $(this)
-                    .addClass('bg-indigo-600 text-white border-l-4 border-indigo-800 pl-2')
-                    .removeClass('hover:bg-indigo-100 dark:hover:bg-indigo-900');
+                    .addClass('bg-indigo-600 dark:bg-indigo-600 text-white border-l-4 border-indigo-800')
+                    .removeClass('text-gray-900 dark:text-gray-100 hover:bg-indigo-50 dark:hover:bg-indigo-900/20');
+
+                // Update badge colors for active item
+                $(this).find('.inline-flex')
+                    .removeClass('bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200')
+                    .addClass('bg-indigo-500 text-white');
+
+                // Reset badge colors for inactive items
+                $('.nav-item').not(this).find('.inline-flex')
+                    .removeClass('bg-indigo-500 text-white')
+                    .addClass('bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200');
             });
 
             $('[data-section]').first().click();
@@ -56,143 +68,82 @@
     </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen">
-<div class="md:hidden bg-white dark:bg-gray-800 p-4 shadow">
-    <button id="menu-toggle" class="text-indigo-700 dark:text-indigo-300">
-        📂 Menu
+{{-- Mobile Menu Toggle --}}
+<div class="md:hidden bg-white dark:bg-gray-800 p-4 shadow border-b border-gray-200 dark:border-gray-700">
+    <button id="menu-toggle" class="flex items-center space-x-2 text-indigo-700 dark:text-indigo-300 hover:text-indigo-900 dark:hover:text-indigo-100 transition-colors">
+        <span class="text-lg">📂</span>
+        <span class="font-medium">Menu</span>
     </button>
 </div>
 
-<div class="flex flex-col md:flex-row">
-    <div id="sidebar" class="md:block hidden">
-        <nav class="md:w-64 bg-white dark:bg-gray-800 shadow-md p-4 space-y-2 flex md:flex-col flex-row md:space-y-2 space-x-2 md:space-x-0 overflow-auto">
-            <h1 class="text-xl font-bold text-indigo-700 dark:text-indigo-300 mb-2 md:mb-4 w-full">Laravel Atlas</h1>
-
-            <button data-section="models" class="block text-left px-3 py-2 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900 w-full">
-                🧱 Models
-                <span class="ml-2 text-xs bg-gray-200 dark:bg-gray-700 dark:text-gray-100 text-gray-800 px-1.5 py-0.5 rounded">
-                    {{ count($models) }}
-                </span>
-            </button>
-            <button data-section="commands" class="block text-left px-3 py-2 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900 w-full">
-                💬 Commands
-                <span class="ml-2 text-xs bg-gray-200 dark:bg-gray-700 dark:text-gray-100 text-gray-800 px-1.5 py-0.5 rounded">
-                    {{ count($commands) }}
-                </span>
-            </button>
-            <button data-section="routes" class="block text-left px-3 py-2 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900 w-full">
-                🛣️ Routes
-                <span class="ml-2 text-xs bg-gray-200 dark:bg-gray-700 dark:text-gray-100 text-gray-800 px-1.5 py-0.5 rounded">
-                    {{ count($routes) }}
-                </span>
-            </button>
-            <button data-section="services" class="block text-left px-3 py-2 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900 w-full">
-                🔧 Services
-                <span class="ml-2 text-xs bg-gray-200 dark:bg-gray-700 dark:text-gray-100 text-gray-800 px-1.5 py-0.5 rounded">
-                    {{ count($services) }}
-                </span>
-            </button>
-            <button data-section="notifications" class="block text-left px-3 py-2 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900 w-full">
-                📢 Notifications
-                <span class="ml-2 text-xs bg-gray-200 dark:bg-gray-700 dark:text-gray-100 text-gray-800 px-1.5 py-0.5 rounded">
-                    {{ count($notifications) }}
-                </span>
-            </button>
-            <button data-section="middlewares" class="block text-left px-3 py-2 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900 w-full">
-                🛡️ Middlewares
-                <span class="ml-2 text-xs bg-gray-200 dark:bg-gray-700 dark:text-gray-100 text-gray-800 px-1.5 py-0.5 rounded">
-                    {{ count($middlewares) }}
-                </span>
-            </button>
-            <button data-section="form_requests" class="block text-left px-3 py-2 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900 w-full">
-                📋 Form Requests
-                <span class="ml-2 text-xs bg-gray-200 dark:bg-gray-700 dark:text-gray-100 text-gray-800 px-1.5 py-0.5 rounded">
-                    {{ count($form_requests) }}
-                </span>
-            </button>
-            <button data-section="events" class="block text-left px-3 py-2 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900 w-full">
-                ⚡ Events
-                <span class="ml-2 text-xs bg-gray-200 dark:bg-gray-700 dark:text-gray-100 text-gray-800 px-1.5 py-0.5 rounded">
-                    {{ count($events) }}
-                </span>
-            </button>
-            <button data-section="controllers" class="block text-left px-3 py-2 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900 w-full">
-                🎮 Controllers
-                <span class="ml-2 text-xs bg-gray-200 dark:bg-gray-700 dark:text-gray-100 text-gray-800 px-1.5 py-0.5 rounded">
-                    {{ count($controllers) }}
-                </span>
-            </button>
-            <button data-section="resources" class="block text-left px-3 py-2 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900 w-full">
-                🔗 API Resources
-                <span class="ml-2 text-xs bg-gray-200 dark:bg-gray-700 dark:text-gray-100 text-gray-800 px-1.5 py-0.5 rounded">
-                    {{ count($resources) }}
-                </span>
-            </button>
-            <button data-section="jobs" class="block text-left px-3 py-2 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900 w-full">
-                ⚡ Jobs
-                <span class="ml-2 text-xs bg-gray-200 dark:bg-gray-700 dark:text-gray-100 text-gray-800 px-1.5 py-0.5 rounded">
-                    {{ count($jobs) }}
-                </span>
-            </button>
-            <button data-section="actions" class="block text-left px-3 py-2 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900 w-full">
-                ⚡ Actions
-                <span class="ml-2 text-xs bg-gray-200 dark:bg-gray-700 dark:text-gray-100 text-gray-800 px-1.5 py-0.5 rounded">
-                    {{ count($actions ?? []) }}
-                </span>
-            </button>
-            <button data-section="policies" class="block text-left px-3 py-2 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900 w-full">
-                🛡️ Policies
-                <span class="ml-2 text-xs bg-gray-200 dark:bg-gray-700 dark:text-gray-100 text-gray-800 px-1.5 py-0.5 rounded">
-                    {{ count($policies ?? []) }}
-                </span>
-            </button>
-            <button data-section="rules" class="block text-left px-3 py-2 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900 w-full">
-                📏 Rules
-                <span class="ml-2 text-xs bg-gray-200 dark:bg-gray-700 dark:text-gray-100 text-gray-800 px-1.5 py-0.5 rounded">
-                    {{ count($rules ?? []) }}
-                </span>
-            </button>
-            <button data-section="listeners" class="block text-left px-3 py-2 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900 w-full">
-                👂 Listeners
-                <span class="ml-2 text-xs bg-gray-200 dark:bg-gray-700 dark:text-gray-100 text-gray-800 px-1.5 py-0.5 rounded">
-                    {{ count($listeners ?? []) }}
-                </span>
-            </button>
-            <button data-section="observers" class="block text-left px-3 py-2 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900 w-full">
-                👁️ Observers
-                <span class="ml-2 text-xs bg-gray-200 dark:bg-gray-700 dark:text-gray-100 text-gray-800 px-1.5 py-0.5 rounded">
-                    {{ count($observers ?? []) }}
-                </span>
-            </button>
-            <button onclick="toggleDarkMode()" class="block text-left px-3 py-2 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900 w-full">
-                🌓 Toggle Theme
-            </button>
-        </nav>
+<div class="flex">
+    {{-- Sidebar --}}
+    <div id="sidebar" class="md:block hidden fixed md:relative inset-y-0 left-0 z-50 md:z-auto">
+        @include('atlas::exports.partials.common.navigation')
     </div>
 
-    <div class="flex-1 p-6">
+    {{-- Main Content --}}
+    <div class="flex-1 md:ml-0">
+        <div class="p-6 max-w-7xl mx-auto">
         <div id="section-models" class="content-section hidden">
-            <h2 class="text-xl font-bold">🧱 Models</h2>
+            <div class="mb-8">
+                <div class="flex items-center space-x-3 mb-2">
+                    <span class="text-2xl">🧱</span>
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Models</h2>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
+                        {{ count($models) }} {{ count($models) === 1 ? 'Model' : 'Models' }}
+                    </span>
+                </div>
+                <p class="text-gray-600 dark:text-gray-400">Database entities and their relationships, attributes, and behaviors.</p>
+            </div>
             @foreach ($models as $model)
                 @include('atlas::exports.partials.model-card', ['model' => $model])
             @endforeach
         </div>
 
         <div id="section-commands" class="content-section hidden">
-            <h2 class="text-xl font-bold">💬 Commands</h2>
+            <div class="mb-8">
+                <div class="flex items-center space-x-3 mb-2">
+                    <span class="text-2xl">💬</span>
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Commands</h2>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
+                        {{ count($commands) }} {{ count($commands) === 1 ? 'Command' : 'Commands' }}
+                    </span>
+                </div>
+                <p class="text-gray-600 dark:text-gray-400">Artisan commands for CLI operations and automation tasks.</p>
+            </div>
             @foreach ($commands as $command)
                 @include('atlas::exports.partials.command-card', ['command' => $command])
             @endforeach
         </div>
 
         <div id="section-routes" class="content-section hidden">
-            <h2 class="text-xl font-bold">🛣️ Routes</h2>
+            <div class="mb-8">
+                <div class="flex items-center space-x-3 mb-2">
+                    <span class="text-2xl">🛣️</span>
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Routes</h2>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
+                        {{ count($routes) }} {{ count($routes) === 1 ? 'Route' : 'Routes' }}
+                    </span>
+                </div>
+                <p class="text-gray-600 dark:text-gray-400">Application endpoints and URL patterns for handling HTTP requests.</p>
+            </div>
             @foreach ($routes as $route)
                 @include('atlas::exports.partials.route-card', ['route' => $route])
             @endforeach
         </div>
 
         <div id="section-services" class="content-section hidden">
-            <h2 class="text-xl font-bold">🔧 Services</h2>
+            <div class="mb-8">
+                <div class="flex items-center space-x-3 mb-2">
+                    <span class="text-2xl">🔧</span>
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Services</h2>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
+                        {{ count($services) }} {{ count($services) === 1 ? 'Service' : 'Services' }}
+                    </span>
+                </div>
+                <p class="text-gray-600 dark:text-gray-400">Business logic components and application services.</p>
+            </div>
             @foreach ($services as $service)
                 @include('atlas::exports.partials.service-card', ['service' => $service])
             @endforeach
