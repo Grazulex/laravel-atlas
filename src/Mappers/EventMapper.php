@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Mappers;
 
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use ReflectionNamedType;
-use ReflectionUnionType;
 use Illuminate\Support\Facades\File;
 use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
 use ReflectionClass;
+use ReflectionNamedType;
 use ReflectionParameter;
+use ReflectionUnionType;
 
 class EventMapper implements ComponentMapper
 {
@@ -78,6 +78,7 @@ class EventMapper implements ComponentMapper
                 return true;
             }
         }
+
         // Vérifier si c'est dans le namespace Events
         return str_contains($reflection->getName(), '\\Events\\');
     }

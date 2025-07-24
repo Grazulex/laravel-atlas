@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Mappers;
 
-use InvalidArgumentException;
-use ReflectionType;
-use ReflectionNamedType;
-use Throwable;
 use Illuminate\Support\Facades\File;
+use InvalidArgumentException;
 use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
 use ReflectionClass;
 use ReflectionMethod;
+use ReflectionNamedType;
+use ReflectionType;
+use Throwable;
 
 class ActionMapper implements ComponentMapper
 {
@@ -105,7 +105,7 @@ class ActionMapper implements ComponentMapper
                     'parameters' => array_map(
                         fn ($p): array => [
                             'name' => $p->getName(),
-                            'type' => $p->getType() ? $p->getType()->__toString() : null,
+                            'type' => $p->getType() instanceof ReflectionType ? $p->getType()->__toString() : null,
                             'default' => $p->isDefaultValueAvailable() ? $p->getDefaultValue() : null,
                         ],
                         $method->getParameters()
@@ -133,7 +133,7 @@ class ActionMapper implements ComponentMapper
             'parameters' => array_map(
                 fn ($p): array => [
                     'name' => $p->getName(),
-                    'type' => $p->getType() ? $p->getType()->__toString() : null,
+                    'type' => $p->getType() instanceof ReflectionType ? $p->getType()->__toString() : null,
                 ],
                 $constructor->getParameters()
             ),

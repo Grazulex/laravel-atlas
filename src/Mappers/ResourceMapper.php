@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Mappers;
 
-use ReflectionNamedType;
-use ReflectionUnionType;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\File;
 use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
 use ReflectionClass;
 use ReflectionMethod;
+use ReflectionNamedType;
+use ReflectionUnionType;
 
 class ResourceMapper implements ComponentMapper
 {
@@ -58,6 +58,7 @@ class ResourceMapper implements ComponentMapper
         if ($reflection->isSubclassOf(JsonResource::class)) {
             return true;
         }
+
         return str_contains($reflection->getName(), 'Resource');
     }
 

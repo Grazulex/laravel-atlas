@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Mappers;
 
-use InvalidArgumentException;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\File;
+use InvalidArgumentException;
 use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
 use ReflectionClass;

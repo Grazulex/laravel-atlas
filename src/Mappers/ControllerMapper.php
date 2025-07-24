@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Mappers;
 
-use ReflectionNamedType;
-use ReflectionUnionType;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\File;
 use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
 use ReflectionClass;
 use ReflectionMethod;
+use ReflectionNamedType;
 use ReflectionParameter;
+use ReflectionUnionType;
 
 class ControllerMapper implements ComponentMapper
 {
@@ -60,6 +60,7 @@ class ControllerMapper implements ComponentMapper
         if ($reflection->isSubclassOf(Controller::class)) {
             return true;
         }
+
         return str_contains($reflection->getName(), 'Controller');
     }
 

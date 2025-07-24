@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Mappers;
 
-use Illuminate\Foundation\Bus\Dispatchable;
+use Exception;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use ReflectionNamedType;
-use ReflectionUnionType;
-use Exception;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\File;
 use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
 use ReflectionClass;
 use ReflectionMethod;
+use ReflectionNamedType;
 use ReflectionParameter;
+use ReflectionUnionType;
 
 class JobMapper implements ComponentMapper
 {

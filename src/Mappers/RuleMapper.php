@@ -6,14 +6,14 @@ namespace LaravelAtlas\Mappers;
 
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Contracts\Validation\ValidationRule;
-use Throwable;
-use InvalidArgumentException;
-use ReflectionParameter;
-use ReflectionException;
 use Illuminate\Support\Facades\File;
+use InvalidArgumentException;
 use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
 use ReflectionClass;
+use ReflectionException;
+use ReflectionParameter;
+use Throwable;
 
 class RuleMapper implements ComponentMapper
 {
@@ -157,9 +157,7 @@ class RuleMapper implements ComponentMapper
             if (is_array($default)) {
                 return '[]';
             }
-            else {
-                return (string) $default;
-            }
+            return (string) $default;
         } catch (ReflectionException) {
             return 'unknown';
         }
