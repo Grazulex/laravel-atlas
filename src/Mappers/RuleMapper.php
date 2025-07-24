@@ -28,12 +28,22 @@ class RuleMapper implements ComponentMapper
         $recursive = $options['recursive'] ?? true;
         $seen = [];
 
+        echo "RuleMapper Debug:\n";
+        echo "Default paths: " . json_encode($paths) . "\n";
+        echo "app_path('Rules'): " . app_path('Rules') . "\n";
+        echo "base_path(): " . base_path() . "\n";
+
         foreach ($paths as $path) {
+            echo "Checking path: $path\n";
+            echo "Path exists: " . (is_dir($path) ? 'YES' : 'NO') . "\n";
+            
             if (! is_dir($path)) {
+                echo "Skipping non-existent path\n";
                 continue;
             }
 
             $files = $recursive ? File::allFiles($path) : File::files($path);
+            echo "Files found: " . count($files) . "\n";
 
             foreach ($files as $file) {
                 // Debug: afficher tous les fichiers trouvés
