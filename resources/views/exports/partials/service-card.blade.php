@@ -53,6 +53,6 @@
     {{-- Footer --}}
     @include('atlas::exports.partials.common.card-footer', [
         'class' => $service['class'],
-        'file' => $service['file'] ?? null
+        'file' => $service['file']
     ])
 </div>

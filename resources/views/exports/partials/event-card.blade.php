@@ -1,159 +1,166 @@
-{{-- Event Card Component --}}
-<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-200">
+<div class="bg-white rounded-lg shadow-sm p-4 mb-4 border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+{{-- Header --}}
     @include('atlas::exports.partials.common.card-header', [
-        'icon' => '📢',
-        'title' => $item['name'],
-        'subtitle' => $item['namespace'],
-        'badges' => [
-            [
-                'text' => 'Event',
-                'class' => 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
-                'icon' => '📢'
-            ],
-            [
-                'text' => $item['should_broadcast'] ? 'Broadcastable' : 'Standard',
-                'class' => $item['should_broadcast'] ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300' : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
-                'icon' => $item['should_broadcast'] ? '📡' : '📋'
-            ]
-        ]
+        'icon' => '⚡',
+        'title' => class_basename($item['class']),
+        'badge' => 'Event',
+        'badgeColor' => 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200',
+        'namespace' => $item['namespace'],
+        'class' => $item['class']
     ])
 
-    <div class="p-6 space-y-6">
-        {{-- Basic Information --}}
-        <div class="grid md:grid-cols-2 gap-4">
-            @include('atlas::exports.partials.common.property-item', [
-                'label' => 'File Location',
-                'value' => str_replace(base_path() . '/', '', $item['file']),
-                'type' => 'code'
-            ])
-
-            @include('atlas::exports.partials.common.property-item', [
-                'label' => 'Class',
-                'value' => $item['class'],
-                'type' => 'code'
-            ])
-
-            @if ($item['should_broadcast'])
-                @include('atlas::exports.partials.common.property-item', [
-                    'label' => 'Broadcasting',
-                    'value' => 'This event can be broadcast to client applications',
-                    'type' => 'default'
-                ])
-            @endif
+    {{-- Description --}}
+    @if (!empty($item['description']))
+        <div class="mb-4">
+            <p class="text-xs text-gray-600 dark:text-gray-300 italic bg-gray-50 dark:bg-gray-700/50 rounded p-3">
+                {{ $item['description'] }}
+            </p>
         </div>
+    @endif
 
+    {{-- Key Properties Grid (Always 3 columns on large screens) --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+        {{-- Broadcastable Status --}}
+        @include('atlas::exports.partials.common.property-item', [
+            'icon' => '📡',
+            'label' => 'Broadcastable',
+            'value' => $item['broadcastable'] ? 'Yes' : 'No',
+            'type' => 'simple'
+        ])
+
+        {{-- Traits Count --}}
+        @include('atlas::exports.partials.common.property-item', [
+            'icon' => '🧩',
+            'label' => 'Traits',
+            'value' => !empty($item['traits']) ? count($item['traits']) . ' traits' : '0 traits',
+            'type' => 'simple'
+        ])
+
+        {{-- Properties Count --}}
+        @include('atlas::exports.partials.common.property-item', [
+            'icon' => '🏗️',
+            'label' => 'Properties',
+            'value' => !empty($item['properties']) ? count($item['properties']) . ' properties' : '0 properties',
+            'type' => 'simple'
+        ])
+    </div>
+
+    {{-- Detailed Tables Section --}}
+    <div class="space-y-6">
         {{-- Traits --}}
         @if (!empty($item['traits']))
             <div>
-                @include('atlas::exports.partials.common.property-item', [
-                    'label' => 'Used Traits',
-                    'value' => $item['traits'],
-                    'type' => 'badge-list'
-                ])
-            </div>
-        @endif
-
-        {{-- Constructor Parameters --}}
-        @if (!empty($item['constructor']['parameters']))
-            <div>
-                <dt class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Event Data (Constructor Parameters)</dt>
-                <dd>
-                    <div class="space-y-2">
-                        @foreach ($item['constructor']['parameters'] as $param)
-                            <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center space-x-2">
-                                        <code class="text-sm font-medium">${{ $param['name'] }}</code>
-                                        <span class="text-sm text-gray-600 dark:text-gray-400">: {{ $param['type'] }}</span>
-                                    </div>
-                                    <div class="flex space-x-1">
-                                        @if ($param['nullable'])
-                                            <span class="text-xs px-1.5 py-0.5 rounded bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">nullable</span>
-                                        @endif
-                                        @if ($param['hasDefault'])
-                                            <span class="text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">default</span>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
+                <div class="flex items-center mb-3">
+                    <span class="text-sm mr-2">🧩</span>
+                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Traits ({{ count($item['traits']) }})
+                    </h4>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-700/50 rounded p-3">
+                    <div class="flex flex-wrap gap-2">
+                        @foreach ($item['traits'] as $trait)
+                            <span class="text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200 font-medium">
+                                {{ class_basename($trait) }}
+                            </span>
                         @endforeach
                     </div>
-                </dd>
+                </div>
             </div>
         @endif
 
         {{-- Properties --}}
         @if (!empty($item['properties']))
             <div>
-                <dt class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Event Properties</dt>
-                <dd>
+                <div class="flex items-center mb-3">
+                    <span class="text-sm mr-2">🏗️</span>
+                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Constructor Properties ({{ count($item['properties']) }})
+                    </h4>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-700/50 rounded p-3">
                     <div class="space-y-2">
                         @foreach ($item['properties'] as $property)
-                            <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center space-x-2">
-                                        <code class="text-sm font-medium">${{ $property['name'] }}</code>
-                                    </div>
-                                    <div class="flex space-x-1">
-                                        <span class="text-xs px-1.5 py-0.5 rounded {{ $property['visibility'] === 'public' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : ($property['visibility'] === 'protected' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400') }}">
-                                            {{ $property['visibility'] }}
-                                        </span>
-                                        @if ($property['static'])
-                                            <span class="text-xs px-1.5 py-0.5 rounded bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400">static</span>
-                                        @endif
-                                    </div>
-                                </div>
+                            <div class="text-xs bg-white dark:bg-gray-800 rounded p-2 border">
+                                @if (isset($property['type']))
+                                    <span class="text-purple-600 dark:text-purple-400">{{ $property['type'] }}</span>
+                                @endif
+                                <code class="text-blue-600 dark:text-blue-400">${{ $property['name'] ?? 'property' }}</code>
+                                @if (isset($property['visibility']))
+                                    <span class="ml-2 text-xs px-1.5 py-0.5 rounded bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200">
+                                        {{ $property['visibility'] }}
+                                    </span>
+                                @endif
                             </div>
                         @endforeach
                     </div>
-                </dd>
+                </div>
             </div>
         @endif
 
-        {{-- Broadcasting Configuration --}}
-        @if (!empty($item['broadcast_config']))
+        {{-- Broadcast Channels --}}
+        @if (!empty($item['channels']))
             <div>
-                <dt class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Broadcasting Configuration</dt>
-                <dd>
-                    <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 space-y-2">
-                        @if (!empty($item['broadcast_config']['channels']))
-                            <div>
-                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Channels:</span>
-                                <div class="mt-1">
-                                    @foreach ($item['broadcast_config']['channels'] as $channel)
-                                        <code class="text-xs mr-2 px-1.5 py-0.5 bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 rounded">{{ $channel }}</code>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endif
-                        @if (!empty($item['broadcast_config']['event_name']))
-                            <div>
-                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Event Name:</span>
-                                <code class="ml-2">{{ $item['broadcast_config']['event_name'] }}</code>
-                            </div>
-                        @endif
+                <div class="flex items-center mb-3">
+                    <span class="text-sm mr-2">📡</span>
+                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Broadcast Channels ({{ count($item['channels']) }})
+                    </h4>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-700/50 rounded p-3">
+                    <div class="flex flex-wrap gap-2">
+                        @foreach ($item['channels'] as $channel)
+                            <span class="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200 font-medium">
+                                {{ $channel }}
+                            </span>
+                        @endforeach
                     </div>
-                </dd>
+                </div>
             </div>
         @endif
 
-        {{-- Related Listeners --}}
-        @if (!empty($item['listeners']))
+        {{-- Event Listeners --}}
+        @if (!empty($event['listeners']))
             <div>
-                @include('atlas::exports.partials.common.property-item', [
-                    'label' => 'Event Listeners',
-                    'value' => $item['listeners'],
-                    'type' => 'badge-list'
-                ])
+                <div class="flex items-center mb-3">
+                    <span class="text-sm mr-2">👂</span>
+                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Event Listeners ({{ count($event['listeners']) }})
+                    </h4>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-700/50 rounded p-3">
+                    <div class="flex flex-wrap gap-2">
+                        @foreach ($event['listeners'] as $listener)
+                            <span class="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200 font-medium">
+                                {{ class_basename($listener) }}
+                            </span>
+                        @endforeach
+                    </div>
+                </div>
             </div>
-        @endif
-
-        {{-- Flow Section --}}
-        @if (!empty($item['flow']))
-            @include('atlas::exports.partials.common.flow-section', [
-                'flow' => $item['flow'],
-                'type' => 'event'
-            ])
         @endif
     </div>
+
+    {{-- Interactive Sections --}}
+    <div class="mt-6 space-y-4">
+        {{-- Methods Section --}}
+        @include('atlas::exports.partials.common.collapsible-methods', [
+            'methods' => $event['methods'] ?? [],
+            'componentId' => 'event-' . md5($event['class']),
+            'title' => 'Methods',
+            'icon' => '⚙️',
+            'collapsed' => true
+        ])
+
+        {{-- Flow Section --}}
+        @include('atlas::exports.partials.common.flow-section', [
+            'flow' => $event['flow'] ?? [],
+            'type' => 'event'
+        ])
+    </div>
+
+    {{-- Footer --}}
+    @include('atlas::exports.partials.common.card-footer', [
+        'class' => $event['class'],
+        'file' => $event['file']
+    ])
 </div>

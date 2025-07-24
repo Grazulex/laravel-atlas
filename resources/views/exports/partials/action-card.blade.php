@@ -1,124 +1,55 @@
-{{-- Action Card Component --}}
-<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-200">
+<div class="bg-white rounded-lg shadow-sm p-4 mb-4 border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+{{-- Header --}}
     @include('atlas::exports.partials.common.card-header', [
         'icon' => '⚡',
-        'title' => $item['name'],
-        'subtitle' => $item['namespace'],
-        'badges' => [
-            [
-                'text' => 'Action',
-                'class' => 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
-                'icon' => '⚡'
-            ],
-            @if (!empty($item['invokable']))
-                [
-                    'text' => 'Invokable',
-                    'class' => 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-                    'icon' => '🎯'
-                ]
-            @endif
-        ]
+        'title' => $action['name'],
+        'badge' => 'Action',
+        'badgeColor' => 'bg-orange-100 text-orange-600 dark:bg-orange-900 dark:text-orange-300',
+        'namespace' => $action['namespace'],
+        'class' => $action['class']
     ])
 
-    <div class="p-6 space-y-6">
-        {{-- Basic Information --}}
-        <div class="grid md:grid-cols-2 gap-4">
-            @include('atlas::exports.partials.common.property-item', [
-                'label' => 'File Location',
-                'value' => str_replace(base_path() . '/', '', $item['file']),
-                'type' => 'code'
-            ])
+    {{-- Constructor Dependencies --}}
+    @if (!empty($action['dependencies']))
+        @include('atlas::exports.partials.common.property-item', [
+            'icon' => '🔗',
+            'label' => 'Dependencies',
+            'value' => implode(', ', array_map('class_basename', $action['dependencies'])),
+            'type' => 'code'
+        ])
+    @endif
 
-            @include('atlas::exports.partials.common.property-item', [
-                'label' => 'Class',
-                'value' => $item['class'],
-                'type' => 'code'
-            ])
-
-            @if (!empty($item['invokable']))
-                @include('atlas::exports.partials.common.property-item', [
-                    'label' => 'Type',
-                    'value' => 'Invokable Action (single __invoke method)',
-                    'type' => 'default'
-                ])
-            @endif
+    {{-- Constructor Parameters --}}
+    @if (!empty($action['constructor']['parameters']))
+        <div class="mb-3">
+            <h4 class="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                🔧 Constructor Parameters
+            </h4>
+            <div class="space-y-1">
+                @foreach ($action['constructor']['parameters'] as $param)
+                    <div class="text-xs bg-gray-50 dark:bg-gray-700 rounded p-2">
+                        <span class="font-mono text-blue-600 dark:text-blue-400">${{ $param['name'] }}</span>
+                        @if ($param['type'])
+                            : <span class="text-gray-600 dark:text-gray-400">{{ class_basename($param['type']) }}</span>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
         </div>
+    @endif
 
-        {{-- Action Parameters --}}
-        @if (!empty($item['parameters']))
-            <div>
-                <dt class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Action Parameters</dt>
-                <dd>
-                    <div class="space-y-2">
-                        @foreach ($item['parameters'] as $param)
-                            <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center space-x-2">
-                                        <code class="text-sm font-medium">${{ $param['name'] }}</code>
-                                        <span class="text-sm text-gray-600 dark:text-gray-400">: {{ $param['type'] }}</span>
-                                    </div>
-                                    <div class="flex space-x-1">
-                                        @if ($param['nullable'])
-                                            <span class="text-xs px-1.5 py-0.5 rounded bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">nullable</span>
-                                        @endif
-                                        @if ($param['hasDefault'])
-                                            <span class="text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">default</span>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </dd>
-            </div>
-        @endif
+    {{-- Méthodes --}}
+    @include('atlas::exports.partials.common.collapsible-methods', [
+        'methods' => $action['methods'] ?? [],
+        'componentId' => 'action-' . md5($action['class']),
+        'title' => 'Méthodes',
+        'icon' => '⚙️',
+        'collapsed' => true
+    ])
 
-        {{-- Constructor Parameters --}}
-        @if (!empty($item['constructor']['parameters']))
-            <div>
-                <dt class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Constructor Parameters</dt>
-                <dd>
-                    <div class="space-y-2">
-                        @foreach ($item['constructor']['parameters'] as $param)
-                            <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center space-x-2">
-                                        <code class="text-sm font-medium">${{ $param['name'] }}</code>
-                                        <span class="text-sm text-gray-600 dark:text-gray-400">: {{ $param['type'] }}</span>
-                                    </div>
-                                    <div class="flex space-x-1">
-                                        @if ($param['nullable'])
-                                            <span class="text-xs px-1.5 py-0.5 rounded bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">nullable</span>
-                                        @endif
-                                        @if ($param['hasDefault'])
-                                            <span class="text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">default</span>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </dd>
-            </div>
-        @endif
-
-        {{-- Action Methods --}}
-        @if (!empty($item['methods']))
-            <div>
-                @include('atlas::exports.partials.common.property-item', [
-                    'label' => 'Action Methods',
-                    'value' => $item['methods'],
-                    'type' => 'method-list'
-                ])
-            </div>
-        @endif
-
-        {{-- Flow Section --}}
-        @if (!empty($item['flow']))
-            @include('atlas::exports.partials.common.flow-section', [
-                'flow' => $item['flow'],
-                'type' => 'action'
-            ])
-        @endif
-    </div>
+    {{-- Footer --}}
+    @include('atlas::exports.partials.common.card-footer', [
+        'class' => $action['class'],
+        'file' => $action['file']
+    ])
 </div>

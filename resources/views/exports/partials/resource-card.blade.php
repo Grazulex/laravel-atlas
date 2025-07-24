@@ -1,51 +1,93 @@
-{{-- Resource Card Component --}}
-<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-200">
+<div class="bg-white rounded-lg shadow-sm p-4 mb-4 border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+{{-- Header --}}
     @include('atlas::exports.partials.common.card-header', [
-        'icon' => '🗃️',
-        'title' => $item['name'],
-        'subtitle' => $item['namespace'],
-        'badges' => [
-            [
-                'text' => 'API Resource',
-                'class' => 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-300',
-                'icon' => '🗃️'
-            ],
-            [
-                'text' => $item['is_collection'] ? 'Collection' : 'Single Resource',
-                'class' => $item['is_collection'] ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300' : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
-                'icon' => $item['is_collection'] ? '📚' : '📄'
-            ]
-        ]
+        'icon' => '🔗',
+        'title' => class_basename($resource['class']),
+        'badge' => 'API Resource',
+        'badgeColor' => 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-200',
+        'namespace' => $resource['namespace'],
+        'class' => $resource['class']
     ])
 
-    <div class="p-6 space-y-6">
-        {{-- Basic Information --}}
-        <div class="grid md:grid-cols-2 gap-4">
+    {{-- Properties Grid --}}
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+        {{-- Traits --}}
+        @if (!empty($resource['traits']))
             @include('atlas::exports.partials.common.property-item', [
-                'label' => 'File Location',
-                'value' => str_replace(base_path() . '/', '', $item['file']),
-                'type' => 'code'
-            ])
-
-            @include('atlas::exports.partials.common.property-item', [
-                'label' => 'Class',
-                'value' => $item['class'],
-                'type' => 'code'
-            ])
-
-            @include('atlas::exports.partials.common.property-item', [
-                'label' => 'Resource Type',
-                'value' => $item['is_collection'] ? 'Resource Collection' : 'Single Resource',
-                'type' => 'default'
-            ])
-        </div>
-
-        {{-- Flow Section --}}
-        @if (!empty($item['flow']))
-            @include('atlas::exports.partials.common.flow-section', [
-                'flow' => $item['flow'],
-                'type' => 'resource'
+                'icon' => '🧩',
+                'label' => 'Traits',
+                'type' => 'list',
+                'items' => $resource['traits']
             ])
         @endif
+
+        {{-- Methods --}}
+        @if (!empty($resource['methods']))
+            @include('atlas::exports.partials.common.property-item', [
+                'icon' => '⚙️',
+                'label' => 'Custom Methods',
+                'type' => 'methods',
+                'items' => $resource['methods']
+            ])
+        @endif
+
+        {{-- Relationships --}}
+        @if (!empty($resource['relationships']))
+            @include('atlas::exports.partials.common.property-item', [
+                'icon' => '🔗',
+                'label' => 'Relationships',
+                'type' => 'list',
+                'items' => $resource['relationships']
+            ])
+        @endif
+
+        {{-- Conditional Fields --}}
+        @if (!empty($resource['conditionals']))
+            @include('atlas::exports.partials.common.property-item', [
+                'icon' => '🔀',
+                'label' => 'Conditional Fields',
+                'type' => 'list',
+                'items' => $resource['conditionals']
+            ])
+        @endif
+
+        {{-- Transformations --}}
+        @if (!empty($resource['transformations']))
+            @include('atlas::exports.partials.common.property-item', [
+                'icon' => '🔄',
+                'label' => 'Data Transformations',
+                'type' => 'transformations',
+                'items' => $resource['transformations']
+            ])
+        @endif
+
+        {{-- Full Class Name --}}
+        @include('atlas::exports.partials.common.property-item', [
+            'icon' => '🏷️',
+            'label' => 'Full Class Name',
+            'value' => $resource['class'],
+            'type' => 'code'
+        ])
     </div>
+
+    {{-- Flow Section --}}
+    @include('atlas::exports.partials.common.flow-section', [
+        'flow' => $resource['flow'] ?? [],
+        'type' => 'resource'
+    ])
+
+    {{-- Méthodes --}}
+    @include('atlas::exports.partials.common.collapsible-methods', [
+        'methods' => $resource['methods'] ?? [],
+        'componentId' => 'resource-' . md5($resource['class']),
+        'title' => 'Méthodes',
+        'icon' => '⚙️',
+        'collapsed' => true
+    ])
+
+    {{-- Footer --}}
+    @include('atlas::exports.partials.common.card-footer', [
+        'class' => $resource['class'],
+        'file' => $resource['file']
+    ])
 </div>

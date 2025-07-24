@@ -1,124 +1,146 @@
-{{-- Route Card Component --}}
-<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-200">
+<div class="bg-white rounded-lg shadow-sm p-4 mb-4 border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+{{-- Header --}}
     @include('atlas::exports.partials.common.card-header', [
         'icon' => '🛣️',
-        'title' => $item['uri'] ?: '/',
-        'subtitle' => $item['name'] ? 'Route: ' . $item['name'] : 'Unnamed route',
-        'badges' => array_merge(
-            [
-                [
-                    'text' => ucfirst($item['type']),
-                    'class' => match($item['type']) {
-                        'api' => 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
-                        'admin' => 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
-                        'webhook' => 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
-                        'system' => 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
-                        default => 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
-                    },
-                    'icon' => match($item['type']) {
-                        'api' => '🔌',
-                        'admin' => '👨‍💼',
-                        'webhook' => '🪝',
-                        'system' => '⚙️',
-                        default => '🌐'
-                    }
-                ]
-            ],
-            array_map(fn($method) => [
-                'text' => $method,
-                'class' => match(strtoupper($method)) {
-                    'GET' => 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-                    'POST' => 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
-                    'PUT', 'PATCH' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
-                    'DELETE' => 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
-                    default => 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
-                }
-            ], $item['methods'])
-        )
+        'title' => $route['uri'],
+        'badge' => strtoupper($route['type']),
+        'badgeColor' => 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200',
+        'namespace' => $route['namespace'] ?? null,
+        'class' => $route['class'] ?? null
     ])
 
-    <div class="p-6 space-y-6">
-        {{-- Basic Route Information --}}
-        <div class="grid md:grid-cols-2 gap-4">
-            @include('atlas::exports.partials.common.property-item', [
-                'label' => 'URI Pattern',
-                'value' => $item['uri'] ?: '/',
-                'type' => 'code'
-            ])
-
-            @if ($item['name'])
-                @include('atlas::exports.partials.common.property-item', [
-                    'label' => 'Route Name',
-                    'value' => $item['name'],
-                    'type' => 'code'
-                ])
-            @endif
-
-            @include('atlas::exports.partials.common.property-item', [
-                'label' => 'HTTP Methods',
-                'value' => $item['methods'],
-                'type' => 'badge-list'
-            ])
-
-            @if ($item['prefix'])
-                @include('atlas::exports.partials.common.property-item', [
-                    'label' => 'Route Prefix',
-                    'value' => $item['prefix'],
-                    'type' => 'code'
-                ])
-            @endif
+    {{-- Description --}}
+    @if (!empty($route['description']))
+        <div class="mb-4">
+            <p class="text-xs text-gray-600 dark:text-gray-300 italic bg-gray-50 dark:bg-gray-700/50 rounded p-3">
+                {{ $route['description'] }}
+            </p>
         </div>
+    @endif
 
-        {{-- Action Information --}}
+    {{-- Key Properties Grid (Always 3 columns on large screens) --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+        {{-- Route Name --}}
+        @include('atlas::exports.partials.common.property-item', [
+            'icon' => '🔖',
+            'label' => 'Route Name',
+            'value' => $route['name'] ?? 'Not Named',
+            'type' => 'simple'
+        ])
+
+        {{-- HTTP Methods --}}
+        @include('atlas::exports.partials.common.property-item', [
+            'icon' => '🧭',
+            'label' => 'HTTP Methods',
+            'value' => !empty($route['methods']) ? implode(', ', $route['methods']) : 'GET',
+            'type' => 'simple'
+        ])
+
+        {{-- Middleware Count --}}
+        @include('atlas::exports.partials.common.property-item', [
+            'icon' => '🛡️',
+            'label' => 'Middlewares',
+            'value' => !empty($route['middleware']) ? count($route['middleware']) . ' middlewares' : '0 middlewares',
+            'type' => 'simple'
+        ])
+    </div>
+
+    {{-- Detailed Tables Section --}}
+    <div class="space-y-6">
+        {{-- Handler Details --}}
         <div>
-            <dt class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Route Action</dt>
-            <dd>
-                <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
-                    @if ($item['is_closure'])
-                        <div class="flex items-center space-x-2">
-                            <span class="text-xs px-2 py-1 rounded bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">Closure</span>
-                            <span class="text-sm text-gray-600 dark:text-gray-400">Anonymous function</span>
-                        </div>
-                    @elseif ($item['controller'] && $item['uses'])
-                        <div class="space-y-2">
-                            <div>
-                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Controller:</span>
-                                <code class="ml-2">{{ class_basename($item['controller']) }}</code>
+            <div class="flex items-center mb-3">
+                <span class="text-sm mr-2">⚙️</span>
+                <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Handler Details
+                </h4>
+            </div>
+            <div class="bg-gray-50 dark:bg-gray-700/50 rounded p-3">
+                @if ($route['is_closure'])
+                    <span class="text-xs px-2 py-1 rounded-full bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-200 font-medium">
+                        Closure Function
+                    </span>
+                @else
+                    <div class="space-y-2">
+                        @if (!empty($route['controller']))
+                            <div class="text-xs">
+                                <span class="font-medium text-gray-700 dark:text-gray-300">Controller:</span>
+                                <code class="ml-2 text-blue-600 dark:text-blue-400">{{ class_basename($route['controller']) }}</code>
                             </div>
-                            <div>
-                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Method:</span>
-                                <code class="ml-2">{{ $item['uses'] }}</code>
+                        @endif
+                        @if (!empty($route['uses']))
+                            <div class="text-xs">
+                                <span class="font-medium text-gray-700 dark:text-gray-300">Method:</span>
+                                <code class="ml-2 text-purple-600 dark:text-purple-400">{{ $route['uses'] }}</code>
                             </div>
-                        </div>
-                    @else
-                        <div>
-                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Action:</span>
-                            <code class="ml-2">{{ $item['action'] }}</code>
-                        </div>
-                    @endif
-                </div>
-            </dd>
+                        @endif
+                    </div>
+                @endif
+            </div>
         </div>
 
         {{-- Middleware --}}
-        @if (!empty($item['middleware']))
+        @if (!empty($route['middleware']))
             <div>
-                @include('atlas::exports.partials.common.property-item', [
-                    'label' => 'Applied Middleware',
-                    'value' => array_map(function($middleware) {
-                        return is_string($middleware) ? $middleware : class_basename($middleware);
-                    }, $item['middleware']),
-                    'type' => 'badge-list'
-                ])
+                <div class="flex items-center mb-3">
+                    <span class="text-sm mr-2">🛡️</span>
+                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Applied Middlewares ({{ count($route['middleware']) }})
+                    </h4>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-700/50 rounded p-3">
+                    <div class="flex flex-wrap gap-2">
+                        @foreach ($route['middleware'] as $middleware)
+                            <span class="text-xs px-2 py-1 rounded-full bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-200 font-medium">
+                                {{ $middleware }}
+                            </span>
+                        @endforeach
+                    </div>
+                </div>
             </div>
         @endif
 
-        {{-- Flow Section --}}
-        @if (!empty($item['flow']))
-            @include('atlas::exports.partials.common.flow-section', [
-                'flow' => $item['flow'],
-                'type' => 'route'
-            ])
+        {{-- Additional Properties --}}
+        @if (!empty($route['prefix']) || !empty($route['domain']))
+            <div>
+                <div class="flex items-center mb-3">
+                    <span class="text-sm mr-2">🌐</span>
+                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Additional Properties
+                    </h4>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-700/50 rounded p-3">
+                    <div class="space-y-2">
+                        @if (!empty($route['prefix']))
+                            <div class="text-xs">
+                                <span class="font-medium text-gray-700 dark:text-gray-300">Prefix:</span>
+                                <code class="ml-2 text-green-600 dark:text-green-400">{{ $route['prefix'] }}</code>
+                            </div>
+                        @endif
+                        @if (!empty($route['domain']))
+                            <div class="text-xs">
+                                <span class="font-medium text-gray-700 dark:text-gray-300">Domain:</span>
+                                <code class="ml-2 text-blue-600 dark:text-blue-400">{{ $route['domain'] }}</code>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
         @endif
     </div>
+
+    {{-- Interactive Sections --}}
+    <div class="mt-6 space-y-4">
+        {{-- Flow Section --}}
+        @include('atlas::exports.partials.common.flow-section', [
+            'flow' => $route['flow'] ?? [],
+            'type' => 'route'
+        ])
+    </div>
+
+    {{-- Footer --}}
+    @include('atlas::exports.partials.common.card-footer', [
+        'class' => $route['class'] ?? 'N/A',
+        'file' => $route['file'] ?? 'N/A'
+    ])
 </div>
