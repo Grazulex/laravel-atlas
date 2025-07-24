@@ -1,5 +1,5 @@
 {{-- PDF Model Card - Complete Model on one or few pages --}}
-<div class="card no-break">
+<div class="card">
     {{-- Header --}}
     <div class="card-header">
         <div class="card-title">

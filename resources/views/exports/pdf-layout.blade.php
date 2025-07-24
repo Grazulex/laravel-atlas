@@ -313,7 +313,10 @@
             <div class="section section-break">
                 <h2 class="section-title">MODELS ({{ count($models) }})</h2>
                 <div class="cards-grid">
-                    @foreach ($models as $item)
+                    @foreach ($models as $index => $item)
+                        @if ($index > 0)
+                            <div class="page-break"></div>
+                        @endif
                         @include('atlas::exports.pdf.model-card')
                     @endforeach
                 </div>
