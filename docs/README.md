@@ -8,13 +8,12 @@ This directory contains comprehensive documentation for Laravel Atlas.
 - [configuration.md](configuration.md) - Configuration options and customization
 - [components.md](components.md) - Detailed component type documentation
 - [export-formats.md](export-formats.md) - Export formats and examples
+- [testing-architecture.md](testing-architecture.md) - **NEW** Architecture testing and validation guide
 - [html-exports/](html-exports/) - HTML export examples and documentation
-- [api-reference.md](api-reference.md) - Complete API reference
-- [examples.md](examples.md) - Working examples and use cases
-- [troubleshooting.md](troubleshooting.md) - Common issues and solutions
 
 ## Quick Links
 
 - **[Main README](../README.md)** - Overview and quick start
 - **[Examples Directory](../examples/)** - Working code examples
+- **[Testing Example](../examples/testing-example.php)** - **NEW** Architecture testing examples
 - **[HTML Export Examples](html-exports/)** - Interactive HTML dashboard examples

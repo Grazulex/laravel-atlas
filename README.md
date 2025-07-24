@@ -46,6 +46,8 @@ Laravel Atlas is perfect for:
 - **Architecture Reviews** - Analyze application structure and dependencies  
 - **Legacy Code Analysis** - Understand complex existing applications
 - **Compliance Reporting** - Generate architectural documentation
+- **🧪 Architecture Testing** - Validate application structure and enforce coding standards
+- **CI/CD Integration** - Automated architecture analysis and reporting
 
 ## ✨ Features
 
@@ -59,6 +61,7 @@ Laravel Atlas is perfect for:
 - ⚡ **CLI Integration** - Powerful Artisan commands for map generation
 - 💻 **Programmatic API** - Full PHP API with Atlas facade
 - 📝 **Documentation Generation** - Auto-generate architecture documentation
+- 🧪 **Testing Integration** - Use Atlas facade for architecture testing and validation
 
 ## 📦 Installation
 
@@ -370,6 +373,68 @@ $htmlReport = Atlas::export('routes', 'html');
 $pdfDocument = Atlas::export('commands', 'pdf');
 ```
 
+## 🧪 Testing Your Architecture
+
+Laravel Atlas provides powerful capabilities for **testing and validating your application's architecture**. Use the Atlas facade in your tests to ensure your codebase follows intended patterns and standards.
+
+### Architecture Testing Examples
+
+```php
+use Tests\TestCase;
+use LaravelAtlas\Facades\Atlas;
+
+class ArchitectureTest extends TestCase
+{
+    /** @test */
+    public function controllers_follow_naming_conventions(): void
+    {
+        $controllersData = Atlas::scan('controllers');
+        
+        foreach ($controllersData['data'] as $controller) {
+            $this->assertStringEndsWith('Controller', $controller['name']);
+        }
+    }
+
+    /** @test */
+    public function models_have_proper_relationships(): void
+    {
+        $modelsData = Atlas::scan('models', ['include_relationships' => true]);
+        
+        foreach ($modelsData['data'] as $model) {
+            $relationshipCount = count($model['relationships'] ?? []);
+            $this->assertLessThan(15, $relationshipCount, 
+                "Model {$model['name']} has too many relationships");
+        }
+    }
+
+    /** @test */
+    public function routes_have_proper_middleware(): void
+    {
+        $routesData = Atlas::scan('routes', ['include_middleware' => true]);
+        
+        $apiRoutes = array_filter($routesData['data'], 
+            fn($route) => str_starts_with($route['uri'], 'api/'));
+            
+        foreach ($apiRoutes as $route) {
+            $this->assertContains('api', $route['middleware']);
+        }
+    }
+}
+```
+
+### CI/CD Integration
+
+```bash
+# Run architecture tests in your pipeline
+php artisan test --filter=ArchitectureTest
+
+# Generate architecture reports
+php artisan atlas:export --format=html --output=reports/architecture.html
+php artisan atlas:export --format=json --output=reports/architecture.json
+```
+
+**📖 Learn More**: See our comprehensive [Testing Architecture Guide](docs/testing-architecture.md) for advanced testing strategies and examples.
+
 ## 🔍 Analysis Tools
 
 Laravel Atlas provides comprehensive component analysis:
@@ -467,15 +532,17 @@ return [
 
 - **[Getting Started](#-quick-start)** - Basic usage and installation
 - **[Available Components](#available-component-types)** - Currently supported component types
-- **[Export Formats](docs/export-formats.md)** - **NEW** Detailed export format documentation with HTML examples
-- **[HTML Export Examples](docs/html-exports/)** - **NEW** Interactive HTML dashboard examples and features
+- **[Export Formats](docs/export-formats.md)** - Detailed export format documentation with HTML examples
+- **[Testing Architecture](docs/testing-architecture.md)** - **NEW** Complete guide to architecture testing and validation
+- **[HTML Export Examples](docs/html-exports/)** - Interactive HTML dashboard examples and features
 - **[Examples Directory](examples/)** - Working examples for all features
 - **[Configuration](#️-configuration)** - Detailed configuration options
 
 ### Quick Links
 
 - **[Examples README](examples/README.md)** - Overview of all working examples
-- **[HTML Export Example](examples/html-export-example.php)** - **NEW** Interactive HTML dashboard generation
+- **[Testing Example](examples/testing-example.php)** - **NEW** Architecture testing and validation examples
+- **[HTML Export Example](examples/html-export-example.php)** - Interactive HTML dashboard generation
 - **[Basic Usage Example](examples/basic-usage.php)** - Simple scanning and exporting
 - **[Models Analysis](examples/models-example.php)** - Detailed model mapping
 - **[Routes Analysis](examples/routes-example.php)** - Route mapping with middleware
