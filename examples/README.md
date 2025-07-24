@@ -26,8 +26,9 @@ Laravel Atlas currently supports **16 component types**:
 ## Examples Overview
 
 - [Basic Usage](basic-usage.php) - Simple scanning and exporting
+- [Testing Example](testing-example.php) - **NEW** Architecture testing and validation
 - [HTML Export Example](html-export-example.php) - Interactive HTML dashboard generation
-- [PDF Export Example](pdf-export-example.php) - **NEW** Professional PDF report generation
+- [PDF Export Example](pdf-export-example.php) - Professional PDF report generation
 - [Models Analysis](models-example.php) - Detailed model mapping with relationships
 - [Routes Analysis](routes-example.php) - Route mapping with middleware information
 - [Commands Analysis](commands-example.php) - Artisan command analysis
@@ -35,9 +36,9 @@ Laravel Atlas currently supports **16 component types**:
 - [Notifications Analysis](notifications-example.php) - Notification mapping with channels
 - [Middlewares Analysis](middlewares-example.php) - Middleware analysis with parameters
 - [Form Requests Analysis](form-requests-example.php) - Form request validation mapping
-- [Events Analysis](events-example.php) - **NEW** Event class mapping with listeners
-- [Controllers Analysis](controllers-example.php) - **NEW** Controller mapping with actions
-- [Jobs Analysis](jobs-example.php) - **NEW** Job class mapping with queue configuration
+- [Events Analysis](events-example.php) - Event class mapping with listeners
+- [Controllers Analysis](controllers-example.php) - Controller mapping with actions
+- [Jobs Analysis](jobs-example.php) - Job class mapping with queue configuration
 - [Complete Application Map](complete-analysis.php) - Generate comprehensive application documentation
 
 ## Export Formats

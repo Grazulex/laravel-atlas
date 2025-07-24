@@ -105,8 +105,8 @@ return [
 ```php
 'formats' => [
     'json' => env('ATLAS_FORMAT_JSON', true),
-    'markdown' => env('ATLAS_FORMAT_MARKDOWN', true),
     'html' => env('ATLAS_FORMAT_HTML', true),
+    'pdf' => env('ATLAS_FORMAT_PDF', true),
 ],
 ```
 
@@ -146,8 +146,8 @@ ATLAS_MAX_ENTRIES=2000
 # Generation settings
 ATLAS_OUTPUT_PATH=/var/www/html/docs/atlas
 ATLAS_FORMAT_JSON=true
-ATLAS_FORMAT_MARKDOWN=true
 ATLAS_FORMAT_HTML=true
+ATLAS_FORMAT_PDF=true
 
 # Analysis settings
 ATLAS_INCLUDE_VENDORS=false
@@ -210,10 +210,10 @@ Customize export behavior:
         'include_search' => true,
         'include_navigation' => true,
     ],
-    'markdown' => [
-        'include_toc' => true,
-        'include_stats' => true,
-        'format' => 'github', // github, gitlab, default
+    'pdf' => [
+        'format' => 'A4',
+        'orientation' => 'portrait',
+        'include_cover' => true,
     ],
     'json' => [
         'pretty_print' => true,
@@ -320,7 +320,7 @@ return [
         'output_path' => env('CI_PROJECT_DIR', base_path()) . '/docs',
         'formats' => [
             'html' => true,
-            'markdown' => true,
+            'pdf' => true,
             'json' => true,
         ],
     ],
@@ -349,7 +349,7 @@ return [
         'output_path' => '/var/www/docs/atlas',
         'formats' => [
             'html' => true,
-            'markdown' => true,
+            'pdf' => true,
             'json' => true,
         ],
     ],

@@ -619,7 +619,7 @@ php artisan atlas:export --type=observers --format=pdf --output=docs/observers.p
 
 ```bash
 # Generate models documentation
-php artisan atlas:generate --type=models --format=html --output=docs/models.html
+php artisan atlas:export --type=models --format=html --output=docs/models.html
 ```
 
 ```php
@@ -662,7 +662,7 @@ $modelsData = Atlas::scan('models', [
 
 ```bash
 # Generate routes documentation
-php artisan atlas:generate --type=routes --format=markdown --output=docs/routes.md
+php artisan atlas:export --type=routes --format=html --output=docs/routes.html
 ```
 
 ```php
@@ -701,7 +701,7 @@ $routesData = Atlas::scan('routes', [
 
 ```bash
 # Generate commands documentation
-php artisan atlas:generate --type=commands --format=json --output=api/commands.json
+php artisan atlas:export --type=commands --format=json --output=api/commands.json
 ```
 
 ```php
@@ -741,7 +741,7 @@ $commandsData = Atlas::scan('commands', [
 
 ```bash
 # Generate services documentation
-php artisan atlas:generate --type=services --format=html --output=docs/services.html
+php artisan atlas:export --type=services --format=html --output=docs/services.html
 ```
 
 ```php
@@ -781,7 +781,7 @@ $servicesData = Atlas::scan('services', [
 
 ```bash
 # Generate notifications documentation
-php artisan atlas:generate --type=notifications --format=markdown --output=docs/notifications.md
+php artisan atlas:export --type=notifications --format=pdf --output=docs/notifications.pdf
 ```
 
 ```php
@@ -822,7 +822,7 @@ $notificationsData = Atlas::scan('notifications', [
 
 ```bash
 # Generate middlewares documentation
-php artisan atlas:generate --type=middlewares --format=html --output=docs/middlewares.html
+php artisan atlas:export --type=middlewares --format=html --output=docs/middlewares.html
 ```
 
 ```php
@@ -863,7 +863,7 @@ $middlewaresData = Atlas::scan('middlewares', [
 
 ```bash
 # Generate form requests documentation
-php artisan atlas:generate --type=form_requests --format=json --output=api/form-requests.json
+php artisan atlas:export --type=form_requests --format=json --output=api/form-requests.json
 ```
 
 ```php
