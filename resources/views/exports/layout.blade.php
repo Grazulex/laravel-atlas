@@ -155,49 +155,49 @@
     {{-- Main Content --}}
     <div class="flex-1 md:ml-0">
         <div class="p-6 max-w-7xl mx-auto">
-        <div id="section-models" class="content-section hidden">
-            <div class="mb-8">
-                <div class="flex items-center space-x-3 mb-2">
-                    <span class="text-2xl">🧱</span>
-                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Models</h2>
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
-                        {{ count($models) }} {{ count($models) === 1 ? 'Model' : 'Models' }}
-                    </span>
+            <div id="section-models" class="content-section hidden">
+                <div class="mb-8">
+                    <div class="flex items-center space-x-3 mb-2">
+                        <span class="text-2xl">🧱</span>
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Models</h2>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
+                            {{ count($models) }} {{ count($models) === 1 ? 'Model' : 'Models' }}
+                        </span>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-400">Database entities and their relationships, attributes, and behaviors.</p>
                 </div>
-                <p class="text-gray-600 dark:text-gray-400">Database entities and their relationships, attributes, and behaviors.</p>
+                @foreach ($models as $model)
+                    @include('atlas::exports.partials.model-card', ['model' => $model])
+                @endforeach
             </div>
-            @foreach ($models as $model)
-                @include('atlas::exports.partials.model-card', ['model' => $model])
-            @endforeach
-        </div>
 
-        <div id="section-commands" class="content-section hidden">
-            <div class="mb-8">
-                <div class="flex items-center space-x-3 mb-2">
-                    <span class="text-2xl">💬</span>
-                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Commands</h2>
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
-                        {{ count($commands) }} {{ count($commands) === 1 ? 'Command' : 'Commands' }}
-                    </span>
+            <div id="section-commands" class="content-section hidden">
+                <div class="mb-8">
+                    <div class="flex items-center space-x-3 mb-2">
+                        <span class="text-2xl">💬</span>
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Commands</h2>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
+                            {{ count($commands) }} {{ count($commands) === 1 ? 'Command' : 'Commands' }}
+                        </span>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-400">Artisan commands for CLI operations and automation tasks.</p>
                 </div>
-                <p class="text-gray-600 dark:text-gray-400">Artisan commands for CLI operations and automation tasks.</p>
+                @foreach ($commands as $command)
+                    @include('atlas::exports.partials.command-card', ['command' => $command])
+                @endforeach
             </div>
-            @foreach ($commands as $command)
-                @include('atlas::exports.partials.command-card', ['command' => $command])
-            @endforeach
-        </div>
 
-        <div id="section-routes" class="content-section hidden">
-            <div class="mb-8">
-                <div class="flex items-center space-x-3 mb-2">
-                    <span class="text-2xl">🛣️</span>
-                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Routes</h2>
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
-                        {{ count($routes) }} {{ count($routes) === 1 ? 'Route' : 'Routes' }}
-                    </span>
+            <div id="section-routes" class="content-section hidden">
+                <div class="mb-8">
+                    <div class="flex items-center space-x-3 mb-2">
+                        <span class="text-2xl">🛣️</span>
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Routes</h2>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
+                            {{ count($routes) }} {{ count($routes) === 1 ? 'Route' : 'Routes' }}
+                        </span>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-400">Application endpoints and URL patterns for handling HTTP requests.</p>
                 </div>
-                <p class="text-gray-600 dark:text-gray-400">Application endpoints and URL patterns for handling HTTP requests.</p>
-            </div>
             @foreach ($routes as $route)
                 @include('atlas::exports.partials.route-card', ['route' => $route])
             @endforeach
