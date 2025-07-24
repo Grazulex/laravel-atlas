@@ -1,4 +1,8 @@
-<div class="bg-white rounded-lg shadow-sm p-4 mb-4 border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+<div class="bg-whi    @endif
+
+    {{-- Key Properties Grid (Always 3 columns on large screens) --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+        {{-- Authorization Status --}}unded-lg shadow-sm p-4 mb-4 border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
     {{-- Header --}}
     @include('atlas::exports.partials.common.card-header', [
         'icon' => '📝',

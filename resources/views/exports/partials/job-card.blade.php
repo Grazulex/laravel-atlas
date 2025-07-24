@@ -19,7 +19,7 @@
     @endif
 
     {{-- Key Properties Grid (Always 3 columns on large screens) --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
         {{-- Queueable Status --}}
         @include('atlas::exports.partials.common.property-item', [
             'icon' => '�',
