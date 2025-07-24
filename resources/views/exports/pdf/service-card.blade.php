@@ -7,17 +7,17 @@
     
     <div class="card-content">
         <div class="property-item">
-            <div class="property-label">📁 Namespace:</div>
+            <div class="property-label">NAMESPACE:</div>
             <div class="property-value">{{ dirname(str_replace('\\', '/', $item['class'] ?? '')) }}</div>
         </div>
         
         <div class="property-item">
-            <div class="property-label">🎯 Methods:</div>
+            <div class="property-label">METHODS:</div>
             <div class="property-value">{{ !empty($item['methods']) ? count($item['methods']) . ' methods' : 'None' }}</div>
         </div>
 
         <div class="property-item">
-            <div class="property-label">🔧 Dependencies:</div>
+            <div class="property-label">DEPENDENCIES:</div>
             <div class="property-value">{{ !empty($item['dependencies']) ? count($item['dependencies']) . ' dependencies' : 'None' }}</div>
         </div>
     </div>

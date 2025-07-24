@@ -7,17 +7,17 @@
     
     <div class="card-content">
         <div class="property-item">
-            <div class="property-label">📝 Description:</div>
+            <div class="property-label">DESCRIPTION:</div>
             <div class="property-value">{{ $item['description'] ?? 'No description' }}</div>
         </div>
         
         <div class="property-item">
-            <div class="property-label">🎯 Arguments:</div>
+            <div class="property-label">ARGUMENTS:</div>
             <div class="property-value">{{ !empty($item['arguments']) ? count($item['arguments']) . ' arguments' : 'None' }}</div>
         </div>
 
         <div class="property-item">
-            <div class="property-label">⚙️ Options:</div>
+            <div class="property-label">OPTIONS:</div>
             <div class="property-value">{{ !empty($item['options']) ? count($item['options']) . ' options' : 'None' }}</div>
         </div>
     </div>
