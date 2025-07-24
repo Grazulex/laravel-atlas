@@ -6,13 +6,10 @@
     @param array $items - Array of items for lists (optional)
     @param string $type - Display type: 'simple', 'list', 'code', 'table', 'properties', 'methods', 'dependencies', 'transformations', 'parameters' (default: simple)
 --}}
-@php
-    $type = $type ?? 'simple';
-@endphp
 <div class="min-h-[2rem]">
     <span class="block text-xs text-gray-400 dark:text-gray-500 font-semibold mb-1">{{ $icon ?? '' }} {{ $label }}</span>
     
-    @if ($type === 'list')
+    @if (($type ?? 'simple') === 'list')
         @if (!empty($items))
             <ul class="text-xs space-y-0.5">
                 @foreach ($items as $item)
@@ -22,7 +19,7 @@
         @else
             <span class="text-xs text-gray-500 italic">None</span>
         @endif
-    @elseif ($type === 'properties')
+    @elseif (($type ?? 'simple') === 'properties')
         @if (!empty($items))
             <div class="text-xs space-y-1">
                 @foreach ($items as $property)
@@ -35,7 +32,7 @@
         @else
             <span class="text-xs text-gray-500 italic">None</span>
         @endif
-    @elseif ($type === 'methods')
+    @elseif (($type ?? 'simple') === 'methods')
         @if (!empty($items))
             <div class="text-xs space-y-1">
                 @foreach ($items as $method)
@@ -48,7 +45,7 @@
         @else
             <span class="text-xs text-gray-500 italic">None</span>
         @endif
-    @elseif ($type === 'dependencies')
+    @elseif (($type ?? 'simple') === 'dependencies')
         @if (!empty($items))
             <div class="text-xs space-y-1">
                 @foreach ($items as $depType => $deps)
@@ -63,7 +60,7 @@
         @else
             <span class="text-xs text-gray-500 italic">None</span>
         @endif
-    @elseif ($type === 'transformations')
+    @elseif (($type ?? 'simple') === 'transformations')
         @if (!empty($items))
             <ul class="text-xs space-y-0.5">
                 @foreach ($items as $item)
@@ -73,7 +70,7 @@
         @else
             <span class="text-xs text-gray-500 italic">None</span>
         @endif
-    @elseif ($type === 'parameters')
+    @elseif (($type ?? 'simple') === 'parameters')
         @if (!empty($items))
             <div class="text-xs space-y-1">
                 @foreach ($items as $param)
@@ -94,7 +91,7 @@
         @else
             <span class="text-xs text-gray-500 italic">None</span>
         @endif
-    @elseif ($type === 'code')
+    @elseif (($type ?? 'simple') === 'code')
         @if (!empty($value))
             <div class="text-xs bg-gray-50 dark:bg-gray-700 rounded p-2 text-gray-800 dark:text-gray-200 leading-tight">
                 {{ $value }}
@@ -102,7 +99,7 @@
         @else
             <span class="text-xs text-gray-500 italic">None</span>
         @endif
-    @elseif ($type === 'table')
+    @elseif (($type ?? 'simple') === 'table')
         {{ $slot ?? '' }}
     @else
         @if (!empty($value))
