@@ -2,28 +2,28 @@
     {{-- Header --}}
     @include('atlas::exports.partials.common.card-header', [
         'icon' => '📝',
-        'title' => str_replace(['Store', 'Update', 'Request'], ['Create', 'Edit', ''], class_basename($formRequest['class'])),
-        'badge' => str_contains($formRequest['class'], 'Store') ? 'Create' : (str_contains($formRequest['class'], 'Update') ? 'Update' : 'Form Request'),
-        'badgeColor' => str_contains($formRequest['class'], 'Store') ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200' : (str_contains($formRequest['class'], 'Update') ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'),
-        'namespace' => $formRequest['namespace'],
-        'class' => $formRequest['class']
+        'title' => str_replace(['Store', 'Update', 'Request'], ['Create', 'Edit', ''], class_basename($form_request['class'])),
+        'badge' => str_contains($form_request['class'], 'Store') ? 'Create' : (str_contains($form_request['class'], 'Update') ? 'Update' : 'Form Request'),
+        'badgeColor' => str_contains($form_request['class'], 'Store') ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200' : (str_contains($form_request['class'], 'Update') ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'),
+        'namespace' => $form_request['namespace'],
+        'class' => $form_request['class']
     ])
 
     {{-- Description --}}
-    @if (!empty($formRequest['description']))
-        <p class="text-xs text-gray-600 dark:text-gray-300 italic mb-3">{{ $formRequest['description'] }}</p>
+    @if (!empty($form_request['description']))
+        <p class="text-xs text-gray-600 dark:text-gray-300 italic mb-3">{{ $form_request['description'] }}</p>
     @endif
 
     {{-- Properties Grid --}}
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
         {{-- Authorization --}}
-        @if (!empty($formRequest['authorization']))
+        @if (!empty($form_request['authorization']))
             @include('atlas::exports.partials.common.property-item', [
                 'icon' => '🔐',
                 'label' => 'Authorization',
-                'value' => $formRequest['authorization']['always_true'] ? 'Always Allow' : 
-                          ($formRequest['authorization']['always_false'] ? 'Always Deny' : 
-                          ($formRequest['authorization']['uses_can'] ? 'Policy-based' : 'Custom Logic')),
+                'value' => $form_request['authorization']['always_true'] ? 'Always Allow' : 
+                          ($form_request['authorization']['always_false'] ? 'Always Deny' : 
+                          ($form_request['authorization']['uses_can'] ? 'Policy-based' : 'Custom Logic')),
                 'type' => 'simple'
             ])
         @endif
@@ -32,7 +32,7 @@
         @include('atlas::exports.partials.common.property-item', [
             'icon' => '📋',
             'label' => 'Validation Rules',
-            'value' => count($formRequest['rules']) . ' fields',
+            'value' => count($form_request['rules']) . ' fields',
             'type' => 'simple'
         ])
 
@@ -40,13 +40,13 @@
         @include('atlas::exports.partials.common.property-item', [
             'icon' => '🏷️',
             'label' => 'Full Class Name',
-            'value' => $formRequest['class'],
+            'value' => $form_request['class'],
             'type' => 'code'
         ])
     </div>
 
     {{-- Validation Rules Table --}}
-    @if (!empty($formRequest['rules']))
+    @if (!empty($form_request['rules']))
         <div class="mb-4">
             @include('atlas::exports.partials.common.property-item', [
                 'icon' => '✅',
@@ -63,7 +63,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($formRequest['rules'] as $field => $rules)
+                    @foreach ($form_request['rules'] as $field => $rules)
                         <tr class="border-t dark:border-gray-600">
                             <td class="p-2">
                                 <code>{{ $field }}</code>
@@ -85,13 +85,13 @@
                                 </div>
                             </td>
                             <td class="p-2 text-gray-600 dark:text-gray-300">
-                                {{ $formRequest['attributes'][$field] ?? '-' }}
+                                {{ $form_request['attributes'][$field] ?? '-' }}
                             </td>
                             <td class="p-2 text-gray-600 dark:text-gray-300">
                                 @php
                                     $messageKey = $field . '.required';
                                     $hasCustomMessage = false;
-                                    foreach ($formRequest['messages'] as $key => $message) {
+                                    foreach ($form_request['messages'] as $key => $message) {
                                         if (str_starts_with($key, $field . '.')) {
                                             $hasCustomMessage = true;
                                             break;
@@ -108,7 +108,7 @@
     @endif
 
     {{-- Custom Messages --}}
-    @if (!empty($formRequest['messages']))
+    @if (!empty($form_request['messages']))
         <div class="mb-4">
             @include('atlas::exports.partials.common.property-item', [
                 'icon' => '💬',
@@ -123,7 +123,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($formRequest['messages'] as $rule => $message)
+                    @foreach ($form_request['messages'] as $rule => $message)
                         <tr class="border-t dark:border-gray-600">
                             <td class="p-2"><code>{{ $rule }}</code></td>
                             <td class="p-2 text-gray-600 dark:text-gray-300">{{ $message }}</td>
@@ -135,7 +135,7 @@
     @endif
 
     {{-- Methods Table --}}
-    @if (!empty($formRequest['methods']))
+    @if (!empty($form_request['methods']))
         <div class="mb-4">
             @include('atlas::exports.partials.common.property-item', [
                 'icon' => '🔧',
@@ -152,7 +152,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($formRequest['methods'] as $method)
+                    @foreach ($form_request['methods'] as $method)
                         <tr class="border-t dark:border-gray-600">
                             <td class="p-2">
                                 <code>{{ $method['name'] }}</code>
@@ -189,13 +189,13 @@
 
     {{-- Flow Section --}}
     @include('atlas::exports.partials.common.flow-section', [
-        'flow' => $formRequest['flow'] ?? [],
+        'flow' => $form_request['flow'] ?? [],
         'type' => 'form_request'
     ])
 
     {{-- Footer --}}
     @include('atlas::exports.partials.common.card-footer', [
-        'class' => $formRequest['class'],
-        'file' => $formRequest['file']
+        'class' => $form_request['class'],
+        'file' => $form_request['file']
     ])
 </div>
