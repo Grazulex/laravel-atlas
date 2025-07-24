@@ -45,19 +45,17 @@ class ActionMapper implements ComponentMapper
             $files = $recursive ? File::allFiles($path) : File::files($path);
 
             foreach ($files as $file) {
-                $fqcn = ClassResolver::resolveFromPath($file->getRealPath());
+                foreach ($files as $file) {
+                $fqcn = $this->resolveClassFromFile($file->getRealPath());
 
                 if (
                     $fqcn &&
-                    class_exists($fqcn) &&
                     ! isset($seen[$fqcn])
                 ) {
-                    $reflection = new ReflectionClass($fqcn);
-                    if (! $reflection->isAbstract() && ! $reflection->isInterface()) {
-                        $actions[] = $this->analyzeAction($fqcn);
-                        $seen[$fqcn] = true;
-                    }
+                    $seen[$fqcn] = true;
+                    $actions[] = $this->analyzeAction($fqcn, $file->getRealPath());
                 }
+            }
             }
         }
 
@@ -155,5 +153,57 @@ class ActionMapper implements ComponentMapper
         }
 
         return $dependencies;
+    }
+
+    /**
+     * Résoudre le nom de classe à partir d'un fichier
+     */
+    protected function resolveClassFromFile(string $filePath): ?string
+    {
+        // D'abord essayer avec ClassResolver
+        $fqcn = ClassResolver::resolveFromPath($filePath);
+        if ($fqcn && class_exists($fqcn)) {
+            return $fqcn;
+        }
+
+        // Si ça ne fonctionne pas, essayer de charger manuellement le fichier
+        if (!file_exists($filePath)) {
+            return null;
+        }
+
+        // Lire le contenu du fichier pour extraire le namespace et le nom de classe
+        $content = file_get_contents($filePath);
+        if ($content === false) {
+            return null;
+        }
+
+        // Extraire le namespace
+        if (preg_match('/namespace\s+([^;]+);/', $content, $namespaceMatches)) {
+            $namespace = trim($namespaceMatches[1]);
+        } else {
+            $namespace = '';
+        }
+
+        // Extraire le nom de classe
+        if (preg_match('/class\s+(\w+)/', $content, $classMatches)) {
+            $className = $classMatches[1];
+        } else {
+            return null;
+        }
+
+        // Construire le FQCN
+        $fqcn = $namespace ? $namespace . '\\' . $className : $className;
+
+        // Essayer de charger le fichier
+        try {
+            require_once $filePath;
+            if (class_exists($fqcn)) {
+                return $fqcn;
+            }
+        } catch (\Throwable $e) {
+            // Ignorer les erreurs de chargement
+        }
+
+        return null;
     }
 }
