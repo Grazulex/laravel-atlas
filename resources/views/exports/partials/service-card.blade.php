@@ -4,7 +4,9 @@
         'icon' => '🔧',
         'title' => class_basename($service['class']),
         'badge' => 'Service',
-        'badgeColor' => 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200'
+        'badgeColor' => 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200',
+        'namespace' => $service['namespace'],
+        'class' => $service['class']
     ])
 
     {{-- Description --}}
@@ -37,5 +39,11 @@
     @include('atlas::exports.partials.common.flow-section', [
         'flow' => $service['flow'] ?? [],
         'type' => 'service'
+    ])
+
+    {{-- Footer --}}
+    @include('atlas::exports.partials.common.card-footer', [
+        'class' => $service['class'],
+        'file' => $service['file']
     ])
 </div>

@@ -4,15 +4,9 @@
         'icon' => '👂',
         'title' => $listener['name'],
         'badge' => 'Listener',
-        'badgeColor' => 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900 dark:text-indigo-300'
-    ])
-
-    {{-- Namespace --}}
-    @include('atlas::exports.partials.common.property-item', [
-        'icon' => '📦',
-        'label' => 'Namespace',
-        'value' => $listener['namespace'],
-        'type' => 'code'
+        'badgeColor' => 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900 dark:text-indigo-300',
+        'namespace' => $listener['namespace'],
+        'class' => $listener['class']
     ])
 
     {{-- Handle Method Status --}}

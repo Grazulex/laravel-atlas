@@ -4,15 +4,9 @@
         'icon' => '🛡️',
         'title' => $policy['name'],
         'badge' => 'Policy',
-        'badgeColor' => 'bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-300'
-    ])
-
-    {{-- Namespace --}}
-    @include('atlas::exports.partials.common.property-item', [
-        'icon' => '📦',
-        'label' => 'Namespace',
-        'value' => $policy['namespace'],
-        'type' => 'code'
+        'badgeColor' => 'bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-300',
+        'namespace' => $policy['namespace'],
+        'class' => $policy['class']
     ])
 
     {{-- Related Model --}}

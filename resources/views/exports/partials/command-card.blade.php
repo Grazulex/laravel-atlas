@@ -3,8 +3,10 @@
     @include('atlas::exports.partials.common.card-header', [
         'icon' => '💬',
         'title' => class_basename($command['class']),
-        'badge' => !empty($command['aliases']) ? implode(', ', $command['aliases']) : null,
-        'badgeColor' => 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
+        'badge' => !empty($command['aliases']) ? implode(', ', $command['aliases']) : 'Command',
+        'badgeColor' => 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300',
+        'namespace' => $command['namespace'],
+        'class' => $command['class']
     ])
 
     {{-- Description --}}
@@ -66,5 +68,11 @@
     @include('atlas::exports.partials.common.flow-section', [
         'flow' => $command['flow'] ?? [],
         'type' => 'command'
+    ])
+
+    {{-- Footer --}}
+    @include('atlas::exports.partials.common.card-footer', [
+        'class' => $command['class'],
+        'file' => $command['file']
     ])
 </div>

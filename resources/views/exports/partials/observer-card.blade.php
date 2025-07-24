@@ -4,15 +4,9 @@
         'icon' => '👁️',
         'title' => $observer['name'],
         'badge' => 'Observer',
-        'badgeColor' => 'bg-cyan-100 text-cyan-600 dark:bg-cyan-900 dark:text-cyan-300'
-    ])
-
-    {{-- Namespace --}}
-    @include('atlas::exports.partials.common.property-item', [
-        'icon' => '📦',
-        'label' => 'Namespace',
-        'value' => $observer['namespace'],
-        'type' => 'code'
+        'badgeColor' => 'bg-cyan-100 text-cyan-600 dark:bg-cyan-900 dark:text-cyan-300',
+        'namespace' => $observer['namespace'],
+        'class' => $observer['class']
     ])
 
     {{-- Observed Model --}}

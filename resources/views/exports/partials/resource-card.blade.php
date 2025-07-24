@@ -4,7 +4,9 @@
         'icon' => '🔗',
         'title' => class_basename($resource['class']),
         'badge' => 'API Resource',
-        'badgeColor' => 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-200'
+        'badgeColor' => 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-200',
+        'namespace' => $resource['namespace'],
+        'class' => $resource['class']
     ])
 
     {{-- Properties Grid --}}
@@ -72,5 +74,11 @@
     @include('atlas::exports.partials.common.flow-section', [
         'flow' => $resource['flow'] ?? [],
         'type' => 'resource'
+    ])
+
+    {{-- Footer --}}
+    @include('atlas::exports.partials.common.card-footer', [
+        'class' => $resource['class'],
+        'file' => $resource['file']
     ])
 </div>

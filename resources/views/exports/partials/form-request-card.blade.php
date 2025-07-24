@@ -4,7 +4,9 @@
         'icon' => '📝',
         'title' => str_replace(['Store', 'Update', 'Request'], ['Create', 'Edit', ''], class_basename($formRequest['class'])),
         'badge' => str_contains($formRequest['class'], 'Store') ? 'Create' : (str_contains($formRequest['class'], 'Update') ? 'Update' : 'Form Request'),
-        'badgeColor' => str_contains($formRequest['class'], 'Store') ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200' : (str_contains($formRequest['class'], 'Update') ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300')
+        'badgeColor' => str_contains($formRequest['class'], 'Store') ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200' : (str_contains($formRequest['class'], 'Update') ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'),
+        'namespace' => $formRequest['namespace'],
+        'class' => $formRequest['class']
     ])
 
     {{-- Description --}}
@@ -189,5 +191,11 @@
     @include('atlas::exports.partials.common.flow-section', [
         'flow' => $formRequest['flow'] ?? [],
         'type' => 'form_request'
+    ])
+
+    {{-- Footer --}}
+    @include('atlas::exports.partials.common.card-footer', [
+        'class' => $formRequest['class'],
+        'file' => $formRequest['file']
     ])
 </div>
