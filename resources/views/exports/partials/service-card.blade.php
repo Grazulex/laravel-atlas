@@ -1,5 +1,5 @@
 {{-- Service Card Component --}}
-@include('exports.partials.common.card-wrapper', ['class' => ''])
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-200">
     @include('exports.partials.common.card-header', [
         'icon' => '🔧',
         'title' => $item['name'],
@@ -87,4 +87,4 @@
             ])
         @endif
     </div>
-@endinclude
+</div>
