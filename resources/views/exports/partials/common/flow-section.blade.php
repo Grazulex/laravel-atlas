@@ -4,246 +4,297 @@
     @param string $type - Component type for conditional rendering
 --}}
 @if (!empty($flow['jobs']) || !empty($flow['events']) || !empty($flow['notifications']) || !empty($flow['mails']) || !empty($flow['logs']) || !empty($flow['dependencies']) || !empty($flow['calls']) || !empty($flow['observers']) || !empty($flow['facades']) || !empty($flow['cache']) || !empty($flow['auth']) || !empty($flow['exceptions']) || !empty($flow['services']) || !empty($flow['uses']) || !empty($flow['models']) || !empty($flow['rules']) || !empty($flow['policies']) || !empty($flow['validations']))
-    <div class="mt-4">
-        <h3 class="text-xs text-gray-400 font-semibold mb-2">🔄 Flow & Dependencies</h3>
-        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+    <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+            <span class="mr-2">🔄</span>
+            Flow & Dependencies
+        </h4>
+        
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             
             {{-- Jobs --}}
             @if (!empty($flow['jobs']))
-                <div class="min-h-[3rem]">
-                    <span class="block text-xs text-gray-400 font-semibold mb-1">📬 Jobs</span>
-                    <ul class="text-xs space-y-0.5">
+                <div class="min-h-[4rem] bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                    <div class="flex items-center mb-2">
+                        <span class="text-sm mr-2">📬</span>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Jobs</span>
+                    </div>
+                    <div class="space-y-1">
                         @foreach ($flow['jobs'] as $job)
-                            <li>
+                            <div class="text-xs">
                                 @if (is_array($job))
                                     <code>{{ class_basename($job['class']) }}</code>
                                     @if (isset($job['async']))
-                                        <span class="text-[10px] {{ $job['async'] ? 'text-green-600' : 'text-red-500' }} ml-1">
-                                            ({{ $job['async'] ? 'queued' : 'sync' }})
+                                        <span class="ml-1 px-1.5 py-0.5 rounded text-[10px] {{ $job['async'] ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' }}">
+                                            {{ $job['async'] ? 'queued' : 'sync' }}
                                         </span>
                                     @endif
                                 @else
                                     <code>{{ class_basename($job) }}</code>
                                 @endif
-                            </li>
+                            </div>
                         @endforeach
-                    </ul>
-                </div>
-            @else
-                <div class="min-h-[3rem]">
-                    <span class="block text-xs text-gray-400 font-semibold mb-1">📬 Jobs</span>
-                    <span class="text-xs text-gray-500 italic">None</span>
+                    </div>
                 </div>
             @endif
 
             {{-- Events --}}
             @if (!empty($flow['events']))
-                <div class="min-h-[3rem]">
-                    <span class="block text-xs text-gray-400 font-semibold mb-1">🔔 Events</span>
-                    <ul class="text-xs space-y-0.5">
+                <div class="min-h-[4rem] bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                    <div class="flex items-center mb-2">
+                        <span class="text-sm mr-2">🔔</span>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Events</span>
+                    </div>
+                    <div class="space-y-1">
                         @foreach ($flow['events'] as $event)
-                            <li>
+                            <div class="text-xs">
                                 @if (is_array($event))
                                     <code>{{ class_basename($event['class']) }}</code>
                                 @else
                                     <code>{{ class_basename($event) }}</code>
                                 @endif
-                            </li>
+                            </div>
                         @endforeach
-                    </ul>
-                </div>
-            @else
-                <div class="min-h-[3rem]">
-                    <span class="block text-xs text-gray-400 font-semibold mb-1">🔔 Events</span>
-                    <span class="text-xs text-gray-500 italic">None</span>
+                    </div>
                 </div>
             @endif
 
             {{-- Observers (Models only) --}}
-            @if ($type === 'model')
-                @if (!empty($flow['observers']))
-                    <div class="min-h-[3rem]">
-                        <span class="block text-xs text-gray-400 font-semibold mb-1">👁 Observers</span>
-                        <ul class="text-xs space-y-0.5">
-                            @foreach ($flow['observers'] as $observer)
-                                <li><code>{{ class_basename($observer) }}</code></li>
-                            @endforeach
-                        </ul>
+            @if ($type === 'model' && !empty($flow['observers']))
+                <div class="min-h-[4rem] bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                    <div class="flex items-center mb-2">
+                        <span class="text-sm mr-2">👁</span>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Observers</span>
                     </div>
-                @else
-                    <div class="min-h-[3rem]">
-                        <span class="block text-xs text-gray-400 font-semibold mb-1">👁 Observers</span>
-                        <span class="text-xs text-gray-500 italic">None</span>
+                    <div class="space-y-1">
+                        @foreach ($flow['observers'] as $observer)
+                            <div class="text-xs">
+                                <code>{{ class_basename($observer) }}</code>
+                            </div>
+                        @endforeach
                     </div>
-                @endif
+                </div>
             @endif
 
             {{-- Command Calls (Commands only) --}}
             @if ($type === 'command' && !empty($flow['calls']))
-                <div class="min-h-[3rem]">
-                    <span class="block text-xs text-gray-400 font-semibold mb-1">🔁 Calls</span>
-                    <ul class="text-xs space-y-0.5">
+                <div class="min-h-[4rem] bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                    <div class="flex items-center mb-2">
+                        <span class="text-sm mr-2">🔁</span>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Calls</span>
+                    </div>
+                    <div class="space-y-1">
                         @foreach ($flow['calls'] as $call)
-                            <li><code>{{ $call }}</code></li>
+                            <div class="text-xs">
+                                <code>{{ $call }}</code>
+                            </div>
                         @endforeach
-                    </ul>
-                </div>
-            @endif
-
-            {{-- Notifications Used (Notification type only) --}}
-            @if ($type === 'notification' && !empty($flow['notifications']))
-                <div class="min-h-[3rem]">
-                    <span class="block text-xs text-gray-400 font-semibold mb-1">📬 Notifications Used</span>
-                    <ul class="text-xs space-y-0.5">
-                        @foreach ($flow['notifications'] as $notif)
-                            <li><code>{{ class_basename($notif['class']) }}</code></li>
-                        @endforeach
-                    </ul>
+                    </div>
                 </div>
             @endif
 
             {{-- Notifications --}}
             @if (!empty($flow['notifications']))
-                <div class="min-h-[3rem]">
-                    <span class="block text-xs text-gray-400 font-semibold mb-1">💬 Notifications</span>
-                    <ul class="text-xs space-y-0.5">
+                <div class="min-h-[4rem] bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                    <div class="flex items-center mb-2">
+                        <span class="text-sm mr-2">💬</span>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Notifications</span>
+                    </div>
+                    <div class="space-y-1">
                         @foreach ($flow['notifications'] as $notif)
-                            @if (is_array($notif))
-                                <li><code>{{ class_basename($notif['class']) }}</code></li>
-                            @else
-                                <li><code>{{ class_basename($notif) }}</code></li>
-                            @endif
+                            <div class="text-xs">
+                                @if (is_array($notif))
+                                    <code>{{ class_basename($notif['class']) }}</code>
+                                @else
+                                    <code>{{ class_basename($notif) }}</code>
+                                @endif
+                            </div>
                         @endforeach
-                    </ul>
+                    </div>
                 </div>
             @endif
 
             {{-- Mail --}}
             @if (!empty($flow['mails']))
-                <div class="min-h-[3rem]">
-                    <span class="block text-xs text-gray-400 font-semibold mb-1">📧 Mail</span>
-                    <ul class="text-xs space-y-0.5">
+                <div class="min-h-[4rem] bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                    <div class="flex items-center mb-2">
+                        <span class="text-sm mr-2">📧</span>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Mail</span>
+                    </div>
+                    <div class="space-y-1">
                         @foreach ($flow['mails'] as $mail)
-                            <li><code>{{ $mail }}</code></li>
+                            <div class="text-xs">
+                                <code>{{ $mail }}</code>
+                            </div>
                         @endforeach
-                    </ul>
+                    </div>
                 </div>
             @endif
 
             {{-- Logs --}}
             @if (!empty($flow['logs']))
-                <div class="min-h-[3rem]">
-                    <span class="block text-xs text-gray-400 font-semibold mb-1">📜 Logs</span>
-                    <ul class="text-xs space-y-0.5">
+                <div class="min-h-[4rem] bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                    <div class="flex items-center mb-2">
+                        <span class="text-sm mr-2">📜</span>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Logs</span>
+                    </div>
+                    <div class="space-y-1">
                         @foreach ($flow['logs'] as $log)
-                            <li><code>{{ $log }}</code></li>
+                            <div class="text-xs">
+                                <code>{{ $log }}</code>
+                            </div>
                         @endforeach
-                    </ul>
+                    </div>
                 </div>
             @endif
 
-            {{-- Facades (Middleware specific) --}}
+            {{-- Facades --}}
             @if (!empty($flow['facades']))
-                <div class="min-h-[3rem]">
-                    <span class="block text-xs text-gray-400 font-semibold mb-1">🏛️ Facades</span>
-                    <ul class="text-xs space-y-0.5">
+                <div class="min-h-[4rem] bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                    <div class="flex items-center mb-2">
+                        <span class="text-sm mr-2">🏛️</span>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Facades</span>
+                    </div>
+                    <div class="space-y-1">
                         @foreach ($flow['facades'] as $facade)
-                            <li><code>{{ $facade }}</code></li>
+                            <div class="text-xs">
+                                <code>{{ $facade }}</code>
+                            </div>
                         @endforeach
-                    </ul>
+                    </div>
                 </div>
             @endif
 
-            {{-- Cache (Middleware specific) --}}
+            {{-- Cache --}}
             @if (!empty($flow['cache']))
-                <div class="min-h-[3rem]">
-                    <span class="block text-xs text-gray-400 font-semibold mb-1">💾 Cache</span>
-                    <ul class="text-xs space-y-0.5">
+                <div class="min-h-[4rem] bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                    <div class="flex items-center mb-2">
+                        <span class="text-sm mr-2">💾</span>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Cache</span>
+                    </div>
+                    <div class="space-y-1">
                         @foreach ($flow['cache'] as $cacheOp)
-                            <li><code>{{ $cacheOp }}</code></li>
+                            <div class="text-xs">
+                                <code>{{ $cacheOp }}</code>
+                            </div>
                         @endforeach
-                    </ul>
+                    </div>
                 </div>
             @endif
 
-            {{-- Auth (Middleware specific) --}}
+            {{-- Auth --}}
             @if (!empty($flow['auth']))
-                <div class="min-h-[3rem]">
-                    <span class="block text-xs text-gray-400 font-semibold mb-1">🔐 Auth</span>
-                    <ul class="text-xs space-y-0.5">
+                <div class="min-h-[4rem] bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                    <div class="flex items-center mb-2">
+                        <span class="text-sm mr-2">🔐</span>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Auth</span>
+                    </div>
+                    <div class="space-y-1">
                         @foreach ($flow['auth'] as $authOp)
-                            <li><code>{{ $authOp }}</code></li>
+                            <div class="text-xs">
+                                <code>{{ $authOp }}</code>
+                            </div>
                         @endforeach
-                    </ul>
+                    </div>
                 </div>
             @endif
 
-            {{-- Exceptions (Middleware specific) --}}
+            {{-- Exceptions --}}
             @if (!empty($flow['exceptions']))
-                <div class="min-h-[3rem]">
-                    <span class="block text-xs text-gray-400 font-semibold mb-1">⚠️ Exceptions</span>
-                    <ul class="text-xs space-y-0.5">
+                <div class="min-h-[4rem] bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                    <div class="flex items-center mb-2">
+                        <span class="text-sm mr-2">⚠️</span>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Exceptions</span>
+                    </div>
+                    <div class="space-y-1">
                         @foreach ($flow['exceptions'] as $exception)
-                            <li><code>{{ $exception }}</code></li>
+                            <div class="text-xs">
+                                <code>{{ $exception }}</code>
+                            </div>
                         @endforeach
-                    </ul>
+                    </div>
                 </div>
             @endif
 
-            {{-- Services (Middleware specific) --}}
+            {{-- Services --}}
             @if (!empty($flow['services']))
-                <div class="min-h-[3rem]">
-                    <span class="block text-xs text-gray-400 font-semibold mb-1">🔧 Services</span>
-                    <ul class="text-xs space-y-0.5">
+                <div class="min-h-[4rem] bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                    <div class="flex items-center mb-2">
+                        <span class="text-sm mr-2">🔧</span>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Services</span>
+                    </div>
+                    <div class="space-y-1">
                         @foreach ($flow['services'] as $service)
-                            <li><code>{{ $service }}</code></li>
+                            <div class="text-xs">
+                                <code>{{ $service }}</code>
+                            </div>
                         @endforeach
-                    </ul>
+                    </div>
                 </div>
             @endif
 
-            {{-- Models (Form Request specific) --}}
+            {{-- Models --}}
             @if (!empty($flow['models']))
-                <div class="min-h-[3rem]">
-                    <span class="block text-xs text-gray-400 font-semibold mb-1">🧱 Models</span>
-                    <ul class="text-xs space-y-0.5">
+                <div class="min-h-[4rem] bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                    <div class="flex items-center mb-2">
+                        <span class="text-sm mr-2">🧱</span>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Models</span>
+                    </div>
+                    <div class="space-y-1">
                         @foreach ($flow['models'] as $model)
-                            <li><code>{{ $model }}</code></li>
+                            <div class="text-xs">
+                                <code>{{ $model }}</code>
+                            </div>
                         @endforeach
-                    </ul>
+                    </div>
                 </div>
             @endif
 
-            {{-- Custom Rules (Form Request specific) --}}
+            {{-- Custom Rules --}}
             @if (!empty($flow['rules']))
-                <div class="min-h-[3rem]">
-                    <span class="block text-xs text-gray-400 font-semibold mb-1">📏 Custom Rules</span>
-                    <ul class="text-xs space-y-0.5">
+                <div class="min-h-[4rem] bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                    <div class="flex items-center mb-2">
+                        <span class="text-sm mr-2">📏</span>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Custom Rules</span>
+                    </div>
+                    <div class="space-y-1">
                         @foreach ($flow['rules'] as $rule)
-                            <li><code>{{ $rule }}</code></li>
+                            <div class="text-xs">
+                                <code>{{ $rule }}</code>
+                            </div>
                         @endforeach
-                    </ul>
+                    </div>
                 </div>
             @endif
 
-            {{-- Policies (Form Request specific) --}}
+            {{-- Policies --}}
             @if (!empty($flow['policies']))
-                <div class="min-h-[3rem]">
-                    <span class="block text-xs text-gray-400 font-semibold mb-1">🛡️ Policies</span>
-                    <ul class="text-xs space-y-0.5">
+                <div class="min-h-[4rem] bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                    <div class="flex items-center mb-2">
+                        <span class="text-sm mr-2">🛡️</span>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Policies</span>
+                    </div>
+                    <div class="space-y-1">
                         @foreach ($flow['policies'] as $policy)
-                            <li><code>{{ $policy }}</code></li>
+                            <div class="text-xs">
+                                <code>{{ $policy }}</code>
+                            </div>
                         @endforeach
-                    </ul>
+                    </div>
                 </div>
             @endif
 
-            {{-- Validation Types (Form Request specific) --}}
+            {{-- Validation Types --}}
             @if (!empty($flow['validations']))
-                <div class="min-h-[3rem]">
-                    <span class="block text-xs text-gray-400 font-semibold mb-1">✅ Validation Types</span>
-                    <div class="text-xs bg-gray-50 dark:bg-gray-700 rounded p-2 text-gray-800 dark:text-gray-200 leading-tight">
-                        {{ implode(', ', $flow['validations']) }}
+                <div class="min-h-[4rem] bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                    <div class="flex items-center mb-2">
+                        <span class="text-sm mr-2">✅</span>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Validation Types</span>
+                    </div>
+                    <div class="text-xs">
+                        <div class="bg-white dark:bg-gray-700 rounded p-2 text-gray-800 dark:text-gray-200 leading-tight">
+                            {{ implode(', ', $flow['validations']) }}
+                        </div>
                     </div>
                 </div>
             @endif
@@ -252,23 +303,28 @@
 
         {{-- Dependencies (Full width) --}}
         @if (!empty($flow['dependencies']))
-            <div class="mt-3">
-                <span class="block text-xs text-gray-400 font-semibold mb-1">🧩 Dependencies</span>
-                <div class="text-xs bg-gray-50 dark:bg-gray-700 rounded p-2 text-gray-800 dark:text-gray-200 leading-tight">
-                    @if (is_array($flow['dependencies']) && isset($flow['dependencies'][0]) && is_string($flow['dependencies'][0]))
-                        {{-- Simple array of dependencies --}}
-                        {{ implode(', ', array_map('class_basename', $flow['dependencies'])) }}
-                    @else
-                        {{-- Grouped dependencies --}}
-                        @foreach ($flow['dependencies'] as $type => $deps)
-                            @if (!empty($deps))
-                                <div class="mb-1">
-                                    <span class="font-semibold capitalize text-indigo-500">{{ $type }}:</span>
-                                    {{ implode(', ', array_map('class_basename', $deps)) }}
-                                </div>
-                            @endif
-                        @endforeach
-                    @endif
+            <div class="mt-4">
+                <div class="flex items-center mb-2">
+                    <span class="text-sm mr-2">🧩</span>
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Dependencies</span>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                    <div class="text-xs text-gray-800 dark:text-gray-200 leading-relaxed">
+                        @if (is_array($flow['dependencies']) && isset($flow['dependencies'][0]) && is_string($flow['dependencies'][0]))
+                            {{-- Simple array of dependencies --}}
+                            {{ implode(', ', array_map('class_basename', $flow['dependencies'])) }}
+                        @else
+                            {{-- Grouped dependencies --}}
+                            @foreach ($flow['dependencies'] as $type => $deps)
+                                @if (!empty($deps))
+                                    <div class="mb-2">
+                                        <span class="font-semibold capitalize text-indigo-600 dark:text-indigo-400">{{ $type }}:</span>
+                                        {{ implode(', ', array_map('class_basename', $deps)) }}
+                                    </div>
+                                @endif
+                            @endforeach
+                        @endif
+                    </div>
                 </div>
             </div>
         @endif

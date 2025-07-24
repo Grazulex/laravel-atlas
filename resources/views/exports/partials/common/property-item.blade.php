@@ -1,123 +1,120 @@
 {{-- 
-    Property grid item component
-    @param string $icon - Emoji icon (optional)
+    Property item component
     @param string $label - Property label
-    @param string $value - Property value (optional)
-    @param array $items - Array of items for lists (optional)
-    @param string $type - Display type: 'simple', 'list', 'code', 'table', 'properties', 'methods', 'dependencies', 'transformations', 'parameters' (default: simple)
+    @param mixed $value - Property value (can be string, array, etc.)
+    @param string $type - Type of display (default, code, list, badge-list)
+    @param string $class - Additional CSS classes
 --}}
-<div class="min-h-[2rem]">
-    <span class="block text-xs text-gray-400 dark:text-gray-500 font-semibold mb-1">{{ $icon ?? '' }} {{ $label }}</span>
-    
-    @if (($type ?? 'simple') === 'list')
-        @if (!empty($items))
-            <ul class="text-xs space-y-0.5">
-                @foreach ($items as $item)
-                    <li>{{ $item }}</li>
-                @endforeach
-            </ul>
-        @else
-            <span class="text-xs text-gray-500 italic">None</span>
-        @endif
-    @elseif (($type ?? 'simple') === 'properties')
-        @if (!empty($items))
-            <div class="text-xs space-y-1">
-                @foreach ($items as $property)
-                    <div class="flex items-center justify-between">
-                        <span class="text-gray-700 dark:text-gray-300">{{ $property['name'] }}</span>
-                        <span class="text-indigo-600 dark:text-indigo-400 font-mono">{{ $property['type'] }}</span>
-                    </div>
-                @endforeach
-            </div>
-        @else
-            <span class="text-xs text-gray-500 italic">None</span>
-        @endif
-    @elseif (($type ?? 'simple') === 'methods')
-        @if (!empty($items))
-            <div class="text-xs space-y-1">
-                @foreach ($items as $method)
-                    <div class="border-b border-gray-100 dark:border-gray-700 pb-1 mb-1 last:border-b-0">
-                        <div class="flex items-center justify-between">
-                            <span class="text-gray-700 dark:text-gray-300 font-mono">{{ $method['name'] }}()</span>
-                            <span class="text-indigo-600 dark:text-indigo-400 font-mono">{{ $method['returnType'] }}</span>
-                        </div>
-                        {{-- Debug: afficher toujours la source --}}
-                        @if(isset($method['source']))
-                            <div class="text-xs {{ $method['source'] === 'class' ? 'text-green-500' : 'text-orange-500' }} italic mt-0.5">
-                                Source: {{ $method['source'] }}
+@php
+    $displayType = $type ?? 'default';
+    $itemClass = $class ?? '';
+@endphp
+
+<div class="property-item {{ $itemClass }}">
+    <dt class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">{{ $label }}</dt>
+    <dd class="text-sm text-gray-900 dark:text-gray-100">
+        @if ($displayType === 'code')
+            @if ($value)
+                <code class="block">{{ $value }}</code>
+            @else
+                <span class="text-gray-500 dark:text-gray-400 italic">Not set</span>
+            @endif
+            
+        @elseif ($displayType === 'list')
+            @if (is_array($value) && count($value) > 0)
+                <ul class="space-y-1">
+                    @foreach ($value as $item)
+                        <li><code>{{ $item }}</code></li>
+                    @endforeach
+                </ul>
+            @else
+                <span class="text-gray-500 dark:text-gray-400 italic">None</span>
+            @endif
+            
+        @elseif ($displayType === 'badge-list')
+            @if (is_array($value) && count($value) > 0)
+                <div class="flex flex-wrap gap-1">
+                    @foreach ($value as $item)
+                        <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300">
+                            {{ $item }}
+                        </span>
+                    @endforeach
+                </div>
+            @else
+                <span class="text-gray-500 dark:text-gray-400 italic">None</span>
+            @endif
+            
+        @elseif ($displayType === 'method-list')
+            @if (is_array($value) && count($value) > 0)
+                <div class="space-y-2">
+                    @foreach ($value as $method)
+                        <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                            <div class="flex items-center justify-between">
+                                <code class="text-sm font-medium">{{ $method['name'] ?? $method }}</code>
+                                @if (isset($method['visibility']))
+                                    <span class="text-xs px-2 py-1 rounded-full {{ $method['visibility'] === 'public' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' : ($method['visibility'] === 'protected' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300') }}">
+                                        {{ $method['visibility'] }}
+                                    </span>
+                                @endif
                             </div>
-                        @else
-                            <div class="text-xs text-red-500 italic mt-0.5">
-                                No source info
-                            </div>
-                        @endif
-                    </div>
-                @endforeach
-            </div>
-        @else
-            <span class="text-xs text-gray-500 italic">None</span>
-        @endif
-    @elseif (($type ?? 'simple') === 'dependencies')
-        @if (!empty($items))
-            <div class="text-xs space-y-1">
-                @foreach ($items as $depType => $deps)
-                    @if (!empty($deps))
-                        <div>
-                            <span class="text-gray-500 capitalize">{{ $depType }}:</span>
-                            <span class="text-gray-700 dark:text-gray-300">{{ implode(', ', $deps) }}</span>
-                        </div>
-                    @endif
-                @endforeach
-            </div>
-        @else
-            <span class="text-xs text-gray-500 italic">None</span>
-        @endif
-    @elseif (($type ?? 'simple') === 'transformations')
-        @if (!empty($items))
-            <ul class="text-xs space-y-0.5">
-                @foreach ($items as $item)
-                    <li class="font-mono text-blue-600 dark:text-blue-400">{{ $item }}</li>
-                @endforeach
-            </ul>
-        @else
-            <span class="text-xs text-gray-500 italic">None</span>
-        @endif
-    @elseif (($type ?? 'simple') === 'parameters')
-        @if (!empty($items))
-            <div class="text-xs space-y-1">
-                @foreach ($items as $param)
-                    <div class="flex items-center justify-between">
-                        <span class="text-gray-700 dark:text-gray-300">${{ $param['name'] }}</span>
-                        <div class="flex items-center space-x-1">
-                            <span class="text-indigo-600 dark:text-indigo-400 font-mono">{{ $param['type'] }}</span>
-                            @if($param['nullable'])
-                                <span class="text-yellow-600 dark:text-yellow-400">?</span>
+                            @if (isset($method['parameters']) && count($method['parameters']) > 0)
+                                <div class="mt-2 text-xs text-gray-600 dark:text-gray-400">
+                                    Parameters: <code>{{ implode(', ', $method['parameters']) }}</code>
+                                </div>
                             @endif
-                            @if($param['hasDefault'])
-                                <span class="text-green-600 dark:text-green-400">default</span>
+                            @if (isset($method['return_type']) && $method['return_type'])
+                                <div class="mt-1 text-xs text-gray-600 dark:text-gray-400">
+                                    Returns: <code>{{ $method['return_type'] }}</code>
+                                </div>
                             @endif
                         </div>
-                    </div>
-                @endforeach
-            </div>
+                    @endforeach
+                </div>
+            @else
+                <span class="text-gray-500 dark:text-gray-400 italic">None</span>
+            @endif
+            
+        @elseif ($displayType === 'relation-list')
+            @if (is_array($value) && count($value) > 0)
+                <div class="space-y-2">
+                    @foreach ($value as $name => $relation)
+                        <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                            <div class="flex items-center justify-between mb-1">
+                                <code class="text-sm font-medium">{{ $name }}</code>
+                                <span class="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                                    {{ $relation['type'] ?? 'Relation' }}
+                                </span>
+                            </div>
+                            @if (isset($relation['related']))
+                                <div class="text-xs text-gray-600 dark:text-gray-400">
+                                    Related: <code>{{ class_basename($relation['related']) }}</code>
+                                </div>
+                            @endif
+                            @if (isset($relation['foreignKey']) && $relation['foreignKey'])
+                                <div class="text-xs text-gray-600 dark:text-gray-400">
+                                    Foreign Key: <code>{{ $relation['foreignKey'] }}</code>
+                                </div>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <span class="text-gray-500 dark:text-gray-400 italic">None</span>
+            @endif
+            
         @else
-            <span class="text-xs text-gray-500 italic">None</span>
-        @endif
-    @elseif (($type ?? 'simple') === 'code')
-        @if (!empty($value))
-            <div class="text-xs bg-gray-50 dark:bg-gray-700 rounded p-2 text-gray-800 dark:text-gray-200 leading-tight">
+            {{-- Default display --}}
+            @if (is_array($value))
+                @if (count($value) > 0)
+                    <code>{{ implode(', ', $value) }}</code>
+                @else
+                    <span class="text-gray-500 dark:text-gray-400 italic">None</span>
+                @endif
+            @elseif ($value)
                 {{ $value }}
-            </div>
-        @else
-            <span class="text-xs text-gray-500 italic">None</span>
+            @else
+                <span class="text-gray-500 dark:text-gray-400 italic">Not set</span>
+            @endif
         @endif
-    @elseif (($type ?? 'simple') === 'table')
-        {{ $slot ?? '' }}
-    @else
-        @if (!empty($value))
-            <code class="text-xs">{{ $value }}</code>
-        @else
-            <span class="text-xs text-gray-500 italic">None</span>
-        @endif
-    @endif
+    </dd>
 </div>
