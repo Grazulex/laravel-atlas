@@ -49,9 +49,9 @@ Laravel Atlas is perfect for:
 
 ## ✨ Features
 
-- 🚀 **Comprehensive Scanning** - Analyze 7 Laravel component types
+- 🚀 **Comprehensive Scanning** - Analyze 16 Laravel component types
 - 🗺️ **Architecture Mapping** - Generate detailed application structure maps
-- 📊 **Multiple Export Formats** - Export to JSON, HTML, Markdown, and PHP
+- 📊 **Multiple Export Formats** - Export to JSON, HTML, and PDF
 - 🔍 **Dependency Analysis** - Track relationships and dependencies between components
 - 📋 **Extensible Architecture** - Support for custom mappers and exporters
 - 🎯 **Smart Detection** - Intelligent component discovery and classification
@@ -82,50 +82,59 @@ php artisan vendor:publish --tag=atlas-config
 ### 1. Generate Your First Map
 
 ```bash
-php artisan atlas:generate
+php artisan atlas:export
 ```
 
-This creates a JSON output showing all discovered components in your application.
+This creates an HTML output showing all discovered components in your application.
 
 ### 2. Generate Specific Component Maps
 
 ```bash
 # Generate model architecture map
-php artisan atlas:generate --type=models --format=markdown
+php artisan atlas:export --type=models --format=html
 
 # Generate route map
-php artisan atlas:generate --type=routes --format=html
+php artisan atlas:export --type=routes --format=json
 
 # Generate commands map  
-php artisan atlas:generate --type=commands --format=json
+php artisan atlas:export --type=commands --format=pdf
 
 # Generate services map
-php artisan atlas:generate --type=services --format=markdown
+php artisan atlas:export --type=services --format=html
 
 # Generate notifications map
-php artisan atlas:generate --type=notifications --format=html
+php artisan atlas:export --type=notifications --format=json
 
 # Generate middlewares map
-php artisan atlas:generate --type=middlewares --format=json
+php artisan atlas:export --type=middlewares --format=pdf
 
 # Generate form requests map
-php artisan atlas:generate --type=form_requests --format=markdown
+php artisan atlas:export --type=form_requests --format=html
+
+# Generate events map
+php artisan atlas:export --type=events --format=json
+
+# Generate controllers map
+php artisan atlas:export --type=controllers --format=html
+
+# Generate jobs map
+php artisan atlas:export --type=jobs --format=pdf
 
 # Generate complete application map (all available components)
-php artisan atlas:generate --type=all --format=json --output=docs/architecture.json
+php artisan atlas:export --type=all --format=html --output=docs/architecture.html
 ```
 
 ### 3. Customize Export Formats
 
 ```bash
 # Generate JSON output (default)
-php artisan atlas:generate --format=json
-
-# Generate comprehensive markdown documentation
-php artisan atlas:generate --format=markdown
+php artisan atlas:export --format=json
 
 # Generate interactive HTML map
-php artisan atlas:generate --format=html
+php artisan atlas:export --format=html
+
+# Generate PDF documentation
+php artisan atlas:export --format=pdf
 ```
 
 ### 4. Access Generated Maps Programmatically
@@ -133,7 +142,7 @@ php artisan atlas:generate --format=html
 ```php
 use LaravelAtlas\Facades\Atlas;
 
-// Scan specific component types
+// Scan specific component types - all 16 available types
 $modelData = Atlas::scan('models');
 $routeData = Atlas::scan('routes');
 $commandData = Atlas::scan('commands');
@@ -141,11 +150,20 @@ $serviceData = Atlas::scan('services');
 $notificationData = Atlas::scan('notifications');
 $middlewareData = Atlas::scan('middlewares');
 $formRequestData = Atlas::scan('form_requests');
+$eventData = Atlas::scan('events');
+$controllerData = Atlas::scan('controllers');
+$resourceData = Atlas::scan('resources');
+$jobData = Atlas::scan('jobs');
+$actionData = Atlas::scan('actions');
+$policyData = Atlas::scan('policies');
+$ruleData = Atlas::scan('rules');
+$listenerData = Atlas::scan('listeners');
+$observerData = Atlas::scan('observers');
 
 // Export to different formats
 $jsonOutput = Atlas::export('models', 'json');
-$markdownDocs = Atlas::export('routes', 'markdown');
-$htmlReport = Atlas::export('commands', 'html');
+$htmlReport = Atlas::export('routes', 'html');
+$pdfDocument = Atlas::export('commands', 'pdf');
 ```
 
 ## 🗺️ Architecture Mapping
@@ -198,11 +216,32 @@ $formRequestData = Atlas::scan('form_requests', [
     'include_rules' => true,
     'include_authorization' => true,
 ]);
+
+// Event mapping
+$eventData = Atlas::scan('events', [
+    'include_listeners' => true,
+    'include_properties' => true,
+]);
+
+// Controller mapping
+$controllerData = Atlas::scan('controllers', [
+    'include_actions' => true,
+    'include_dependencies' => true,
+]);
+
+// Additional component mappings for other types
+$resourceData = Atlas::scan('resources');
+$jobData = Atlas::scan('jobs');
+$actionData = Atlas::scan('actions');
+$policyData = Atlas::scan('policies');
+$ruleData = Atlas::scan('rules');
+$listenerData = Atlas::scan('listeners');
+$observerData = Atlas::scan('observers');
 ```
 
 ### Available Component Types
 
-Laravel Atlas can analyze **7 component types**:
+Laravel Atlas can analyze **16 component types**:
 
 - **models** - Eloquent models with relationships, observers, and factories
 - **routes** - Application routes with middleware and controllers  
@@ -211,6 +250,15 @@ Laravel Atlas can analyze **7 component types**:
 - **notifications** - Laravel notification classes with channels and methods
 - **middlewares** - HTTP middleware with parameters and dependencies
 - **form_requests** - Form request validation classes with rules and authorization
+- **events** - Laravel event classes with their properties and methods
+- **controllers** - Application controllers with their actions and dependencies
+- **resources** - API resource classes with their transformations
+- **jobs** - Queue job classes with their handles and dependencies
+- **actions** - Single action controllers and action classes
+- **policies** - Authorization policy classes with their methods
+- **rules** - Custom validation rule classes
+- **listeners** - Event listener classes with their handlers
+- **observers** - Model observer classes with their lifecycle hooks
 
 ## 📊 Export Formats
 
@@ -218,16 +266,13 @@ Multiple export formats for different use cases:
 
 ```bash
 # JSON for data processing and API integration
-php artisan atlas:generate --format=json --output=storage/atlas/map.json
-
-# Markdown documentation for README files
-php artisan atlas:generate --format=markdown --output=docs/ARCHITECTURE.md
+php artisan atlas:export --format=json --output=storage/atlas/map.json
 
 # Interactive HTML maps with full component visualization
-php artisan atlas:generate --format=html --output=public/atlas/map.html
+php artisan atlas:export --format=html --output=public/atlas/map.html
 
-# PHP code for advanced processing
-php artisan atlas:generate --format=php --output=storage/atlas/map.php
+# PDF reports for documentation and presentations  
+php artisan atlas:export --format=pdf --output=storage/atlas/architecture.pdf
 ```
 
 ### HTML Export Features
@@ -250,15 +295,26 @@ The HTML export format provides an **interactive, responsive dashboard** with ad
 - 📢 **Notifications** - with channels, methods, and dependencies
 - 🛡️ **Middlewares** - with parameters, dependencies, and flow patterns
 - 📋 **Form Requests** - with validation rules, authorization, and attributes
+- ⚡ **Events** - with listeners, properties, and event flow
+- 🎮 **Controllers** - with actions, dependencies, and request handling
+- 🔄 **Resources** - with transformations, attributes, and API structure
+- ⚙️ **Jobs** - with handlers, dependencies, and queue configuration
+- 🎯 **Actions** - with single responsibilities and method signatures
+- 🔐 **Policies** - with authorization methods and access control
+- ✅ **Rules** - with validation logic and custom rule implementations
+- 👂 **Listeners** - with event handling and processing logic
+- 👁️ **Observers** - with model lifecycle hooks and event handling
 
 **Example HTML Generation:**
 ```bash
 # Generate interactive HTML dashboard
-php artisan atlas:generate --format=html --output=public/docs/architecture.html
+php artisan atlas:export --format=html --output=public/docs/architecture.html
 
 # Generate component-specific HTML reports
-php artisan atlas:generate --type=models --format=html --output=public/docs/models.html
-php artisan atlas:generate --type=routes --format=html --output=public/docs/routes.html
+php artisan atlas:export --type=models --format=html --output=public/docs/models.html
+php artisan atlas:export --type=routes --format=html --output=public/docs/routes.html
+php artisan atlas:export --type=events --format=html --output=public/docs/events.html
+php artisan atlas:export --type=controllers --format=html --output=public/docs/controllers.html
 ```
 
 **Sample HTML Dashboard Features:**
@@ -271,6 +327,38 @@ php artisan atlas:generate --type=routes --format=html --output=public/docs/rout
 
 See [HTML Export Examples](docs/html-exports/) for complete sample reports and detailed documentation.
 
+### PDF Export Features
+
+The PDF export format provides **professional documentation** suitable for presentations and reports:
+
+- **📄 Professional Layout** - Clean, enterprise-ready document formatting
+- **📊 Comprehensive Coverage** - All 16 component types in structured sections
+- **🎨 Optimized for Print** - A4 format with proper page breaks and typography
+- **📝 Complete Documentation** - Detailed component information with metadata
+- **🔧 Self-contained** - Complete PDF files ready for sharing and archiving
+
+**PDF Generation Examples:**
+```bash
+# Generate complete PDF architecture documentation
+php artisan atlas:export --format=pdf --output=docs/architecture.pdf
+
+# Generate component-specific PDF reports
+php artisan atlas:export --type=models --format=pdf --output=docs/models.pdf
+php artisan atlas:export --type=routes --format=pdf --output=docs/routes.pdf
+php artisan atlas:export --type=services --format=pdf --output=docs/services.pdf
+```
+
+**PDF Features:**
+- Professional header with project information and generation timestamp
+- Structured sections for each component type with detailed information
+- Optimized typography and layout for readability
+- Component metadata including relationships, dependencies, and configurations
+- Suitable for documentation packages, compliance reports, and team presentations
+
+**Requirements for PDF Export:**
+- `dompdf/dompdf` package (automatically included as suggested dependency)
+- `ext-gd` PHP extension for image processing
+
 ### Programmatic Export
 
 ```php
@@ -278,8 +366,8 @@ use LaravelAtlas\Facades\Atlas;
 
 // Export specific types to different formats
 $jsonOutput = Atlas::export('models', 'json');
-$markdownDocs = Atlas::export('routes', 'markdown');
-$htmlReport = Atlas::export('commands', 'html');
+$htmlReport = Atlas::export('routes', 'html');
+$pdfDocument = Atlas::export('commands', 'pdf');
 ```
 
 ## 🔍 Analysis Tools
@@ -410,28 +498,32 @@ return [
 
 ```bash
 # Generate comprehensive application architecture with interactive HTML dashboard
-php artisan atlas:generate --type=all --format=html --output=docs/architecture.html
+php artisan atlas:export --type=all --format=html --output=docs/architecture.html
 
 # Generate specific component maps
-php artisan atlas:generate --type=models --format=markdown --output=docs/models.md
-php artisan atlas:generate --type=routes --format=json --output=docs/routes.json
-php artisan atlas:generate --type=commands --format=html --output=docs/commands.html
-php artisan atlas:generate --type=services --format=markdown --output=docs/services.md
-php artisan atlas:generate --type=notifications --format=html --output=docs/notifications.html
-php artisan atlas:generate --type=middlewares --format=json --output=docs/middlewares.json
-php artisan atlas:generate --type=form_requests --format=markdown --output=docs/form-requests.md
+php artisan atlas:export --type=models --format=json --output=docs/models.json
+php artisan atlas:export --type=routes --format=html --output=docs/routes.html
+php artisan atlas:export --type=commands --format=pdf --output=docs/commands.pdf
+php artisan atlas:export --type=services --format=html --output=docs/services.html
+php artisan atlas:export --type=notifications --format=json --output=docs/notifications.json
+php artisan atlas:export --type=middlewares --format=pdf --output=docs/middlewares.pdf
+php artisan atlas:export --type=form_requests --format=html --output=docs/form-requests.html
+php artisan atlas:export --type=events --format=json --output=docs/events.json
+php artisan atlas:export --type=controllers --format=html --output=docs/controllers.html
+php artisan atlas:export --type=jobs --format=pdf --output=docs/jobs.pdf
 ```
 
 ### Interactive HTML Dashboard Generation
 
 ```bash
 # Generate complete interactive HTML architecture dashboard
-php artisan atlas:generate --format=html --output=public/atlas/dashboard.html
+php artisan atlas:export --format=html --output=public/atlas/dashboard.html
 
 # Generate component-specific interactive reports
-php artisan atlas:generate --type=models --format=html --output=public/atlas/models.html
-php artisan atlas:generate --type=routes --format=html --output=public/atlas/routes.html
-php artisan atlas:generate --type=services --format=html --output=public/atlas/services.html
+php artisan atlas:export --type=models --format=html --output=public/atlas/models.html
+php artisan atlas:export --type=routes --format=html --output=public/atlas/routes.html
+php artisan atlas:export --type=services --format=html --output=public/atlas/services.html
+php artisan atlas:export --type=events --format=html --output=public/atlas/events.html
 ```
 
 ### Custom Architecture Analysis
@@ -448,12 +540,12 @@ $notificationData = Atlas::scan('notifications', ['include_channels' => true]);
 $middlewareData = Atlas::scan('middlewares', ['include_parameters' => true]);
 $formRequestData = Atlas::scan('form_requests', ['include_rules' => true]);
 
-$markdownReport = Atlas::export('models', 'markdown', [
+$htmlReport = Atlas::export('models', 'html', [
     'include_stats' => true,
     'detailed_sections' => true,
 ]);
 
-file_put_contents('docs/architecture-analysis.md', $markdownReport);
+file_put_contents('docs/architecture-analysis.html', $htmlReport);
 ```
 
 ### Interactive Architecture Explorer
@@ -476,18 +568,20 @@ file_put_contents('public/atlas/explorer.html', $htmlOutput);
 
 ```bash
 # In your CI/CD pipeline
-php artisan atlas:generate --type=all --format=json --output=docs/architecture.json
-php artisan atlas:generate --type=all --format=markdown --output=docs/ARCHITECTURE.md
-php artisan atlas:generate --type=all --format=html --output=public/docs/architecture.html
+php artisan atlas:export --type=all --format=json --output=docs/architecture.json
+php artisan atlas:export --type=all --format=html --output=public/docs/architecture.html
+php artisan atlas:export --type=all --format=pdf --output=docs/architecture.pdf
 
 # Generate specific component documentation
-php artisan atlas:generate --type=models --format=markdown --output=docs/models.md
-php artisan atlas:generate --type=routes --format=json --output=api/routes.json
-php artisan atlas:generate --type=commands --format=html --output=docs/commands.html
-php artisan atlas:generate --type=services --format=markdown --output=docs/services.md
-php artisan atlas:generate --type=notifications --format=html --output=docs/notifications.html
-php artisan atlas:generate --type=middlewares --format=json --output=docs/middlewares.json
-php artisan atlas:generate --type=form_requests --format=markdown --output=docs/form-requests.md
+php artisan atlas:export --type=models --format=html --output=docs/models.html
+php artisan atlas:export --type=routes --format=json --output=api/routes.json
+php artisan atlas:export --type=commands --format=pdf --output=docs/commands.pdf
+php artisan atlas:export --type=services --format=html --output=docs/services.html
+php artisan atlas:export --type=notifications --format=json --output=docs/notifications.json
+php artisan atlas:export --type=middlewares --format=pdf --output=docs/middlewares.pdf
+php artisan atlas:export --type=form_requests --format=html --output=docs/form-requests.html
+php artisan atlas:export --type=events --format=json --output=docs/events.json
+php artisan atlas:export --type=controllers --format=html --output=docs/controllers.html
 ```
 
 ### Advanced Export Examples
@@ -499,9 +593,9 @@ use LaravelAtlas\Facades\Atlas;
 $htmlReport = Atlas::export('all', 'html');
 file_put_contents('reports/architecture-review.html', $htmlReport);
 
-// Export raw PHP data for custom processing
-$phpData = Atlas::export('models', 'php');
-file_put_contents('storage/atlas/models-data.php', $phpData);
+// Generate PDF reports for presentations
+$pdfReport = Atlas::export('all', 'pdf');
+file_put_contents('reports/architecture-presentation.pdf', $pdfReport);
 
 // Generate JSON reports for API consumption
 $jsonData = Atlas::export('routes', 'json');
@@ -515,7 +609,9 @@ $notificationsHtml = Atlas::export('notifications', 'html');
 file_put_contents('public/docs/notifications.html', $notificationsHtml);
 
 // Create complete documentation suite
-$components = ['models', 'routes', 'commands', 'services', 'notifications', 'middlewares', 'form_requests'];
+$components = ['models', 'routes', 'commands', 'services', 'notifications', 'middlewares', 
+               'form_requests', 'events', 'controllers', 'resources', 'jobs', 'actions', 
+               'policies', 'rules', 'listeners', 'observers'];
 foreach ($components as $component) {
     // Interactive HTML reports
     $html = Atlas::export($component, 'html');
@@ -524,6 +620,10 @@ foreach ($components as $component) {
     // API-friendly JSON exports
     $json = Atlas::export($component, 'json');
     file_put_contents("api/atlas/{$component}.json", $json);
+    
+    // Professional PDF documentation
+    $pdf = Atlas::export($component, 'pdf');
+    file_put_contents("docs/pdf/{$component}.pdf", $pdf);
 }
 ```
 
@@ -609,6 +709,36 @@ class ArchitectureTest extends TestCase
         $this->assertArrayHasKey('data', $data);
     }
 
+    public function test_events_can_be_scanned(): void
+    {
+        $data = Atlas::scan('events');
+        
+        $this->assertIsArray($data);
+        $this->assertArrayHasKey('type', $data);
+        $this->assertEquals('events', $data['type']);
+        $this->assertArrayHasKey('data', $data);
+    }
+
+    public function test_controllers_can_be_scanned(): void
+    {
+        $data = Atlas::scan('controllers');
+        
+        $this->assertIsArray($data);
+        $this->assertArrayHasKey('type', $data);
+        $this->assertEquals('controllers', $data['type']);
+        $this->assertArrayHasKey('data', $data);
+    }
+
+    public function test_jobs_can_be_scanned(): void
+    {
+        $data = Atlas::scan('jobs');
+        
+        $this->assertIsArray($data);
+        $this->assertArrayHasKey('type', $data);
+        $this->assertEquals('jobs', $data['type']);
+        $this->assertArrayHasKey('data', $data);
+    }
+
     public function test_json_export_is_valid(): void
     {
         $json = Atlas::export('models', 'json');
@@ -617,12 +747,28 @@ class ArchitectureTest extends TestCase
         $this->assertIsArray($decoded);
     }
 
+    public function test_html_export_is_valid(): void
+    {
+        $html = Atlas::export('models', 'html');
+        
+        $this->assertIsString($html);
+        $this->assertStringContainsString('<html', $html);
+    }
+
+    public function test_pdf_export_is_valid(): void
+    {
+        $pdf = Atlas::export('models', 'pdf');
+        
+        $this->assertIsString($pdf);
+        $this->assertStringStartsWith('%PDF', $pdf);
+    }
+
     public function test_all_components_can_be_scanned(): void
     {
         $data = Atlas::scan('all');
         
         $this->assertIsArray($data);
-        // Should contain the 7 implemented component types
+        // Should contain the 16 implemented component types
         $this->assertArrayHasKey('models', $data);
         $this->assertArrayHasKey('routes', $data);
         $this->assertArrayHasKey('commands', $data);
@@ -630,6 +776,15 @@ class ArchitectureTest extends TestCase
         $this->assertArrayHasKey('notifications', $data);
         $this->assertArrayHasKey('middlewares', $data);
         $this->assertArrayHasKey('form_requests', $data);
+        $this->assertArrayHasKey('events', $data);
+        $this->assertArrayHasKey('controllers', $data);
+        $this->assertArrayHasKey('resources', $data);
+        $this->assertArrayHasKey('jobs', $data);
+        $this->assertArrayHasKey('actions', $data);
+        $this->assertArrayHasKey('policies', $data);
+        $this->assertArrayHasKey('rules', $data);
+        $this->assertArrayHasKey('listeners', $data);
+        $this->assertArrayHasKey('observers', $data);
     }
 }
 ```
