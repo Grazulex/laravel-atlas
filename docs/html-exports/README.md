@@ -38,10 +38,10 @@ The HTML export includes the following component types:
 
 ```bash
 # Generate HTML export for all components
-php artisan atlas:generate --format=html --output=reports/architecture.html
+php artisan atlas:export --format=html --output=reports/architecture.html
 
 # Generate HTML export for specific component type
-php artisan atlas:generate --type=models --format=html --output=reports/models.html
+php artisan atlas:export --type=models --format=html --output=reports/models.html
 ```
 
 ### Programmatic HTML Export
@@ -115,12 +115,12 @@ This directory contains:
 
 ```bash
 # Generate HTML reports for documentation
-php artisan atlas:generate --format=html --output=public/docs/architecture.html
+php artisan atlas:export --format=html --output=public/docs/architecture.html
 
 # Generate component-specific reports
-php artisan atlas:generate --type=models --format=html --output=public/docs/models.html
-php artisan atlas:generate --type=routes --format=html --output=public/docs/routes.html
-php artisan atlas:generate --type=commands --format=html --output=public/docs/commands.html
+php artisan atlas:export --type=models --format=html --output=public/docs/models.html
+php artisan atlas:export --type=routes --format=html --output=public/docs/routes.html
+php artisan atlas:export --type=commands --format=html --output=public/docs/commands.html
 ```
 
 ## Customization

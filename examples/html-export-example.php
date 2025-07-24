@@ -200,10 +200,10 @@ echo "✅ Created navigation index: {$outputDir}/index.html\n\n";
 echo "5. Usage Examples:\n";
 echo "Command Line:\n";
 echo "  # Generate complete HTML architecture report\n";
-echo "  php artisan atlas:generate --format=html --output=reports/architecture.html\n\n";
+echo "  php artisan atlas:export --format=html --output=reports/architecture.html\n\n";
 echo "  # Generate specific component HTML reports\n";
-echo "  php artisan atlas:generate --type=models --format=html --output=reports/models.html\n";
-echo "  php artisan atlas:generate --type=routes --format=html --output=reports/routes.html\n\n";
+echo "  php artisan atlas:export --type=models --format=html --output=reports/models.html\n";
+echo "  php artisan atlas:export --type=routes --format=html --output=reports/routes.html\n\n";
 
 echo "Programmatic:\n";
 echo "  // Complete architecture dashboard\n";

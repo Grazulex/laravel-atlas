@@ -781,7 +781,7 @@ $servicesData = Atlas::scan('services', [
 
 ```bash
 # Generate notifications documentation
-php artisan atlas:generate --type=notifications --format=markdown --output=docs/notifications.md
+php artisan atlas:export --type=notifications --format=pdf --output=docs/notifications.pdf
 ```
 
 ```php
@@ -822,7 +822,7 @@ $notificationsData = Atlas::scan('notifications', [
 
 ```bash
 # Generate middlewares documentation
-php artisan atlas:generate --type=middlewares --format=html --output=docs/middlewares.html
+php artisan atlas:export --type=middlewares --format=html --output=docs/middlewares.html
 ```
 
 ```php
@@ -863,7 +863,7 @@ $middlewaresData = Atlas::scan('middlewares', [
 
 ```bash
 # Generate form requests documentation
-php artisan atlas:generate --type=form_requests --format=json --output=api/form-requests.json
+php artisan atlas:export --type=form_requests --format=json --output=api/form-requests.json
 ```
 
 ```php
