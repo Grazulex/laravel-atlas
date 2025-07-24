@@ -141,11 +141,12 @@
     {{-- Footer --}}
     @php
         $footerClass = 'Route';
-        $footerFile = 'Route Definition';
+        $footerFile = $item['file'] ?? 'Route Definition';
         
         if ($item['is_closure']) {
             $footerClass = 'Closure';
-            $footerFile = 'Inline Closure';
+            // Use file information from RouteMapper instead of hardcoded "Inline Closure"
+            $footerFile = $item['file'] ?? 'Inline Closure';
         } else {
             if (!empty($item['controller'])) {
                 $footerClass = $item['controller'];
