@@ -5,6 +5,7 @@
         'title' => class_basename($controller['class']),
         'badge' => 'Controller',
         'badgeColor' => 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200',
+        'namespace' => $controller['namespace'],
         'class' => $controller['class']
     ])
 

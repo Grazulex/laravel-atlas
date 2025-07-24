@@ -45,4 +45,10 @@
         'flow' => $notification['flow'] ?? [],
         'type' => 'notification'
     ])
+
+    {{-- Footer --}}
+    @include('atlas::exports.partials.common.card-footer', [
+        'class' => $notification['class'],
+        'file' => $notification['file']
+    ])
 </div>

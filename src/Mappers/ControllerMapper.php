@@ -79,7 +79,9 @@ class ControllerMapper implements ComponentMapper
 
         return [
             'class' => $class,
+            'namespace' => $reflection->getNamespaceName(),
             'name' => $reflection->getShortName(),
+            'file' => $file ?: 'N/A',
             'traits' => $this->extractTraits($reflection),
             'constructor' => $this->analyzeConstructor($reflection),
             'middlewares' => $this->extractMiddlewares($source),

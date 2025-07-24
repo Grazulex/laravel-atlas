@@ -98,7 +98,9 @@ class EventMapper implements ComponentMapper
 
         return [
             'class' => $class,
+            'namespace' => $reflection->getNamespaceName(),
             'name' => $reflection->getShortName(),
+            'file' => $file ?: 'N/A',
             'traits' => $this->extractTraits($reflection),
             'properties' => $this->extractProperties($reflection),
             'broadcastable' => $this->isBroadcastable($reflection),

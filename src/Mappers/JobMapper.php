@@ -104,7 +104,9 @@ class JobMapper implements ComponentMapper
 
         return [
             'class' => $class,
+            'namespace' => $reflection->getNamespaceName(),
             'name' => $reflection->getShortName(),
+            'file' => $file ?: 'N/A',
             'traits' => $this->extractTraits($reflection),
             'queueable' => $this->isQueueable($reflection),
             'properties' => $this->extractProperties($reflection, $source),

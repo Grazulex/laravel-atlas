@@ -84,6 +84,9 @@ class MiddlewareMapper implements ComponentMapper
 
         return [
             'class' => $fqcn,
+            'namespace' => $reflection->getNamespaceName(),
+            'name' => $reflection->getShortName(),
+            'file' => $reflection->getFileName() ?: 'N/A',
             'methods' => $this->extractMethods($reflection),
             'dependencies' => $this->extractConstructorDependencies($reflection),
             'parameters' => $this->extractHandleParameters($reflection),

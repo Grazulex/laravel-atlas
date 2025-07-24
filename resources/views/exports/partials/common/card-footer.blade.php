@@ -6,9 +6,11 @@
                 📄 <span class="ml-1 font-mono">{{ $class }}</span>
             </span>
         </div>
-        <div class="flex items-center space-x-1 text-gray-400 dark:text-gray-500">
-            <span>📁</span>
-            <span class="font-mono text-[10px]">{{ $file }}</span>
-        </div>
+        @if (!empty($file))
+            <div class="flex items-center space-x-1 text-gray-400 dark:text-gray-500">
+                <span>📁</span>
+                <span class="font-mono text-[10px]">{{ $file }}</span>
+            </div>
+        @endif
     </div>
 </div>

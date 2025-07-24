@@ -5,6 +5,7 @@
         'title' => class_basename($middleware['class']),
         'badge' => $middleware['has_terminate'] ? 'Terminable' : 'Standard',
         'badgeColor' => $middleware['has_terminate'] ? 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300',
+        'namespace' => $middleware['namespace'],
         'class' => $middleware['class']
     ])
 

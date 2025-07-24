@@ -77,8 +77,13 @@ class ModelMapper implements ComponentMapper
      */
     protected function analyzeModel(Model $model): array
     {
+        $reflection = new ReflectionClass($model);
+        
         return [
             'class' => $model::class,
+            'namespace' => $reflection->getNamespaceName(),
+            'name' => $reflection->getShortName(),
+            'file' => $reflection->getFileName() ?: 'N/A',
             'primary_key' => $model->getKeyName(),
             'table' => $model->getTable(),
             'fillable' => $model->getFillable(),
