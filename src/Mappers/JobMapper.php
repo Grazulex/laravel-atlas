@@ -204,6 +204,19 @@ class JobMapper implements ComponentMapper
     {
         $methods = [];
         $classTraits = $reflection->getTraitNames();
+        $traitMethods = [];
+        
+        // Pré-calculer les méthodes de chaque trait
+        foreach ($classTraits as $traitName) {
+            try {
+                $traitReflection = new ReflectionClass($traitName);
+                foreach ($traitReflection->getMethods() as $traitMethod) {
+                    $traitMethods[$traitMethod->getName()] = class_basename($traitName);
+                }
+            } catch (\Exception $e) {
+                // Ignorer les erreurs de réflexion
+            }
+        }
         
         foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
             // Ignorer les méthodes magiques
@@ -212,34 +225,19 @@ class JobMapper implements ComponentMapper
             }
 
             $source = 'class';
-            $declaringClass = $method->getDeclaringClass();
+            $methodName = $method->getName();
             
-            // Déterminer la source de la méthode
-            if ($declaringClass->getName() !== $reflection->getName()) {
-                $declaringClassName = $declaringClass->getName();
-                
-                // Vérifier si c'est un trait en parcourant les traits utilisés
-                foreach ($classTraits as $traitName) {
-                    // Essayer de créer une réflexion du trait
-                    try {
-                        $traitReflection = new ReflectionClass($traitName);
-                        if ($traitReflection->hasMethod($method->getName())) {
-                            $source = 'trait: ' . class_basename($traitName);
-                            break;
-                        }
-                    } catch (\Exception $e) {
-                        // Ignorer les erreurs de réflexion
-                    }
-                }
-                
-                // Si ce n'est toujours pas trouvé, vérifier les interfaces et classes parentes
-                if ($source === 'class') {
+            // Vérifier si la méthode vient d'un trait
+            if (isset($traitMethods[$methodName])) {
+                $source = 'trait: ' . $traitMethods[$methodName];
+            } else {
+                // Vérifier si c'est défini dans la classe actuelle
+                $declaringClass = $method->getDeclaringClass();
+                if ($declaringClass->getName() !== $reflection->getName()) {
                     if ($declaringClass->isInterface()) {
-                        $source = 'interface: ' . class_basename($declaringClassName);
-                    } elseif ($declaringClass->isTrait()) {
-                        $source = 'trait: ' . class_basename($declaringClassName);
+                        $source = 'interface: ' . class_basename($declaringClass->getName());
                     } else {
-                        $source = 'parent: ' . class_basename($declaringClassName);
+                        $source = 'parent: ' . class_basename($declaringClass->getName());
                     }
                 }
             }
