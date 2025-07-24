@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Mappers;
 
+use InvalidArgumentException;
+use ReflectionType;
+use ReflectionNamedType;
+use Throwable;
 use Illuminate\Support\Facades\File;
 use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
@@ -18,20 +22,21 @@ class ActionMapper implements ComponentMapper
     }
 
     /**
-     * @param array<string, mixed> $options
+     * @param  array<string, mixed>  $options
+     *
      * @return array<string, mixed>
      */
     public function scan(array $options = []): array
     {
         $actions = [];
         $defaultPaths = [app_path('Actions')];
-        
+
         // Ajouter le beta_app s'il existe
         $betaAppPath = base_path('beta_app/app/Actions');
         if (is_dir($betaAppPath)) {
             $defaultPaths[] = $betaAppPath;
         }
-        
+
         $paths = $options['paths'] ?? $defaultPaths;
         $recursive = $options['recursive'] ?? true;
 
@@ -46,16 +51,16 @@ class ActionMapper implements ComponentMapper
 
             foreach ($files as $file) {
                 foreach ($files as $file) {
-                $fqcn = $this->resolveClassFromFile($file->getRealPath());
+                    $fqcn = $this->resolveClassFromFile($file->getRealPath());
 
-                if (
-                    $fqcn &&
-                    ! isset($seen[$fqcn])
-                ) {
-                    $seen[$fqcn] = true;
-                    $actions[] = $this->analyzeAction($fqcn, $file->getRealPath());
+                    if (
+                        $fqcn &&
+                        ! isset($seen[$fqcn])
+                    ) {
+                        $seen[$fqcn] = true;
+                        $actions[] = $this->analyzeAction($fqcn, $file->getRealPath());
+                    }
                 }
-            }
             }
         }
 
@@ -69,15 +74,19 @@ class ActionMapper implements ComponentMapper
     /**
      * @return array<string, mixed>
      */
-    protected function analyzeAction(string $fqcn): array
+    protected function analyzeAction(string $fqcn, string $filePath): array
     {
+        if (! class_exists($fqcn)) {
+            throw new InvalidArgumentException("Class {$fqcn} does not exist");
+        }
+
         $reflection = new ReflectionClass($fqcn);
 
         return [
             'class' => $fqcn,
             'namespace' => $reflection->getNamespaceName(),
             'name' => $reflection->getShortName(),
-            'file' => $reflection->getFileName(),
+            'file' => $filePath,
             'methods' => $this->getPublicMethods($reflection),
             'constructor' => $this->getConstructorInfo($reflection),
             'dependencies' => $this->getDependencies($reflection),
@@ -96,14 +105,14 @@ class ActionMapper implements ComponentMapper
                 $methods[] = [
                     'name' => $method->getName(),
                     'parameters' => array_map(
-                        fn ($p) => [
+                        fn ($p): array => [
                             'name' => $p->getName(),
                             'type' => $p->getType() ? $p->getType()->__toString() : null,
                             'default' => $p->isDefaultValueAvailable() ? $p->getDefaultValue() : null,
                         ],
                         $method->getParameters()
                     ),
-                    'return_type' => $method->getReturnType() ? $method->getReturnType()->__toString() : null,
+                    'return_type' => $method->getReturnType() instanceof ReflectionType ? $method->getReturnType()->__toString() : null,
                 ];
             }
         }
@@ -117,14 +126,14 @@ class ActionMapper implements ComponentMapper
     protected function getConstructorInfo(ReflectionClass $reflection): ?array
     {
         $constructor = $reflection->getConstructor();
-        
+
         if (! $constructor) {
             return null;
         }
 
         return [
             'parameters' => array_map(
-                fn ($p) => [
+                fn ($p): array => [
                     'name' => $p->getName(),
                     'type' => $p->getType() ? $p->getType()->__toString() : null,
                 ],
@@ -139,7 +148,7 @@ class ActionMapper implements ComponentMapper
     protected function getDependencies(ReflectionClass $reflection): array
     {
         $constructor = $reflection->getConstructor();
-        
+
         if (! $constructor) {
             return [];
         }
@@ -147,8 +156,8 @@ class ActionMapper implements ComponentMapper
         $dependencies = [];
         foreach ($constructor->getParameters() as $parameter) {
             $type = $parameter->getType();
-            if ($type && ! $type->isBuiltin()) {
-                $dependencies[] = $type->__toString();
+            if ($type instanceof ReflectionNamedType && ! $type->isBuiltin()) {
+                $dependencies[] = $type->getName();
             }
         }
 
@@ -167,7 +176,7 @@ class ActionMapper implements ComponentMapper
         }
 
         // Si ça ne fonctionne pas, essayer de charger manuellement le fichier
-        if (!file_exists($filePath)) {
+        if (! file_exists($filePath)) {
             return null;
         }
 
@@ -178,11 +187,7 @@ class ActionMapper implements ComponentMapper
         }
 
         // Extraire le namespace
-        if (preg_match('/namespace\s+([^;]+);/', $content, $namespaceMatches)) {
-            $namespace = trim($namespaceMatches[1]);
-        } else {
-            $namespace = '';
-        }
+        $namespace = preg_match('/namespace\s+([^;]+);/', $content, $namespaceMatches) ? trim($namespaceMatches[1]) : '';
 
         // Extraire le nom de classe
         if (preg_match('/class\s+(\w+)/', $content, $classMatches)) {
@@ -192,7 +197,7 @@ class ActionMapper implements ComponentMapper
         }
 
         // Construire le FQCN
-        $fqcn = $namespace ? $namespace . '\\' . $className : $className;
+        $fqcn = $namespace !== '' && $namespace !== '0' ? $namespace . '\\' . $className : $className;
 
         // Essayer de charger le fichier
         try {
@@ -200,7 +205,7 @@ class ActionMapper implements ComponentMapper
             if (class_exists($fqcn)) {
                 return $fqcn;
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable) {
             // Ignorer les erreurs de chargement
         }
 

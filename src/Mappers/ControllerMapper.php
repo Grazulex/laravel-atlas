@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Mappers;
 
+use ReflectionNamedType;
+use ReflectionUnionType;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\File;
 use LaravelAtlas\Contracts\ComponentMapper;
@@ -37,7 +39,7 @@ class ControllerMapper implements ComponentMapper
 
                 if ($fqcn && class_exists($fqcn)) {
                     $reflection = new ReflectionClass($fqcn);
-                    
+
                     if ($this->isController($reflection)) {
                         $controllers[] = $this->analyzeController($reflection);
                     }
@@ -55,8 +57,10 @@ class ControllerMapper implements ComponentMapper
     protected function isController(ReflectionClass $reflection): bool
     {
         // Vérifier si hérite de Controller ou contient "Controller" dans le nom
-        return $reflection->isSubclassOf(Controller::class) || 
-               str_contains($reflection->getName(), 'Controller');
+        if ($reflection->isSubclassOf(Controller::class)) {
+            return true;
+        }
+        return str_contains($reflection->getName(), 'Controller');
     }
 
     /**
@@ -94,6 +98,7 @@ class ControllerMapper implements ComponentMapper
         foreach ($reflection->getTraitNames() as $trait) {
             $traits[] = class_basename($trait);
         }
+
         return $traits;
     }
 
@@ -103,8 +108,8 @@ class ControllerMapper implements ComponentMapper
     protected function analyzeConstructor(ReflectionClass $reflection): array
     {
         $constructor = $reflection->getConstructor();
-        
-        if (!$constructor) {
+
+        if (! $constructor) {
             return ['parameters' => []];
         }
 
@@ -127,17 +132,17 @@ class ControllerMapper implements ComponentMapper
     protected function getParameterType(ReflectionParameter $parameter): string
     {
         $type = $parameter->getType();
-        
+
         if ($type === null) {
             return 'mixed';
         }
 
-        if ($type instanceof \ReflectionNamedType) {
+        if ($type instanceof ReflectionNamedType) {
             return $type->getName();
         }
 
-        if ($type instanceof \ReflectionUnionType) {
-            return implode('|', array_map(fn($t) => $t->getName(), $type->getTypes()));
+        if ($type instanceof ReflectionUnionType) {
+            return implode('|', array_map(fn ($t) => $t instanceof ReflectionNamedType ? $t->getName() : (string) $t, $type->getTypes()));
         }
 
         return 'mixed';
@@ -150,7 +155,7 @@ class ControllerMapper implements ComponentMapper
     {
         $middlewares = [];
 
-        if (!$source) {
+        if (! $source) {
             return $middlewares;
         }
 
@@ -168,7 +173,7 @@ class ControllerMapper implements ComponentMapper
     protected function extractMethods(ReflectionClass $reflection): array
     {
         $methods = [];
-        
+
         foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
             // Ignorer les méthodes héritées de la classe parent Controller
             if ($method->getDeclaringClass()->getName() !== $reflection->getName()) {
@@ -198,7 +203,7 @@ class ControllerMapper implements ComponentMapper
     protected function getMethodParameters(ReflectionMethod $method): array
     {
         $parameters = [];
-        
+
         foreach ($method->getParameters() as $parameter) {
             $parameters[] = [
                 'name' => $parameter->getName(),
@@ -214,17 +219,17 @@ class ControllerMapper implements ComponentMapper
     protected function getMethodReturnType(ReflectionMethod $method): string
     {
         $type = $method->getReturnType();
-        
+
         if ($type === null) {
             return 'mixed';
         }
 
-        if ($type instanceof \ReflectionNamedType) {
+        if ($type instanceof ReflectionNamedType) {
             return $type->getName();
         }
 
-        if ($type instanceof \ReflectionUnionType) {
-            return implode('|', array_map(fn($t) => $t->getName(), $type->getTypes()));
+        if ($type instanceof ReflectionUnionType) {
+            return implode('|', array_map(fn ($t) => $t instanceof ReflectionNamedType ? $t->getName() : (string) $t, $type->getTypes()));
         }
 
         return 'mixed';
@@ -247,7 +252,7 @@ class ControllerMapper implements ComponentMapper
         if ($constructor) {
             foreach ($constructor->getParameters() as $parameter) {
                 $type = $this->getParameterType($parameter);
-                
+
                 if (str_contains($type, 'App\\Models\\')) {
                     $dependencies['models'][] = class_basename($type);
                 } elseif (str_contains($type, 'App\\Services\\')) {
@@ -280,7 +285,7 @@ class ControllerMapper implements ComponentMapper
             ],
         ];
 
-        if (!$source) {
+        if (! $source) {
             return $flow;
         }
 
@@ -289,7 +294,7 @@ class ControllerMapper implements ComponentMapper
             foreach ($matches[1] as $fqcn) {
                 $flow['jobs'][] = [
                     'class' => $fqcn,
-                    'async' => !str_contains($source, "dispatchNow(new {$fqcn}"),
+                    'async' => ! str_contains($source, "dispatchNow(new {$fqcn}"),
                 ];
             }
         }

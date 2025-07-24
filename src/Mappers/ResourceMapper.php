@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Mappers;
 
+use ReflectionNamedType;
+use ReflectionUnionType;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\File;
 use LaravelAtlas\Contracts\ComponentMapper;
@@ -36,7 +38,7 @@ class ResourceMapper implements ComponentMapper
 
                 if ($fqcn && class_exists($fqcn)) {
                     $reflection = new ReflectionClass($fqcn);
-                    
+
                     if ($this->isResource($reflection)) {
                         $resources[] = $this->analyzeResource($reflection);
                     }
@@ -53,8 +55,10 @@ class ResourceMapper implements ComponentMapper
 
     protected function isResource(ReflectionClass $reflection): bool
     {
-        return $reflection->isSubclassOf(JsonResource::class) || 
-               str_contains($reflection->getName(), 'Resource');
+        if ($reflection->isSubclassOf(JsonResource::class)) {
+            return true;
+        }
+        return str_contains($reflection->getName(), 'Resource');
     }
 
     /**
@@ -92,6 +96,7 @@ class ResourceMapper implements ComponentMapper
         foreach ($reflection->getTraitNames() as $trait) {
             $traits[] = class_basename($trait);
         }
+
         return $traits;
     }
 
@@ -101,7 +106,7 @@ class ResourceMapper implements ComponentMapper
     protected function extractMethods(ReflectionClass $reflection): array
     {
         $methods = [];
-        
+
         foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
             // Ignorer les méthodes héritées de JsonResource
             if ($method->getDeclaringClass()->getName() !== $reflection->getName()) {
@@ -122,17 +127,17 @@ class ResourceMapper implements ComponentMapper
     protected function getMethodReturnType(ReflectionMethod $method): string
     {
         $type = $method->getReturnType();
-        
+
         if ($type === null) {
             return 'mixed';
         }
 
-        if ($type instanceof \ReflectionNamedType) {
+        if ($type instanceof ReflectionNamedType) {
             return $type->getName();
         }
 
-        if ($type instanceof \ReflectionUnionType) {
-            return implode('|', array_map(fn($t) => $t->getName(), $type->getTypes()));
+        if ($type instanceof ReflectionUnionType) {
+            return implode('|', array_map(fn ($t) => $t instanceof ReflectionNamedType ? $t->getName() : (string) $t, $type->getTypes()));
         }
 
         return 'mixed';
@@ -145,13 +150,14 @@ class ResourceMapper implements ComponentMapper
     {
         $relationships = [];
 
-        if (!$source) {
+        if (! $source) {
             return $relationships;
         }
 
         // Rechercher les relations dans les resources (whenLoaded, when)
         if (preg_match_all('/[\'"]([a-zA-Z_]+)[\'"]\s*=>\s*(?:new\s+)?([A-Z]\w+Resource)/', $source, $matches)) {
-            for ($i = 0; $i < count($matches[1]); $i++) {
+            $counter = count($matches[1]);
+            for ($i = 0; $i < $counter; $i++) {
                 $relationships[] = $matches[1][$i] . ' → ' . $matches[2][$i];
             }
         }
@@ -173,7 +179,7 @@ class ResourceMapper implements ComponentMapper
     {
         $conditionals = [];
 
-        if (!$source) {
+        if (! $source) {
             return $conditionals;
         }
 
@@ -218,20 +224,22 @@ class ResourceMapper implements ComponentMapper
     {
         $transformations = [];
 
-        if (!$source) {
+        if (! $source) {
             return $transformations;
         }
 
         // Rechercher les transformations de dates
         if (preg_match_all('/\$this->([a-zA-Z_]+)\?->format\([\'"]([^\'"]+)[\'"]/', $source, $matches)) {
-            for ($i = 0; $i < count($matches[1]); $i++) {
+            $counter = count($matches[1]);
+            for ($i = 0; $i < $counter; $i++) {
                 $transformations[] = $matches[1][$i] . ' → format(' . $matches[2][$i] . ')';
             }
         }
 
         // Rechercher les appels de services
         if (preg_match_all('/app\(([A-Z]\w+Service)::class\)->([a-zA-Z_]+)/', $source, $matches)) {
-            for ($i = 0; $i < count($matches[1]); $i++) {
+            $counter = count($matches[1]);
+            for ($i = 0; $i < $counter; $i++) {
                 $transformations[] = $matches[1][$i] . '::' . $matches[2][$i] . '()';
             }
         }
@@ -256,7 +264,7 @@ class ResourceMapper implements ComponentMapper
             ],
         ];
 
-        if (!$source) {
+        if (! $source) {
             return $flow;
         }
 

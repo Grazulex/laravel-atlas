@@ -2,7 +2,7 @@
 
 /**
  * Laravel Atlas - Complete Analysis Example
- * 
+ *
  * This example demonstrates comprehensive application analysis:
  * - Scanning all available component types
  * - Generating complete architecture documentation
@@ -23,7 +23,7 @@ foreach ($allComponents as $type => $data) {
     if (is_array($data) && isset($data['count'])) {
         $count = $data['count'];
         $totalComponents += $count;
-        echo "- " . ucfirst($type) . ": {$count} components\n";
+        echo '- ' . ucfirst($type) . ": {$count} components\n";
     }
 }
 echo "Total components analyzed: {$totalComponents}\n\n";
@@ -46,68 +46,68 @@ foreach ($componentTypes as $type => $options) {
     echo "Analyzing {$type}...\n";
     $data = Atlas::scan($type, $options);
     $detailedAnalysis[$type] = $data;
-    
+
     // Show summary for each type
     if (isset($data['data']) && is_array($data['data'])) {
         $count = count($data['data']);
         echo "  Found {$count} {$type}\n";
-        
+
         // Type-specific analysis
         switch ($type) {
             case 'models':
                 $withRelationships = 0;
                 foreach ($data['data'] as $model) {
-                    if (isset($model['relationships']) && !empty($model['relationships'])) {
+                    if (isset($model['relationships']) && ! empty($model['relationships'])) {
                         $withRelationships++;
                     }
                 }
                 echo "  - {$withRelationships} with relationships\n";
                 break;
-                
+
             case 'routes':
                 $withMiddleware = 0;
                 foreach ($data['data'] as $route) {
-                    if (isset($route['middleware']) && !empty($route['middleware'])) {
+                    if (isset($route['middleware']) && ! empty($route['middleware'])) {
                         $withMiddleware++;
                     }
                 }
                 echo "  - {$withMiddleware} with middleware\n";
                 break;
-                
+
             case 'services':
                 $withDependencies = 0;
                 foreach ($data['data'] as $service) {
-                    if (isset($service['dependencies']) && !empty(array_filter($service['dependencies']))) {
+                    if (isset($service['dependencies']) && ! empty(array_filter($service['dependencies']))) {
                         $withDependencies++;
                     }
                 }
                 echo "  - {$withDependencies} with dependencies\n";
                 break;
-                
+
             case 'notifications':
                 $withChannels = 0;
                 foreach ($data['data'] as $notification) {
-                    if (isset($notification['channels']) && !empty($notification['channels'])) {
+                    if (isset($notification['channels']) && ! empty($notification['channels'])) {
                         $withChannels++;
                     }
                 }
                 echo "  - {$withChannels} with defined channels\n";
                 break;
-                
+
             case 'middlewares':
                 $withParams = 0;
                 foreach ($data['data'] as $middleware) {
-                    if (isset($middleware['parameters']) && !empty($middleware['parameters'])) {
+                    if (isset($middleware['parameters']) && ! empty($middleware['parameters'])) {
                         $withParams++;
                     }
                 }
                 echo "  - {$withParams} with parameters\n";
                 break;
-                
+
             case 'form_requests':
                 $withRules = 0;
                 foreach ($data['data'] as $formRequest) {
-                    if (isset($formRequest['rules']) && !empty($formRequest['rules'])) {
+                    if (isset($formRequest['rules']) && ! empty($formRequest['rules'])) {
                         $withRules++;
                     }
                 }
@@ -124,22 +124,22 @@ echo "3. Generating comprehensive documentation:\n";
 // JSON documentation
 echo "Generating JSON documentation...\n";
 $jsonDoc = Atlas::export('all', 'json');
-echo "- JSON documentation: " . strlen($jsonDoc) . " characters\n";
+echo '- JSON documentation: ' . strlen($jsonDoc) . " characters\n";
 
 // Markdown documentation
 echo "Generating Markdown documentation...\n";
 $markdownDoc = Atlas::export('all', 'markdown');
-echo "- Markdown documentation: " . strlen($markdownDoc) . " characters\n";
+echo '- Markdown documentation: ' . strlen($markdownDoc) . " characters\n";
 
 // HTML documentation
 echo "Generating HTML documentation...\n";
 $htmlDoc = Atlas::export('all', 'html');
-echo "- HTML documentation: " . strlen($htmlDoc) . " characters\n";
+echo '- HTML documentation: ' . strlen($htmlDoc) . " characters\n";
 
 // PHP data export
 echo "Generating PHP data export...\n";
 $phpDoc = Atlas::export('all', 'php');
-echo "- PHP data export: " . strlen($phpDoc) . " characters\n";
+echo '- PHP data export: ' . strlen($phpDoc) . " characters\n";
 
 echo "\n";
 
@@ -157,13 +157,13 @@ $insights = [
 foreach ($detailedAnalysis as $type => $data) {
     if (isset($data['data']) && is_array($data['data'])) {
         $insights['total_classes'] += count($data['data']);
-        
+
         foreach ($data['data'] as $component) {
             // Count methods
             if (isset($component['methods']) && is_array($component['methods'])) {
                 $insights['total_methods'] += count($component['methods']);
             }
-            
+
             // Analyze dependencies
             if (isset($component['dependencies']) && is_array($component['dependencies'])) {
                 foreach (array_filter($component['dependencies']) as $dep) {
@@ -171,12 +171,12 @@ foreach ($detailedAnalysis as $type => $data) {
                     $insights['dependency_patterns'][$baseClass] = ($insights['dependency_patterns'][$baseClass] ?? 0) + 1;
                 }
             }
-            
+
             // Count validation rules
             if (isset($component['rules']) && is_array($component['rules'])) {
                 $insights['validation_complexity'] += count($component['rules']);
             }
-            
+
             // Analyze route patterns
             if (isset($component['uri'])) {
                 $segments = explode('/', trim($component['uri'], '/'));
@@ -192,7 +192,7 @@ echo "- Total classes analyzed: {$insights['total_classes']}\n";
 echo "- Total methods found: {$insights['total_methods']}\n";
 echo "- Validation rules defined: {$insights['validation_complexity']}\n";
 
-if (!empty($insights['dependency_patterns'])) {
+if (! empty($insights['dependency_patterns'])) {
     echo "Most common dependencies:\n";
     arsort($insights['dependency_patterns']);
     foreach (array_slice($insights['dependency_patterns'], 0, 5, true) as $dep => $count) {
@@ -200,7 +200,7 @@ if (!empty($insights['dependency_patterns'])) {
     }
 }
 
-if (!empty($insights['route_patterns'])) {
+if (! empty($insights['route_patterns'])) {
     echo "Route patterns:\n";
     arsort($insights['route_patterns']);
     foreach (array_slice($insights['route_patterns'], 0, 5, true) as $pattern => $count) {
@@ -216,7 +216,7 @@ echo "5. Saving documentation to files:\n";
 $timestamp = date('Y-m-d_H-i-s');
 $outputDir = "atlas_export_{$timestamp}";
 
-if (!file_exists($outputDir)) {
+if (! file_exists($outputDir)) {
     mkdir($outputDir, 0755, true);
     echo "Created output directory: {$outputDir}/\n";
 }
@@ -236,11 +236,11 @@ echo "- Saved: {$outputDir}/architecture.php\n";
 
 // Create a summary file
 $summary = "# Laravel Atlas - Complete Analysis Summary\n\n";
-$summary .= "Generated on: " . date('Y-m-d H:i:s') . "\n\n";
+$summary .= 'Generated on: ' . date('Y-m-d H:i:s') . "\n\n";
 $summary .= "## Component Summary\n\n";
 foreach ($allComponents as $type => $data) {
     if (is_array($data) && isset($data['count'])) {
-        $summary .= "- **" . ucfirst($type) . "**: {$data['count']} components\n";
+        $summary .= '- **' . ucfirst($type) . "**: {$data['count']} components\n";
     }
 }
 $summary .= "\n## Architecture Insights\n\n";

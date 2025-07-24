@@ -2,7 +2,7 @@
 
 /**
  * Laravel Atlas - Commands Analysis Example
- * 
+ *
  * This example demonstrates how to analyze Artisan commands:
  * - Command signatures and descriptions
  * - Arguments and options
@@ -17,12 +17,12 @@ echo "=== Laravel Atlas - Commands Analysis Example ===\n\n";
 echo "1. Basic command scanning:\n";
 $commands = Atlas::scan('commands');
 
-echo "Total commands found: " . ($commands['count'] ?? 0) . "\n";
+echo 'Total commands found: ' . ($commands['count'] ?? 0) . "\n";
 if (isset($commands['data']) && is_array($commands['data'])) {
     echo "Command classes:\n";
     foreach ($commands['data'] as $command) {
         if (isset($command['class'])) {
-            echo "- " . class_basename($command['class']) . " ({$command['class']})\n";
+            echo '- ' . class_basename($command['class']) . " ({$command['class']})\n";
         }
     }
 }
@@ -40,38 +40,38 @@ if (isset($commandsWithDetails['data']) && is_array($commandsWithDetails['data']
         if (isset($command['class'])) {
             $className = class_basename($command['class']);
             echo "Command: {$className}\n";
-            
+
             // Show signature
             if (isset($command['signature'])) {
                 echo "  Signature: {$command['signature']}\n";
             }
-            
+
             // Show description
             if (isset($command['description'])) {
                 echo "  Description: {$command['description']}\n";
             }
-            
+
             // Show arguments
             if (isset($command['arguments']) && is_array($command['arguments'])) {
-                echo "  Arguments: " . count($command['arguments']) . "\n";
+                echo '  Arguments: ' . count($command['arguments']) . "\n";
                 foreach ($command['arguments'] as $arg => $details) {
                     $required = isset($details['required']) && $details['required'] ? ' (required)' : ' (optional)';
                     echo "    - {$arg}{$required}\n";
                 }
             }
-            
+
             // Show options
             if (isset($command['options']) && is_array($command['options'])) {
-                echo "  Options: " . count($command['options']) . "\n";
+                echo '  Options: ' . count($command['options']) . "\n";
                 foreach (array_slice($command['options'], 0, 3) as $option => $details) { // Show first 3
                     $shortcut = isset($details['shortcut']) ? " (-{$details['shortcut']})" : '';
                     echo "    - --{$option}{$shortcut}\n";
                 }
                 if (count($command['options']) > 3) {
-                    echo "    ... and " . (count($command['options']) - 3) . " more options\n";
+                    echo '    ... and ' . (count($command['options']) - 3) . " more options\n";
                 }
             }
-            
+
             echo "\n";
         }
     }
@@ -83,7 +83,7 @@ if (isset($commandsWithDetails['data']) && is_array($commandsWithDetails['data']
     $makeCommands = 0;
     $migrateCommands = 0;
     $customCommands = 0;
-    
+
     foreach ($commandsWithDetails['data'] as $command) {
         if (isset($command['signature'])) {
             $signature = $command['signature'];
@@ -96,7 +96,7 @@ if (isset($commandsWithDetails['data']) && is_array($commandsWithDetails['data']
             }
         }
     }
-    
+
     echo "- Make commands: {$makeCommands}\n";
     echo "- Migration commands: {$migrateCommands}\n";
     echo "- Custom commands: {$customCommands}\n";
@@ -108,15 +108,15 @@ echo "4. Exporting commands:\n";
 
 // JSON export
 $jsonExport = Atlas::export('commands', 'json');
-echo "- JSON export ready (length: " . strlen($jsonExport) . " characters)\n";
+echo '- JSON export ready (length: ' . strlen($jsonExport) . " characters)\n";
 
 // Markdown export
 $markdownExport = Atlas::export('commands', 'markdown');
-echo "- Markdown export ready (length: " . strlen($markdownExport) . " characters)\n";
+echo '- Markdown export ready (length: ' . strlen($markdownExport) . " characters)\n";
 
 // HTML export
 $htmlExport = Atlas::export('commands', 'html');
-echo "- HTML export ready (length: " . strlen($htmlExport) . " characters)\n";
+echo '- HTML export ready (length: ' . strlen($htmlExport) . " characters)\n";
 
 // 5. Custom command analysis
 echo "\n5. Custom command analysis:\n";
@@ -126,7 +126,7 @@ $customCommands = Atlas::scan('commands', [
     'include_descriptions' => true,
 ]);
 
-echo "Custom commands found: " . ($customCommands['count'] ?? 0) . "\n";
+echo 'Custom commands found: ' . ($customCommands['count'] ?? 0) . "\n";
 
 if (isset($customCommands['data']) && is_array($customCommands['data'])) {
     foreach ($customCommands['data'] as $command) {

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Mappers;
 
+use InvalidArgumentException;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\File;
 use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
@@ -18,20 +20,21 @@ class ListenerMapper implements ComponentMapper
     }
 
     /**
-     * @param array<string, mixed> $options
+     * @param  array<string, mixed>  $options
+     *
      * @return array<string, mixed>
      */
     public function scan(array $options = []): array
     {
         $listeners = [];
         $defaultPaths = [app_path('Listeners')];
-        
+
         // Ajouter le beta_app s'il existe
         $betaAppPath = base_path('beta_app/app/Listeners');
         if (is_dir($betaAppPath)) {
             $defaultPaths[] = $betaAppPath;
         }
-        
+
         $paths = $options['paths'] ?? $defaultPaths;
         $recursive = $options['recursive'] ?? true;
         $seen = [];
@@ -69,6 +72,10 @@ class ListenerMapper implements ComponentMapper
      */
     protected function analyzeListener(string $fqcn, string $filePath): array
     {
+        if (! class_exists($fqcn)) {
+            throw new InvalidArgumentException("Class {$fqcn} does not exist");
+        }
+
         $reflection = new ReflectionClass($fqcn);
 
         return [
@@ -92,11 +99,11 @@ class ListenerMapper implements ComponentMapper
         $methods = [];
 
         foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
-            if ($method->class === $reflection->getName() && !$method->isConstructor()) {
+            if ($method->class === $reflection->getName() && ! $method->isConstructor()) {
                 $methods[] = [
                     'name' => $method->getName(),
                     'parameters' => array_map(
-                        fn ($param) => [
+                        fn ($param): array => [
                             'name' => $param->getName(),
                             'type' => $param->getType()?->__toString(),
                             'has_default' => $param->isDefaultValueAvailable(),
@@ -119,6 +126,6 @@ class ListenerMapper implements ComponentMapper
 
     protected function isQueued(ReflectionClass $reflection): bool
     {
-        return in_array('Illuminate\Contracts\Queue\ShouldQueue', class_implements($reflection->getName()) ?: []);
+        return in_array(ShouldQueue::class, class_implements($reflection->getName()) ?: []);
     }
 }

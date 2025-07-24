@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Mappers;
 
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Queue\SerializesModels;
+use ReflectionNamedType;
+use ReflectionUnionType;
 use Illuminate\Support\Facades\File;
 use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
@@ -35,7 +40,7 @@ class EventMapper implements ComponentMapper
 
                 if ($fqcn && class_exists($fqcn)) {
                     $reflection = new ReflectionClass($fqcn);
-                    
+
                     // Vérifier si c'est un événement (utilise le trait Dispatchable ou a une méthode handle/fire)
                     if ($this->isEvent($reflection)) {
                         $events[] = $this->analyzeEvent($reflection);
@@ -56,9 +61,9 @@ class EventMapper implements ComponentMapper
         // Vérifier les traits Laravel d'événements
         $traits = $reflection->getTraitNames();
         $eventTraits = [
-            'Illuminate\Foundation\Events\Dispatchable',
-            'Illuminate\Broadcasting\InteractsWithSockets',
-            'Illuminate\Queue\SerializesModels',
+            Dispatchable::class,
+            InteractsWithSockets::class,
+            SerializesModels::class,
         ];
 
         foreach ($eventTraits as $trait) {
@@ -73,13 +78,8 @@ class EventMapper implements ComponentMapper
                 return true;
             }
         }
-
         // Vérifier si c'est dans le namespace Events
-        if (str_contains($reflection->getName(), '\\Events\\')) {
-            return true;
-        }
-
-        return false;
+        return str_contains($reflection->getName(), '\\Events\\');
     }
 
     /**
@@ -115,6 +115,7 @@ class EventMapper implements ComponentMapper
                 return true;
             }
         }
+
         return false;
     }
 
@@ -125,12 +126,12 @@ class EventMapper implements ComponentMapper
     {
         $traits = [];
         $traitNames = $reflection->getTraitNames();
-        
+
         foreach ($traitNames as $trait) {
             // Garder seulement le nom de classe (pas le namespace complet)
             $traits[] = class_basename($trait);
         }
-        
+
         return $traits;
     }
 
@@ -160,17 +161,17 @@ class EventMapper implements ComponentMapper
     protected function getParameterType(ReflectionParameter $parameter): string
     {
         $type = $parameter->getType();
-        
+
         if ($type === null) {
             return 'mixed';
         }
 
-        if ($type instanceof \ReflectionNamedType) {
+        if ($type instanceof ReflectionNamedType) {
             return $type->getName();
         }
 
-        if ($type instanceof \ReflectionUnionType) {
-            return implode('|', array_map(fn($t) => $t->getName(), $type->getTypes()));
+        if ($type instanceof ReflectionUnionType) {
+            return implode('|', array_map(fn ($t) => $t instanceof ReflectionNamedType ? $t->getName() : (string) $t, $type->getTypes()));
         }
 
         return 'mixed';
@@ -183,14 +184,14 @@ class EventMapper implements ComponentMapper
     {
         $channels = [];
 
-        if (!$source) {
+        if (! $source) {
             return $channels;
         }
 
         // Rechercher les canaux dans la méthode broadcastOn
         if (preg_match('/public function broadcastOn\(\)[^{]*{([^}]+)}/', $source, $matches)) {
             $method = $matches[1];
-            
+
             // Rechercher les canaux (Channel, PrivateChannel, PresenceChannel)
             if (preg_match_all('/new\s+(?:Private|Presence)?Channel\(\s*[\'"]([^\'"]+)[\'"]/', $method, $channelMatches)) {
                 $channels = array_merge($channels, $channelMatches[1]);
@@ -229,7 +230,7 @@ class EventMapper implements ComponentMapper
             ],
         ];
 
-        if (!$source) {
+        if (! $source) {
             return $flow;
         }
 
@@ -238,7 +239,7 @@ class EventMapper implements ComponentMapper
             foreach ($matches[1] as $fqcn) {
                 $flow['jobs'][] = [
                     'class' => $fqcn,
-                    'async' => !str_contains($source, "dispatchNow(new {$fqcn}"),
+                    'async' => ! str_contains($source, "dispatchNow(new {$fqcn}"),
                 ];
             }
         }

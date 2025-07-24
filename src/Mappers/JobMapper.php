@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Mappers;
 
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Bus\Queueable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use ReflectionNamedType;
+use ReflectionUnionType;
+use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\File;
 use LaravelAtlas\Contracts\ComponentMapper;
@@ -37,7 +44,7 @@ class JobMapper implements ComponentMapper
 
                 if ($fqcn && class_exists($fqcn)) {
                     $reflection = new ReflectionClass($fqcn);
-                    
+
                     if ($this->isJob($reflection)) {
                         $jobs[] = $this->analyzeJob($reflection);
                     }
@@ -57,12 +64,12 @@ class JobMapper implements ComponentMapper
         // Vérifier si implémente ShouldQueue ou a les traits de Job
         $interfaces = $reflection->getInterfaceNames();
         $traits = $reflection->getTraitNames();
-        
+
         $jobTraits = [
-            'Illuminate\Foundation\Bus\Dispatchable',
-            'Illuminate\Bus\Queueable',
-            'Illuminate\Queue\InteractsWithQueue',
-            'Illuminate\Queue\SerializesModels',
+            Dispatchable::class,
+            Queueable::class,
+            InteractsWithQueue::class,
+            SerializesModels::class,
         ];
 
         foreach ($jobTraits as $trait) {
@@ -77,7 +84,7 @@ class JobMapper implements ComponentMapper
             }
         }
 
-        return str_contains($reflection->getName(), '\\Jobs\\') || 
+        return str_contains($reflection->getName(), '\\Jobs\\') ||
                str_contains($reflection->getName(), 'Job');
     }
 
@@ -117,6 +124,7 @@ class JobMapper implements ComponentMapper
         foreach ($reflection->getTraitNames() as $trait) {
             $traits[] = class_basename($trait);
         }
+
         return $traits;
     }
 
@@ -127,18 +135,19 @@ class JobMapper implements ComponentMapper
                 return true;
             }
         }
-        
+
         $traits = $reflection->getTraitNames();
-        return in_array('Illuminate\Bus\Queueable', $traits);
+
+        return in_array(Queueable::class, $traits);
     }
 
-        /**
+    /**
      * @return array<int, array<string, mixed>>
      */
     protected function extractProperties(ReflectionClass $reflection, ?string $source): array
     {
         $properties = [];
-        
+
         // Propriétés publiques définies dans la classe
         foreach ($reflection->getProperties() as $property) {
             if ($property->getDeclaringClass()->getName() === $reflection->getName()) {
@@ -160,8 +169,8 @@ class JobMapper implements ComponentMapper
     protected function analyzeConstructor(ReflectionClass $reflection): array
     {
         $constructor = $reflection->getConstructor();
-        
-        if (!$constructor) {
+
+        if (! $constructor) {
             return ['parameters' => []];
         }
 
@@ -181,17 +190,17 @@ class JobMapper implements ComponentMapper
     protected function getParameterType(ReflectionParameter $parameter): string
     {
         $type = $parameter->getType();
-        
+
         if ($type === null) {
             return 'mixed';
         }
 
-        if ($type instanceof \ReflectionNamedType) {
+        if ($type instanceof ReflectionNamedType) {
             return $type->getName();
         }
 
-        if ($type instanceof \ReflectionUnionType) {
-            return implode('|', array_map(fn($t) => $t->getName(), $type->getTypes()));
+        if ($type instanceof ReflectionUnionType) {
+            return implode('|', array_map(fn ($t) => $t instanceof ReflectionNamedType ? $t->getName() : (string) $t, $type->getTypes()));
         }
 
         return 'mixed';
@@ -205,7 +214,7 @@ class JobMapper implements ComponentMapper
         $methods = [];
         $classTraits = $reflection->getTraitNames();
         $traitMethods = [];
-        
+
         // Pré-calculer les méthodes de chaque trait
         foreach ($classTraits as $traitName) {
             try {
@@ -213,11 +222,11 @@ class JobMapper implements ComponentMapper
                 foreach ($traitReflection->getMethods() as $traitMethod) {
                     $traitMethods[$traitMethod->getName()] = class_basename($traitName);
                 }
-            } catch (\Exception $e) {
+            } catch (Exception) {
                 // Ignorer les erreurs de réflexion
             }
         }
-        
+
         foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
             // Ignorer les méthodes magiques
             if (str_starts_with($method->getName(), '__')) {
@@ -226,7 +235,7 @@ class JobMapper implements ComponentMapper
 
             $source = 'class';
             $methodName = $method->getName();
-            
+
             // Vérifier si la méthode vient d'un trait
             if (isset($traitMethods[$methodName])) {
                 $source = 'trait: ' . $traitMethods[$methodName];
@@ -256,17 +265,17 @@ class JobMapper implements ComponentMapper
     protected function getMethodReturnType(ReflectionMethod $method): string
     {
         $type = $method->getReturnType();
-        
+
         if ($type === null) {
             return 'mixed';
         }
 
-        if ($type instanceof \ReflectionNamedType) {
+        if ($type instanceof ReflectionNamedType) {
             return $type->getName();
         }
 
-        if ($type instanceof \ReflectionUnionType) {
-            return implode('|', array_map(fn($t) => $t->getName(), $type->getTypes()));
+        if ($type instanceof ReflectionUnionType) {
+            return implode('|', array_map(fn ($t) => $t instanceof ReflectionNamedType ? $t->getName() : (string) $t, $type->getTypes()));
         }
 
         return 'mixed';
@@ -279,7 +288,7 @@ class JobMapper implements ComponentMapper
     {
         $config = [];
 
-        if (!$source) {
+        if (! $source) {
             return $config;
         }
 
@@ -324,7 +333,7 @@ class JobMapper implements ComponentMapper
             ],
         ];
 
-        if (!$source) {
+        if (! $source) {
             return $flow;
         }
 
@@ -333,7 +342,7 @@ class JobMapper implements ComponentMapper
             foreach ($matches[1] as $fqcn) {
                 $flow['jobs'][] = [
                     'class' => $fqcn,
-                    'async' => !str_contains($source, "dispatchNow(new {$fqcn}"),
+                    'async' => ! str_contains($source, "dispatchNow(new {$fqcn}"),
                 ];
             }
         }

@@ -2,7 +2,7 @@
 
 /**
  * Laravel Atlas - Routes Analysis Example
- * 
+ *
  * This example demonstrates how to analyze application routes:
  * - Route mapping with middleware information
  * - Controller connections
@@ -17,7 +17,7 @@ echo "=== Laravel Atlas - Routes Analysis Example ===\n\n";
 echo "1. Basic route scanning:\n";
 $routes = Atlas::scan('routes');
 
-echo "Total routes found: " . ($routes['count'] ?? 0) . "\n";
+echo 'Total routes found: ' . ($routes['count'] ?? 0) . "\n";
 if (isset($routes['data']) && is_array($routes['data'])) {
     echo "Route methods distribution:\n";
     $methods = [];
@@ -46,22 +46,22 @@ if (isset($routesWithMiddleware['data']) && is_array($routesWithMiddleware['data
         if (isset($route['uri'])) {
             $method = is_array($route['method'] ?? []) ? implode('|', $route['method']) : ($route['method'] ?? 'GET');
             echo "Route: {$method} {$route['uri']}\n";
-            
+
             // Show middleware
             if (isset($route['middleware']) && is_array($route['middleware'])) {
-                echo "  Middleware: " . implode(', ', $route['middleware']) . "\n";
+                echo '  Middleware: ' . implode(', ', $route['middleware']) . "\n";
             }
-            
+
             // Show controller
             if (isset($route['controller'])) {
                 echo "  Controller: {$route['controller']}\n";
             }
-            
+
             // Show action
             if (isset($route['action'])) {
                 echo "  Action: {$route['action']}\n";
             }
-            
+
             echo "\n";
         }
     }
@@ -73,7 +73,7 @@ if (isset($routesWithMiddleware['data']) && is_array($routesWithMiddleware['data
     $apiRoutes = 0;
     $webRoutes = 0;
     $adminRoutes = 0;
-    
+
     foreach ($routesWithMiddleware['data'] as $route) {
         if (isset($route['uri'])) {
             if (str_starts_with($route['uri'], 'api/')) {
@@ -85,7 +85,7 @@ if (isset($routesWithMiddleware['data']) && is_array($routesWithMiddleware['data
             }
         }
     }
-    
+
     echo "- API routes: {$apiRoutes}\n";
     echo "- Admin routes: {$adminRoutes}\n";
     echo "- Web routes: {$webRoutes}\n";
@@ -97,15 +97,15 @@ echo "4. Exporting routes:\n";
 
 // JSON export
 $jsonExport = Atlas::export('routes', 'json');
-echo "- JSON export ready (length: " . strlen($jsonExport) . " characters)\n";
+echo '- JSON export ready (length: ' . strlen($jsonExport) . " characters)\n";
 
 // Markdown export
 $markdownExport = Atlas::export('routes', 'markdown');
-echo "- Markdown export ready (length: " . strlen($markdownExport) . " characters)\n";
+echo '- Markdown export ready (length: ' . strlen($markdownExport) . " characters)\n";
 
 // HTML export
 $htmlExport = Atlas::export('routes', 'html');
-echo "- HTML export ready (length: " . strlen($htmlExport) . " characters)\n";
+echo '- HTML export ready (length: ' . strlen($htmlExport) . " characters)\n";
 
 // 5. Route filtering and analysis
 echo "\n5. Custom route analysis:\n";
@@ -117,18 +117,18 @@ $filteredRoutes = Atlas::scan('routes', [
 if (isset($filteredRoutes['data']) && is_array($filteredRoutes['data'])) {
     $routesWithAuth = 0;
     $routesWithThrottle = 0;
-    
+
     foreach ($filteredRoutes['data'] as $route) {
         if (isset($route['middleware']) && is_array($route['middleware'])) {
             if (in_array('auth', $route['middleware']) || in_array('auth:api', $route['middleware'])) {
                 $routesWithAuth++;
             }
-            if (array_filter($route['middleware'], fn($m) => str_contains($m, 'throttle'))) {
+            if (array_filter($route['middleware'], fn ($m) => str_contains($m, 'throttle'))) {
                 $routesWithThrottle++;
             }
         }
     }
-    
+
     echo "Routes with authentication: {$routesWithAuth}\n";
     echo "Routes with throttling: {$routesWithThrottle}\n";
 }

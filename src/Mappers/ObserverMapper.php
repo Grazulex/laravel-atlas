@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Mappers;
 
+use InvalidArgumentException;
 use Illuminate\Support\Facades\File;
 use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
@@ -18,20 +19,21 @@ class ObserverMapper implements ComponentMapper
     }
 
     /**
-     * @param array<string, mixed> $options
+     * @param  array<string, mixed>  $options
+     *
      * @return array<string, mixed>
      */
     public function scan(array $options = []): array
     {
         $observers = [];
         $defaultPaths = [app_path('Observers')];
-        
+
         // Ajouter le beta_app s'il existe
         $betaAppPath = base_path('beta_app/app/Observers');
         if (is_dir($betaAppPath)) {
             $defaultPaths[] = $betaAppPath;
         }
-        
+
         $paths = $options['paths'] ?? $defaultPaths;
         $recursive = $options['recursive'] ?? true;
         $seen = [];
@@ -69,6 +71,10 @@ class ObserverMapper implements ComponentMapper
      */
     protected function analyzeObserver(string $fqcn, string $filePath): array
     {
+        if (! class_exists($fqcn)) {
+            throw new InvalidArgumentException("Class {$fqcn} does not exist");
+        }
+
         $reflection = new ReflectionClass($fqcn);
 
         return [
@@ -92,11 +98,11 @@ class ObserverMapper implements ComponentMapper
         $methods = [];
 
         foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
-            if ($method->class === $reflection->getName() && !$method->isConstructor()) {
+            if ($method->class === $reflection->getName() && ! $method->isConstructor()) {
                 $methods[] = [
                     'name' => $method->getName(),
                     'parameters' => array_map(
-                        fn ($param) => [
+                        fn ($param): array => [
                             'name' => $param->getName(),
                             'type' => $param->getType()?->__toString(),
                             'has_default' => $param->isDefaultValueAvailable(),
@@ -119,7 +125,7 @@ class ObserverMapper implements ComponentMapper
     {
         $modelEvents = [
             'retrieved', 'creating', 'created', 'updating', 'updated',
-            'saving', 'saved', 'deleting', 'deleted', 'restoring', 'restored'
+            'saving', 'saved', 'deleting', 'deleted', 'restoring', 'restored',
         ];
 
         $foundEvents = [];
@@ -136,16 +142,16 @@ class ObserverMapper implements ComponentMapper
     protected function guessModel(ReflectionClass $reflection): ?string
     {
         $observerName = $reflection->getShortName();
-        
+
         if (str_ends_with($observerName, 'Observer')) {
             $modelName = substr($observerName, 0, -8); // Remove 'Observer' suffix
             $modelClass = "App\\Models\\{$modelName}";
-            
+
             if (class_exists($modelClass)) {
                 return $modelClass;
             }
         }
-        
+
         return null;
     }
 }

@@ -34,10 +34,10 @@ class AtlasExportManager
     {
         // Récupérer tous les types de composants disponibles
         $types = [
-            'models', 'commands', 'routes', 'services', 'notifications', 
-            'middlewares', 'form_requests', 'events', 'controllers', 
-            'resources', 'jobs', 'actions', 'policies', 'rules', 
-            'listeners', 'observers'
+            'models', 'commands', 'routes', 'services', 'notifications',
+            'middlewares', 'form_requests', 'events', 'controllers',
+            'resources', 'jobs', 'actions', 'policies', 'rules',
+            'listeners', 'observers',
         ];
         $allData = [];
 
