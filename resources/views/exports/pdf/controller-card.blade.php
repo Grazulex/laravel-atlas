@@ -1,7 +1,7 @@
 {{-- Controller Card for PDF --}}
 <div class="card no-break">
     <div class="card-header">
-        <div class="card-title">{{ is_array($item['class']) ? class_basename(implode('\\', $item['class'])) : class_basename($item['class']) }}</div>
+        <div class="card-title">{{ class_basename($item['class'] ?? 'Unknown') }}</div>
         <div class="card-subtitle">{{ !empty($item['methods']) ? count($item['methods']) . ' methods' : 'No methods' }}</div>
     </div>
     
@@ -9,7 +9,7 @@
         {{-- Basic Properties --}}
         <div class="property-item">
             <div class="property-label">NAMESPACE:</div>
-            <div class="property-value">{{ is_array($item['class']) ? implode('\\', array_slice($item['class'], 0, -1)) : dirname(str_replace('\\', '/', $item['class'])) }}</div>
+            <div class="property-value">{{ dirname(str_replace('\\', '/', $item['class'] ?? '')) }}</div>
         </div>
         
         <div class="property-item">
@@ -93,7 +93,7 @@
     <div class="card-footer">
         <div class="footer-info">
             <div>
-                <strong>Full Class:</strong> {{ is_array($item['class']) ? implode('\\', $item['class']) : $item['class'] }}
+                <strong>Full Class:</strong> {{ $item['class'] ?? 'Unknown' }}
             </div>
             <div>
                 <strong>File:</strong> {{ basename($item['file'] ?? 'N/A') }}

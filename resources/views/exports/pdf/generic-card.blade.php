@@ -5,8 +5,8 @@
     $cardType = $cardType ?? 'Component';
     
     if (isset($item['class'])) {
-        $cardTitle = is_array($item['class']) ? class_basename(implode('\\', $item['class'])) : class_basename($item['class']);
-        $cardSubtitle = is_array($item['class']) ? implode('\\', array_slice($item['class'], 0, -1)) : dirname(str_replace('\\', '/', $item['class']));
+        $cardTitle = class_basename($item['class']);
+        $cardSubtitle = dirname(str_replace('\\', '/', $item['class']));
     } elseif (isset($item['name'])) {
         $cardTitle = $item['name'];
     } else {
@@ -25,28 +25,28 @@
     <div class="card-content">
         @if (isset($item['class']))
             <div class="property-item">
-                <div class="property-label">📁 Class:</div>
-                <div class="property-value">{{ is_array($item['class']) ? implode('\\', $item['class']) : $item['class'] }}</div>
+                <div class="property-label">Class:</div>
+                <div class="property-value">{{ $item['class'] }}</div>
             </div>
         @endif
         
         @if (isset($item['methods']) && !empty($item['methods']))
             <div class="property-item">
-                <div class="property-label">🎯 Methods:</div>
+                <div class="property-label">Methods:</div>
                 <div class="property-value">{{ count($item['methods']) }} methods</div>
             </div>
         @endif
 
         @if (isset($item['dependencies']) && !empty($item['dependencies']))
             <div class="property-item">
-                <div class="property-label">🔧 Dependencies:</div>
+                <div class="property-label">Dependencies:</div>
                 <div class="property-value">{{ count($item['dependencies']) }} dependencies</div>
             </div>
         @endif
 
         @if (isset($item['properties']) && !empty($item['properties']))
             <div class="property-item">
-                <div class="property-label">⚙️ Properties:</div>
+                <div class="property-label">Properties:</div>
                 <div class="property-value">{{ count($item['properties']) }} properties</div>
             </div>
         @endif

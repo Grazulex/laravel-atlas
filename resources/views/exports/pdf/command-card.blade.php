@@ -2,7 +2,7 @@
 <div class="card no-break">
     <div class="card-header">
         <div class="card-title">{{ $item['signature'] ?? $item['name'] ?? 'N/A' }}</div>
-        <div class="card-subtitle">{{ is_array($item['class']) ? class_basename(implode('\\', $item['class'])) : class_basename($item['class']) }}</div>
+        <div class="card-subtitle">{{ class_basename($item['class'] ?? 'Unknown') }}</div>
     </div>
     
     <div class="card-content">
@@ -25,7 +25,7 @@
     <div class="card-footer">
         <div class="footer-info">
             <div>
-                <strong>Class:</strong> {{ is_array($item['class']) ? implode('\\', $item['class']) : $item['class'] }}
+                <strong>Class:</strong> {{ $item['class'] ?? 'Unknown' }}
             </div>
             <div>
                 <strong>File:</strong> {{ basename($item['file'] ?? 'N/A') }}
