@@ -112,6 +112,7 @@ class ResourceMapper implements ComponentMapper
                 'name' => $method->getName(),
                 'returnType' => $this->getMethodReturnType($method),
                 'isStatic' => $method->isStatic(),
+                'source' => 'class', // Toutes les méthodes de resource sont définies dans la classe
             ];
         }
 

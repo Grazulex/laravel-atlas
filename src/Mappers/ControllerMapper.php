@@ -185,6 +185,7 @@ class ControllerMapper implements ComponentMapper
                 'parameters' => $this->getMethodParameters($method),
                 'returnType' => $this->getMethodReturnType($method),
                 'isStatic' => $method->isStatic(),
+                'source' => 'class', // Toutes les méthodes du controller sont définies dans la classe
             ];
         }
 
