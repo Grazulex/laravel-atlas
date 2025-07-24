@@ -119,17 +119,17 @@
         @endif
 
         {{-- Event Listeners --}}
-        @if (!empty($event['listeners']))
+        @if (!empty($item['listeners']))
             <div>
                 <div class="flex items-center mb-3">
                     <span class="text-sm mr-2">👂</span>
                     <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Event Listeners ({{ count($event['listeners']) }})
+                        Event Listeners ({{ count($item['listeners']) }})
                     </h4>
                 </div>
                 <div class="bg-gray-50 dark:bg-gray-700/50 rounded p-3">
                     <div class="flex flex-wrap gap-2">
-                        @foreach ($event['listeners'] as $listener)
+                        @foreach ($item['listeners'] as $listener)
                             <span class="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200 font-medium">
                                 {{ class_basename($listener) }}
                             </span>
@@ -144,8 +144,8 @@
     <div class="mt-6 space-y-4">
         {{-- Methods Section --}}
         @include('atlas::exports.partials.common.collapsible-methods', [
-            'methods' => $event['methods'] ?? [],
-            'componentId' => 'event-' . md5($event['class']),
+            'methods' => $item['methods'] ?? [],
+            'componentId' => 'event-' . md5($item['class']),
             'title' => 'Methods',
             'icon' => '⚙️',
             'collapsed' => true
@@ -153,14 +153,14 @@
 
         {{-- Flow Section --}}
         @include('atlas::exports.partials.common.flow-section', [
-            'flow' => $event['flow'] ?? [],
+            'flow' => $item['flow'] ?? [],
             'type' => 'event'
         ])
     </div>
 
     {{-- Footer --}}
     @include('atlas::exports.partials.common.card-footer', [
-        'class' => $event['class'],
-        'file' => $event['file']
+        'class' => $item['class'],
+        'file' => $item['file']
     ])
 </div>
