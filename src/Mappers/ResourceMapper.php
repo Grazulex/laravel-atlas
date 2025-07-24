@@ -176,19 +176,34 @@ class ResourceMapper implements ComponentMapper
             return $conditionals;
         }
 
-        // Rechercher les when() conditionals
-        if (preg_match_all('/\$this->when\([^,)]+/', $source, $matches)) {
-            foreach ($matches[0] as $match) {
-                $condition = str_replace('$this->when(', '', $match);
-                $conditionals[] = trim($condition);
+        // Rechercher les when() conditionals avec une regex plus complète
+        if (preg_match_all('/\$this->when\(([^,)]+(?:\([^)]*\))?[^,)]*),/', $source, $matches)) {
+            foreach ($matches[1] as $match) {
+                $condition = trim($match);
+                // Nettoyer et raccourcir si trop long
+                if (strlen($condition) > 50) {
+                    $condition = substr($condition, 0, 47) . '...';
+                }
+                $conditionals[] = $condition;
             }
         }
 
-        // Rechercher les mergeWhen
-        if (preg_match_all('/\$this->mergeWhen\([^,)]+/', $source, $matches)) {
-            foreach ($matches[0] as $match) {
-                $condition = str_replace('$this->mergeWhen(', '', $match);
-                $conditionals[] = 'merge: ' . trim($condition);
+        // Rechercher les mergeWhen avec une regex plus complète
+        if (preg_match_all('/\$this->mergeWhen\(([^,)]+(?:\([^)]*\))?[^,)]*),/', $source, $matches)) {
+            foreach ($matches[1] as $match) {
+                $condition = trim($match);
+                // Nettoyer et raccourcir si trop long
+                if (strlen($condition) > 45) {
+                    $condition = substr($condition, 0, 42) . '...';
+                }
+                $conditionals[] = 'merge: ' . $condition;
+            }
+        }
+
+        // Rechercher les conditions simples dans les expressions ternaires
+        if (preg_match_all('/\$this->([a-zA-Z_]+)\s*\?\s*/', $source, $matches)) {
+            foreach ($matches[1] as $field) {
+                $conditionals[] = '$this->' . $field . ' ? (optional)';
             }
         }
 
