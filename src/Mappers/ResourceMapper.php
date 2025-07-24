@@ -1,0 +1,282 @@
+<?php
+
+declare(strict_types=1);
+
+namespace LaravelAtlas\Mappers;
+
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\File;
+use LaravelAtlas\Contracts\ComponentMapper;
+use LaravelAtlas\Support\ClassResolver;
+use ReflectionClass;
+use ReflectionMethod;
+
+class ResourceMapper implements ComponentMapper
+{
+    public function type(): string
+    {
+        return 'resources';
+    }
+
+    public function scan(array $options = []): array
+    {
+        $resources = [];
+        $paths = $options['paths'] ?? [app_path('Http/Resources')];
+        $recursive = $options['recursive'] ?? true;
+
+        foreach ($paths as $path) {
+            if (! is_dir($path)) {
+                continue;
+            }
+
+            $files = $recursive ? File::allFiles($path) : File::files($path);
+
+            foreach ($files as $file) {
+                $fqcn = ClassResolver::resolveFromPath($file->getRealPath());
+
+                if ($fqcn && class_exists($fqcn)) {
+                    $reflection = new ReflectionClass($fqcn);
+                    
+                    if ($this->isResource($reflection)) {
+                        $resources[] = $this->analyzeResource($reflection);
+                    }
+                }
+            }
+        }
+
+        return [
+            'type' => $this->type(),
+            'count' => count($resources),
+            'data' => $resources,
+        ];
+    }
+
+    protected function isResource(ReflectionClass $reflection): bool
+    {
+        return $reflection->isSubclassOf(JsonResource::class) || 
+               str_contains($reflection->getName(), 'Resource');
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function analyzeResource(ReflectionClass $reflection): array
+    {
+        $class = $reflection->getName();
+        $file = $reflection->getFileName();
+
+        $source = null;
+        if ($file && file_exists($file)) {
+            $content = file_get_contents($file);
+            $source = $content !== false ? $content : null;
+        }
+
+        return [
+            'class' => $class,
+            'name' => $reflection->getShortName(),
+            'traits' => $this->extractTraits($reflection),
+            'methods' => $this->extractMethods($reflection),
+            'relationships' => $this->extractRelationships($source),
+            'conditionals' => $this->extractConditionals($source),
+            'transformations' => $this->extractTransformations($source),
+            'flow' => $this->analyzeFlow($source),
+        ];
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    protected function extractTraits(ReflectionClass $reflection): array
+    {
+        $traits = [];
+        foreach ($reflection->getTraitNames() as $trait) {
+            $traits[] = class_basename($trait);
+        }
+        return $traits;
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    protected function extractMethods(ReflectionClass $reflection): array
+    {
+        $methods = [];
+        
+        foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+            // Ignorer les méthodes héritées de JsonResource
+            if ($method->getDeclaringClass()->getName() !== $reflection->getName()) {
+                continue;
+            }
+
+            $methods[] = [
+                'name' => $method->getName(),
+                'returnType' => $this->getMethodReturnType($method),
+                'isStatic' => $method->isStatic(),
+            ];
+        }
+
+        return $methods;
+    }
+
+    protected function getMethodReturnType(ReflectionMethod $method): string
+    {
+        $type = $method->getReturnType();
+        
+        if ($type === null) {
+            return 'mixed';
+        }
+
+        if ($type instanceof \ReflectionNamedType) {
+            return $type->getName();
+        }
+
+        if ($type instanceof \ReflectionUnionType) {
+            return implode('|', array_map(fn($t) => $t->getName(), $type->getTypes()));
+        }
+
+        return 'mixed';
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    protected function extractRelationships(?string $source): array
+    {
+        $relationships = [];
+
+        if (!$source) {
+            return $relationships;
+        }
+
+        // Rechercher les relations dans les resources (whenLoaded, when)
+        if (preg_match_all('/[\'"]([a-zA-Z_]+)[\'"]\s*=>\s*(?:new\s+)?([A-Z]\w+Resource)/', $source, $matches)) {
+            for ($i = 0; $i < count($matches[1]); $i++) {
+                $relationships[] = $matches[1][$i] . ' → ' . $matches[2][$i];
+            }
+        }
+
+        // Rechercher whenLoaded
+        if (preg_match_all('/whenLoaded\([\'"]([^\'"]+)[\'"]/', $source, $matches)) {
+            foreach ($matches[1] as $relation) {
+                $relationships[] = $relation . ' (whenLoaded)';
+            }
+        }
+
+        return array_unique($relationships);
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    protected function extractConditionals(?string $source): array
+    {
+        $conditionals = [];
+
+        if (!$source) {
+            return $conditionals;
+        }
+
+        // Rechercher les when() conditionals
+        if (preg_match_all('/\$this->when\([^,)]+/', $source, $matches)) {
+            foreach ($matches[0] as $match) {
+                $condition = str_replace('$this->when(', '', $match);
+                $conditionals[] = trim($condition);
+            }
+        }
+
+        // Rechercher les mergeWhen
+        if (preg_match_all('/\$this->mergeWhen\([^,)]+/', $source, $matches)) {
+            foreach ($matches[0] as $match) {
+                $condition = str_replace('$this->mergeWhen(', '', $match);
+                $conditionals[] = 'merge: ' . trim($condition);
+            }
+        }
+
+        return array_unique($conditionals);
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    protected function extractTransformations(?string $source): array
+    {
+        $transformations = [];
+
+        if (!$source) {
+            return $transformations;
+        }
+
+        // Rechercher les transformations de dates
+        if (preg_match_all('/\$this->([a-zA-Z_]+)\?->format\([\'"]([^\'"]+)[\'"]/', $source, $matches)) {
+            for ($i = 0; $i < count($matches[1]); $i++) {
+                $transformations[] = $matches[1][$i] . ' → format(' . $matches[2][$i] . ')';
+            }
+        }
+
+        // Rechercher les appels de services
+        if (preg_match_all('/app\(([A-Z]\w+Service)::class\)->([a-zA-Z_]+)/', $source, $matches)) {
+            for ($i = 0; $i < count($matches[1]); $i++) {
+                $transformations[] = $matches[1][$i] . '::' . $matches[2][$i] . '()';
+            }
+        }
+
+        return array_unique($transformations);
+    }
+
+    /**
+     * @return array<string, array<int|string, mixed>>
+     */
+    protected function analyzeFlow(?string $source): array
+    {
+        $flow = [
+            'services' => [],
+            'facades' => [],
+            'dependencies' => [
+                'models' => [],
+                'services' => [],
+                'resources' => [],
+                'facades' => [],
+                'classes' => [],
+            ],
+        ];
+
+        if (!$source) {
+            return $flow;
+        }
+
+        // Services utilisés
+        if (preg_match_all('/app\(([A-Z][\w\\\\]+Service)::class\)/', $source, $matches)) {
+            foreach ($matches[1] as $service) {
+                $flow['services'][] = $service;
+                $flow['dependencies']['services'][] = $service;
+            }
+        }
+
+        // Resources imbriqués
+        if (preg_match_all('/new\s+([A-Z][\w\\\\]+Resource)/', $source, $matches)) {
+            foreach ($matches[1] as $resource) {
+                $flow['dependencies']['resources'][] = $resource;
+            }
+        }
+
+        // Facades utilisées
+        if (preg_match_all('/([A-Z][a-zA-Z]+)::/', $source, $matches)) {
+            $facades = ['Auth', 'Gate', 'Cache', 'Storage', 'URL', 'Log'];
+            foreach ($matches[1] as $facade) {
+                if (in_array($facade, $facades)) {
+                    $flow['facades'][] = $facade;
+                    $flow['dependencies']['facades'][] = $facade;
+                }
+            }
+        }
+
+        // Nettoyer les doublons
+        foreach ($flow['dependencies'] as &$dep) {
+            $dep = array_values(array_unique($dep));
+        }
+        $flow['services'] = array_values(array_unique($flow['services']));
+        $flow['facades'] = array_values(array_unique($flow['facades']));
+
+        return $flow;
+    }
+}

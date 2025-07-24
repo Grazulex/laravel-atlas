@@ -33,7 +33,7 @@ class AtlasExportManager
     public static function exportAll(string $format, array $options = []): string
     {
         // Récupérer tous les types de composants disponibles
-        $types = ['models', 'commands', 'routes', 'services', 'notifications', 'middlewares', 'form_requests', 'events']; // Pour l'instant, seuls les models sont supportés
+        $types = ['models', 'commands', 'routes', 'services', 'notifications', 'middlewares', 'form_requests', 'events', 'controllers', 'resources']; // Pour l'instant, seuls les models sont supportés
         $allData = [];
 
         foreach ($types as $type) {
