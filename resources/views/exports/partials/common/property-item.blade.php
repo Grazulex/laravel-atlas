@@ -194,23 +194,3 @@
         @endif
     @endif
 </div>
-            @else
-                <span class="text-gray-500 dark:text-gray-400 italic">None</span>
-            @endif
-            
-        @else
-            {{-- Default display --}}
-            @if (is_array($value))
-                @if (count($value) > 0)
-                    <code>{{ implode(', ', $value) }}</code>
-                @else
-                    <span class="text-gray-500 dark:text-gray-400 italic">None</span>
-                @endif
-            @elseif ($value)
-                {{ $value }}
-            @else
-                <span class="text-gray-500 dark:text-gray-400 italic">Not set</span>
-            @endif
-        @endif
-    </dd>
-</div>
