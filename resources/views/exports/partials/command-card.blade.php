@@ -116,10 +116,3 @@
         'file' => $command['file'] ?? 'N/A'
     ])
 </div>
-
-    {{-- Footer --}}
-    @include('atlas::exports.partials.common.card-footer', [
-        'class' => $command['class'],
-        'file' => $command['file']
-    ])
-</div>
