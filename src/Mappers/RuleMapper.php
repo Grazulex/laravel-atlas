@@ -36,7 +36,19 @@ class RuleMapper implements ComponentMapper
             $files = $recursive ? File::allFiles($path) : File::files($path);
 
             foreach ($files as $file) {
+                // Debug: afficher tous les fichiers trouvés
+                echo "Checking file: " . $file->getRealPath() . "\n";
+                
                 $fqcn = ClassResolver::resolveFromPath($file->getRealPath());
+                echo "Resolved FQCN: " . ($fqcn ?: 'NULL') . "\n";
+                
+                if ($fqcn) {
+                    echo "Class exists: " . (class_exists($fqcn) ? 'YES' : 'NO') . "\n";
+                    if (class_exists($fqcn)) {
+                        echo "Implements rule: " . ($this->implementsRule($fqcn) ? 'YES' : 'NO') . "\n";
+                    }
+                }
+                echo "---\n";
 
                 if (
                     $fqcn &&
