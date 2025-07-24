@@ -81,33 +81,34 @@ class RouteMapper implements ComponentMapper
     {
         $uri = $route->uri();
         $middleware = $route->gatherMiddleware();
-        
+
         // Check if route has API middleware or starts with api/
         if (in_array('api', $middleware) || str_starts_with($uri, 'api/')) {
             return base_path('routes/api.php');
         }
-        
+
         // Check for web middleware or common web patterns
         if (in_array('web', $middleware) || str_starts_with($uri, 'admin/')) {
-            return str_starts_with($uri, 'admin/') 
+            return str_starts_with($uri, 'admin/')
                 ? base_path('routes/admin.php')  // If admin routes file exists
                 : base_path('routes/web.php');
         }
-        
+
         // Check for specific route files based on URI patterns
         $routePatterns = [
             'auth/' => 'routes/auth.php',
             'console' => 'routes/console.php',
             'channels' => 'routes/channels.php',
         ];
-        
+
         foreach ($routePatterns as $pattern => $file) {
             if (str_starts_with($uri, $pattern)) {
                 $fullPath = base_path($file);
+
                 return file_exists($fullPath) ? $fullPath : base_path('routes/web.php');
             }
         }
-        
+
         // Default to web.php
         return base_path('routes/web.php');
     }
