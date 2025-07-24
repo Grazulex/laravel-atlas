@@ -60,7 +60,7 @@
                     <div class="flex flex-wrap gap-2">
                         @foreach ($item['traits'] as $trait)
                             <span class="text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200 font-medium">
-                                {{ class_basename($trait) }}
+                                {{ is_array($trait) ? (class_basename($trait[0] ?? '') ?: 'Unknown') : class_basename($trait) }}
                             </span>
                         @endforeach
                     </div>
@@ -137,7 +137,7 @@
                     <div class="flex flex-wrap gap-2">
                         @foreach ($item['dependencies'] as $dependency)
                             <span class="text-xs px-2 py-1 rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200 font-medium">
-                                {{ class_basename($dependency) }}
+                                {{ is_array($dependency) ? (class_basename($dependency[0] ?? '') ?: 'Unknown') : class_basename($dependency) }}
                             </span>
                         @endforeach
                     </div>
@@ -151,7 +151,7 @@
         {{-- Methods Section --}}
         @include('atlas::exports.partials.common.collapsible-methods', [
             'methods' => $item['methods'] ?? [],
-            'componentId' => 'controller-' . md5($item['class']),
+            'componentId' => 'controller-' . md5(is_array($item['class']) ? ($item['class'][0] ?? '') : $item['class']),
             'title' => 'Public Methods',
             'icon' => '⚙️',
             'collapsed' => true
@@ -166,7 +166,7 @@
 
     {{-- Footer --}}
     @include('atlas::exports.partials.common.card-footer', [
-        'class' => $item['class'],
+        'class' => is_array($item['class']) ? ($item['class'][0] ?? '') : $item['class'],
         'file' => $item['file'] ?? 'N/A'
     ])
 </div>
