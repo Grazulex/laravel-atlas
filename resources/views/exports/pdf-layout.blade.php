@@ -346,11 +346,47 @@
         @if (count($routes) > 0)
             <div class="section section-break">
                 <h2 class="section-title">ROUTES ({{ count($routes) }})</h2>
-                <div class="cards-grid">
-                    @foreach ($routes as $item)
-                        @include('atlas::exports.pdf.route-card')
-                    @endforeach
-                </div>
+                
+                {{-- Routes Table --}}
+                <table class="detail-table" style="font-size: 8px;">
+                    <thead>
+                        <tr>
+                            <th style="background: #f8fafc; width: 8%;">Method</th>
+                            <th style="background: #f8fafc; width: 35%;">URI</th>
+                            <th style="background: #f8fafc; width: 20%;">Name</th>
+                            <th style="background: #f8fafc; width: 25%;">Controller</th>
+                            <th style="background: #f8fafc; width: 12%;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($routes as $route)
+                            <tr>
+                                <td style="font-weight: bold; color: 
+                                    @if(($route['method'] ?? '') === 'GET') #059669
+                                    @elseif(($route['method'] ?? '') === 'POST') #dc2626
+                                    @elseif(($route['method'] ?? '') === 'PUT') #f59e0b
+                                    @elseif(($route['method'] ?? '') === 'PATCH') #8b5cf6
+                                    @elseif(($route['method'] ?? '') === 'DELETE') #ef4444
+                                    @else #6b7280 @endif
+                                ;">
+                                    {{ $route['method'] ?? 'GET' }}
+                                </td>
+                                <td style="font-family: monospace; color: #1d4ed8; font-size: 7px; word-break: break-all;">
+                                    {{ $route['uri'] ?? '/' }}
+                                </td>
+                                <td style="font-family: monospace; color: #7c3aed; font-size: 7px;">
+                                    {{ $route['name'] ?? '-' }}
+                                </td>
+                                <td style="font-family: monospace; color: #374151; font-size: 7px;">
+                                    {{ isset($route['controller']) ? class_basename($route['controller']) : '-' }}
+                                </td>
+                                <td style="font-family: monospace; color: #374151; font-size: 7px;">
+                                    {{ $route['action'] ?? '-' }}
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         @endif
 
