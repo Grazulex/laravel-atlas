@@ -17,6 +17,7 @@ Laravel Atlas currently supports **7 component types**:
 ## Examples Overview
 
 - [Basic Usage](basic-usage.php) - Simple scanning and exporting
+- [HTML Export Example](html-export-example.php) - **NEW** Interactive HTML dashboard generation
 - [Models Analysis](models-example.php) - Detailed model mapping with relationships
 - [Routes Analysis](routes-example.php) - Route mapping with middleware information
 - [Commands Analysis](commands-example.php) - Artisan command analysis
@@ -31,6 +32,9 @@ Laravel Atlas currently supports **7 component types**:
 ```bash
 # Generate JSON output for all components
 php artisan atlas:generate --format=json
+
+# Generate interactive HTML dashboard - NEW FEATURE
+php artisan atlas:generate --format=html --output=docs/architecture.html
 
 # Generate specific component documentation
 php artisan atlas:generate --type=models --format=markdown --output=docs/models.md

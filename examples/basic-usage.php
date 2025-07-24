@@ -74,4 +74,18 @@ $routesWithOptions = Atlas::scan('routes', [
 ]);
 echo '- Routes with middleware: ' . ($routesWithOptions['count'] ?? 0) . " found\n";
 
+echo "\n";
+
+// 5. Generate HTML export for interactive documentation
+echo "5. Generating HTML export for interactive documentation:\n";
+
+$htmlReport = Atlas::export('all', 'html');
+echo '- HTML report generated: ' . strlen($htmlReport) . " characters\n";
+
+// You can save this to a file:
+// file_put_contents('atlas-report.html', $htmlReport);
+echo "- To save: file_put_contents('atlas-report.html', \$htmlReport)\n";
+echo "- The HTML report includes dark mode, responsive design, and interactive navigation\n";
+
 echo "\nBasic usage example completed successfully!\n";
+echo "💡 Try the HTML export example for interactive dashboard features!\n";
