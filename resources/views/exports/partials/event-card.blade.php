@@ -5,7 +5,6 @@
         'title' => class_basename($event['class']),
         'badge' => 'Event',
         'badgeColor' => 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200',
-        'namespace' => $event['namespace'],
         'class' => $event['class']
     ])
 
@@ -59,14 +58,6 @@
                 'items' => $event['listeners']
             ])
         @endif
-
-        {{-- Full Class Name --}}
-        @include('atlas::exports.partials.common.property-item', [
-            'icon' => '🏷️',
-            'label' => 'Full Class Name',
-            'value' => $event['class'],
-            'type' => 'code'
-        ])
     </div>
 
     {{-- Flow Section --}}

@@ -4,7 +4,8 @@
         'icon' => '📬',
         'title' => class_basename($notification['class']),
         'badge' => 'Notification',
-        'badgeColor' => 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-200'
+        'badgeColor' => 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-200',
+        'class' => $notification['class']
     ])
 
     {{-- Description --}}

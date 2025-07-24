@@ -5,7 +5,6 @@
         'title' => class_basename($job['class']),
         'badge' => 'Job',
         'badgeColor' => 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-200',
-        'namespace' => $job['namespace'],
         'class' => $job['class']
     ])
 

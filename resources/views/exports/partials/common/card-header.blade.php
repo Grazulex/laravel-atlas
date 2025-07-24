@@ -25,6 +25,20 @@
                 📦 {{ $namespace }}
             </p>
         </div>
+    @elseif (!empty($class))
+        {{-- Extract namespace from class if not provided separately --}}
+        @php
+            $namespaceParts = explode('\\', $class);
+            array_pop($namespaceParts); // Remove class name
+            $extractedNamespace = implode('\\', $namespaceParts);
+        @endphp
+        @if (!empty($extractedNamespace))
+            <div class="mb-2">
+                <p class="text-sm text-gray-600 dark:text-gray-400 font-mono">
+                    📦 {{ $extractedNamespace }}
+                </p>
+            </div>
+        @endif
     @endif
     
     @if (!empty($class))

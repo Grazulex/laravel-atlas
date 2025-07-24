@@ -4,7 +4,8 @@
         'icon' => '🛡️',
         'title' => class_basename($middleware['class']),
         'badge' => $middleware['has_terminate'] ? 'Terminable' : 'Standard',
-        'badgeColor' => $middleware['has_terminate'] ? 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
+        'badgeColor' => $middleware['has_terminate'] ? 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300',
+        'class' => $middleware['class']
     ])
 
     {{-- Description --}}
@@ -109,5 +110,11 @@
     @include('atlas::exports.partials.common.flow-section', [
         'flow' => $middleware['flow'] ?? [],
         'type' => 'middleware'
+    ])
+
+    {{-- Footer --}}
+    @include('atlas::exports.partials.common.card-footer', [
+        'class' => $middleware['class'],
+        'file' => $middleware['file']
     ])
 </div>
