@@ -27,7 +27,7 @@ echo "\n";
 // 2. Scan specific component types
 echo "2. Scanning specific component types:\n";
 
-$componentTypes = ['models', 'routes', 'commands', 'services', 'notifications', 'middlewares', 'form_requests'];
+$componentTypes = ['models', 'routes', 'commands', 'services', 'notifications', 'middlewares', 'form_requests', 'events', 'controllers', 'resources', 'jobs', 'actions', 'policies', 'rules', 'listeners', 'observers'];
 
 foreach ($componentTypes as $type) {
     $data = Atlas::scan($type);
@@ -43,17 +43,13 @@ echo "3. Exporting to different formats:\n";
 $jsonData = Atlas::export('models', 'json');
 echo '- JSON export length: ' . strlen($jsonData) . " characters\n";
 
-// Markdown export
-$markdownData = Atlas::export('routes', 'markdown');
-echo '- Markdown export length: ' . strlen($markdownData) . " characters\n";
-
 // HTML export
-$htmlData = Atlas::export('all', 'html');
+$htmlData = Atlas::export('routes', 'html');
 echo '- HTML export length: ' . strlen($htmlData) . " characters\n";
 
-// PHP export
-$phpData = Atlas::export('commands', 'php');
-echo '- PHP export length: ' . strlen($phpData) . " characters\n";
+// PDF export
+$pdfData = Atlas::export('commands', 'pdf');
+echo '- PDF export length: ' . strlen($pdfData) . " characters\n";
 
 echo "\n";
 

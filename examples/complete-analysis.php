@@ -39,6 +39,9 @@ $componentTypes = [
     'notifications' => ['include_channels' => true, 'include_flow' => true],
     'middlewares' => ['include_parameters' => true, 'include_dependencies' => true],
     'form_requests' => ['include_rules' => true, 'include_authorization' => true],
+    'events' => ['include_listeners' => true, 'include_properties' => true],
+    'controllers' => ['include_actions' => true, 'include_dependencies' => true],
+    'jobs' => ['include_dependencies' => true, 'include_queue_config' => true],
 ];
 
 $detailedAnalysis = [];
@@ -126,20 +129,15 @@ echo "Generating JSON documentation...\n";
 $jsonDoc = Atlas::export('all', 'json');
 echo '- JSON documentation: ' . strlen($jsonDoc) . " characters\n";
 
-// Markdown documentation
-echo "Generating Markdown documentation...\n";
-$markdownDoc = Atlas::export('all', 'markdown');
-echo '- Markdown documentation: ' . strlen($markdownDoc) . " characters\n";
-
 // HTML documentation
 echo "Generating HTML documentation...\n";
 $htmlDoc = Atlas::export('all', 'html');
 echo '- HTML documentation: ' . strlen($htmlDoc) . " characters\n";
 
-// PHP data export
-echo "Generating PHP data export...\n";
-$phpDoc = Atlas::export('all', 'php');
-echo '- PHP data export: ' . strlen($phpDoc) . " characters\n";
+// PDF documentation
+echo "Generating PDF documentation...\n";
+$pdfDoc = Atlas::export('all', 'pdf');
+echo '- PDF documentation: ' . strlen($pdfDoc) . " characters\n";
 
 echo "\n";
 
@@ -225,14 +223,11 @@ if (! file_exists($outputDir)) {
 file_put_contents("{$outputDir}/architecture.json", $jsonDoc);
 echo "- Saved: {$outputDir}/architecture.json\n";
 
-file_put_contents("{$outputDir}/architecture.md", $markdownDoc);
-echo "- Saved: {$outputDir}/architecture.md\n";
-
 file_put_contents("{$outputDir}/architecture.html", $htmlDoc);
 echo "- Saved: {$outputDir}/architecture.html\n";
 
-file_put_contents("{$outputDir}/architecture.php", $phpDoc);
-echo "- Saved: {$outputDir}/architecture.php\n";
+file_put_contents("{$outputDir}/architecture.pdf", $pdfDoc);
+echo "- Saved: {$outputDir}/architecture.pdf\n";
 
 // Create a summary file
 $summary = "# Laravel Atlas - Complete Analysis Summary\n\n";
