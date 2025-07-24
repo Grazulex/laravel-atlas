@@ -157,6 +157,7 @@ class RuleMapper implements ComponentMapper
             if (is_array($default)) {
                 return '[]';
             }
+
             return (string) $default;
         } catch (ReflectionException) {
             return 'unknown';
