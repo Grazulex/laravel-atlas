@@ -77,7 +77,9 @@ class ResourceMapper implements ComponentMapper
 
         return [
             'class' => $class,
+            'namespace' => $reflection->getNamespaceName(),
             'name' => $reflection->getShortName(),
+            'file' => $file ?: 'Unknown',
             'traits' => $this->extractTraits($reflection),
             'methods' => $this->extractMethods($reflection),
             'relationships' => $this->extractRelationships($source),

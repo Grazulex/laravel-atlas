@@ -60,6 +60,9 @@ class ServiceMapper implements ComponentMapper
         if (! class_exists($fqcn)) {
             return [
                 'class' => $fqcn,
+                'namespace' => '',
+                'name' => class_basename($fqcn),
+                'file' => $filePath,
                 'methods' => [],
                 'dependencies' => [],
                 'flow' => [],
@@ -75,6 +78,9 @@ class ServiceMapper implements ComponentMapper
 
         return [
             'class' => $fqcn,
+            'namespace' => $reflection->getNamespaceName(),
+            'name' => $reflection->getShortName(),
+            'file' => $filePath,
             'methods' => $this->extractPublicMethods($reflection),
             'dependencies' => $this->extractConstructorDependencies($reflection),
             'flow' => $this->analyzeFlow($source),

@@ -58,6 +58,9 @@ class NotificationMapper implements ComponentMapper
         if (! class_exists($fqcn)) {
             return [
                 'class' => $fqcn,
+                'namespace' => '',
+                'name' => class_basename($fqcn),
+                'file' => 'Unknown',
                 'channels' => [],
                 'methods' => [],
                 'flow' => [],
@@ -75,6 +78,9 @@ class NotificationMapper implements ComponentMapper
 
         return [
             'class' => $fqcn,
+            'namespace' => $reflection->getNamespaceName(),
+            'name' => $reflection->getShortName(),
+            'file' => $file ?: 'Unknown',
             'channels' => $this->detectChannels($source),
             'methods' => $this->detectDefinedMethods($source),
             'flow' => $this->analyzeFlow($source),

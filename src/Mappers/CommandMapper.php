@@ -68,6 +68,9 @@ class CommandMapper implements ComponentMapper
 
         return [
             'class' => $class,
+            'namespace' => $reflection->getNamespaceName(),
+            'name' => $reflection->getShortName(),
+            'file' => $file ?: 'Unknown',
             'signature' => $this->getSignature($command),
             'parsed_signature' => $this->parseSignature($command),
             'description' => $this->getDescription($command),

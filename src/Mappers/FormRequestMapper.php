@@ -66,6 +66,9 @@ class FormRequestMapper implements ComponentMapper
         if (! class_exists($fqcn)) {
             return [
                 'class' => $fqcn,
+                'namespace' => '',
+                'name' => class_basename($fqcn),
+                'file' => $filePath,
                 'rules' => [],
                 'authorization' => null,
                 'attributes' => [],
@@ -84,6 +87,9 @@ class FormRequestMapper implements ComponentMapper
 
         return [
             'class' => $fqcn,
+            'namespace' => $reflection->getNamespaceName(),
+            'name' => $reflection->getShortName(),
+            'file' => $filePath,
             'rules' => $this->extractRules($source),
             'authorization' => $this->extractAuthorization($source),
             'attributes' => $this->extractAttributes($source),
