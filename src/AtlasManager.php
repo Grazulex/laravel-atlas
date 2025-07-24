@@ -10,6 +10,7 @@ use LaravelAtlas\Mappers\CommandMapper;
 use LaravelAtlas\Mappers\ControllerMapper;
 use LaravelAtlas\Mappers\EventMapper;
 use LaravelAtlas\Mappers\FormRequestMapper;
+use LaravelAtlas\Mappers\JobMapper;
 use LaravelAtlas\Mappers\MiddlewareMapper;
 use LaravelAtlas\Mappers\ModelMapper;
 use LaravelAtlas\Mappers\NotificationMapper;
@@ -37,6 +38,7 @@ class AtlasManager
         $this->registry->register(new EventMapper);
         $this->registry->register(new ControllerMapper);
         $this->registry->register(new ResourceMapper);
+        $this->registry->register(new JobMapper);
     }
 
     /**

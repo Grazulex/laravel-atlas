@@ -70,6 +70,27 @@
         @else
             <span class="text-xs text-gray-500 italic">None</span>
         @endif
+    @elseif ($type === 'parameters')
+        @if (!empty($items))
+            <div class="text-xs space-y-1">
+                @foreach ($items as $param)
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-700 dark:text-gray-300">${{ $param['name'] }}</span>
+                        <div class="flex items-center space-x-1">
+                            <span class="text-indigo-600 dark:text-indigo-400 font-mono">{{ $param['type'] }}</span>
+                            @if($param['nullable'])
+                                <span class="text-yellow-600 dark:text-yellow-400">?</span>
+                            @endif
+                            @if($param['hasDefault'])
+                                <span class="text-green-600 dark:text-green-400">default</span>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <span class="text-xs text-gray-500 italic">None</span>
+        @endif
     @elseif ($type === 'code')
         @if (!empty($value))
             <div class="text-xs bg-gray-50 dark:bg-gray-700 rounded p-2 text-gray-800 dark:text-gray-200 leading-tight">
