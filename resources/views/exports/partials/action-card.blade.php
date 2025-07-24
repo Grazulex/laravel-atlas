@@ -38,39 +38,6 @@
         </div>
     @endif
 
-    {{-- Public Methods --}}
-    @if (!empty($action['methods']))
-        <div class="mb-3">
-            <h4 class="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                🔧 Methods ({{ count($action['methods']) }})
-            </h4>
-            <div class="space-y-2">
-                @foreach ($action['methods'] as $method)
-                    <div class="text-xs bg-blue-50 dark:bg-blue-900/20 rounded p-2">
-                        <div class="font-mono">
-                            <span class="text-purple-600 dark:text-purple-400">{{ $method['name'] }}</span>
-                            <span class="text-gray-500">(</span>
-                            @foreach ($method['parameters'] as $index => $param)
-                                @if ($index > 0), @endif
-                                @if ($param['type'])
-                                    <span class="text-gray-600 dark:text-gray-400">{{ class_basename($param['type']) }}</span>
-                                @endif
-                                <span class="text-blue-600 dark:text-blue-400">${{ $param['name'] }}</span>
-                                @if ($param['default'] !== null)
-                                    <span class="text-gray-500"> = {{ json_encode($param['default']) }}</span>
-                                @endif
-                            @endforeach
-                            <span class="text-gray-500">)</span>
-                            @if ($method['return_type'])
-                                : <span class="text-green-600 dark:text-green-400">{{ class_basename($method['return_type']) }}</span>
-                            @endif
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    @endif
-
     {{-- Méthodes --}}
     @include('atlas::exports.partials.common.collapsible-methods', [
         'methods' => $action['methods'] ?? [],
