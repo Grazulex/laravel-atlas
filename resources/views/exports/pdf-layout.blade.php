@@ -310,7 +310,7 @@
 
         {{-- Models Section --}}
         @if (count($models) > 0)
-            <div class="section">
+            <div class="section section-break">
                 <h2 class="section-title">MODELS ({{ count($models) }})</h2>
                 <div class="cards-grid">
                     @foreach ($models as $item)
