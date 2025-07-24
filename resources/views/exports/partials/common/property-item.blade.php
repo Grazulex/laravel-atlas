@@ -4,7 +4,7 @@
     @param string $label - Property label
     @param string $value - Property value (optional)
     @param array $items - Array of items for lists (optional)
-    @param string $type - Display type: 'simple', 'list', 'code', 'table' (default: simple)
+    @param string $type - Display type: 'simple', 'list', 'code', 'table', 'properties' (default: simple)
 --}}
 <div class="min-h-[2rem]">
     <span class="block text-xs text-gray-400 dark:text-gray-500 font-semibold mb-1">{{ $icon }} {{ $label }}</span>
@@ -16,6 +16,19 @@
                     <li>{{ $item }}</li>
                 @endforeach
             </ul>
+        @else
+            <span class="text-xs text-gray-500 italic">None</span>
+        @endif
+    @elseif ($type === 'properties')
+        @if (!empty($items))
+            <div class="text-xs space-y-1">
+                @foreach ($items as $property)
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-700 dark:text-gray-300">{{ $property['name'] }}</span>
+                        <span class="text-indigo-600 dark:text-indigo-400 font-mono">{{ $property['type'] }}</span>
+                    </div>
+                @endforeach
+            </div>
         @else
             <span class="text-xs text-gray-500 italic">None</span>
         @endif

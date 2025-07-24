@@ -7,6 +7,7 @@ namespace LaravelAtlas;
 use InvalidArgumentException;
 use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Mappers\CommandMapper;
+use LaravelAtlas\Mappers\EventMapper;
 use LaravelAtlas\Mappers\FormRequestMapper;
 use LaravelAtlas\Mappers\MiddlewareMapper;
 use LaravelAtlas\Mappers\ModelMapper;
@@ -31,6 +32,7 @@ class AtlasManager
         $this->registry->register(new NotificationMapper);
         $this->registry->register(new MiddlewareMapper);
         $this->registry->register(new FormRequestMapper);
+        $this->registry->register(new EventMapper);
     }
 
     /**
