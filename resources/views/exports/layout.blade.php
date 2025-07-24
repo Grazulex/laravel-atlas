@@ -20,9 +20,16 @@
         }
 
         $(function () {
+            // Ensure all sections are hidden at start
+            $('.content-section').hide();
+            
             $('[data-section]').on('click', function () {
                 const section = $(this).data('section');
+                
+                // Hide all sections first
                 $('.content-section').hide();
+                
+                // Show the selected section
                 $('#section-' + section).show();
 
                 // Remove active state from all nav items
@@ -46,6 +53,7 @@
                     .addClass('bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200');
             });
 
+            // Activate first section by default
             $('[data-section]').first().click();
 
             $('#menu-toggle').on('click', function () {
