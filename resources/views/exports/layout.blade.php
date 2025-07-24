@@ -155,7 +155,7 @@
     {{-- Main Content --}}
     <div class="flex-1 md:ml-0">
         <div class="p-6 max-w-7xl mx-auto">
-            <div id="section-models" class="content-section hidden">
+            <div id="section-models" class="content-section hidden mt-6 space-y-6">
                 <div class="mb-8">
                     <div class="flex items-center space-x-3 mb-2">
                         <span class="text-2xl">🧱</span>
@@ -171,7 +171,7 @@
                 @endforeach
             </div>
 
-            <div id="section-commands" class="content-section hidden">
+            <div id="section-commands" class="content-section hidden mt-6 space-y-6">
                 <div class="mb-8">
                     <div class="flex items-center space-x-3 mb-2">
                         <span class="text-2xl">💬</span>
@@ -187,7 +187,7 @@
                 @endforeach
             </div>
 
-            <div id="section-routes" class="content-section hidden">
+            <div id="section-routes" class="content-section hidden mt-6 space-y-6">
                 <div class="mb-8">
                     <div class="flex items-center space-x-3 mb-2">
                         <span class="text-2xl">🛣️</span>
@@ -203,7 +203,7 @@
                 @endforeach
             </div>
 
-            <div id="section-services" class="content-section hidden">
+            <div id="section-services" class="content-section hidden mt-6 space-y-6">
                 <div class="mb-8">
                     <div class="flex items-center space-x-3 mb-2">
                         <span class="text-2xl">🔧</span>
@@ -219,7 +219,7 @@
                 @endforeach
             </div>
 
-            <div id="section-notifications" class="content-section hidden">
+            <div id="section-notifications" class="content-section hidden mt-6 space-y-6">
                 <div class="mb-8">
                     <div class="flex items-center space-x-3 mb-2">
                         <span class="text-2xl">📢</span>
@@ -235,7 +235,7 @@
                 @endforeach
             </div>
 
-            <div id="section-middlewares" class="content-section hidden">
+            <div id="section-middlewares" class="content-section hidden mt-6 space-y-6">
                 <div class="mb-8">
                     <div class="flex items-center space-x-3 mb-2">
                         <span class="text-2xl">🛡️</span>
@@ -251,7 +251,7 @@
                 @endforeach
             </div>
 
-            <div id="section-form_requests" class="content-section hidden">
+            <div id="section-form_requests" class="content-section hidden mt-6 space-y-6">
                 <div class="mb-8">
                     <div class="flex items-center space-x-3 mb-2">
                         <span class="text-2xl">📋</span>
@@ -267,7 +267,7 @@
                 @endforeach
             </div>
 
-            <div id="section-events" class="content-section hidden">
+            <div id="section-events" class="content-section hidden mt-6 space-y-6">
                 <div class="mb-8">
                     <div class="flex items-center space-x-3 mb-2">
                         <span class="text-2xl">⚡</span>
@@ -283,7 +283,7 @@
                 @endforeach
             </div>
 
-            <div id="section-controllers" class="content-section hidden">
+            <div id="section-controllers" class="content-section hidden mt-6 space-y-6">
                 <div class="mb-8">
                     <div class="flex items-center space-x-3 mb-2">
                         <span class="text-2xl">🎮</span>
@@ -299,7 +299,7 @@
                 @endforeach
             </div>
 
-            <div id="section-resources" class="content-section hidden">
+            <div id="section-resources" class="content-section hidden mt-6 space-y-6">
                 <div class="mb-8">
                     <div class="flex items-center space-x-3 mb-2">
                         <span class="text-2xl">🔗</span>
@@ -315,7 +315,7 @@
                 @endforeach
             </div>
 
-            <div id="section-jobs" class="content-section hidden">
+            <div id="section-jobs" class="content-section hidden mt-6 space-y-6">
                 <div class="mb-8">
                     <div class="flex items-center space-x-3 mb-2">
                         <span class="text-2xl">⚙️</span>
@@ -331,7 +331,7 @@
                 @endforeach
             </div>
 
-            <div id="section-actions" class="content-section hidden">
+            <div id="section-actions" class="content-section hidden mt-6 space-y-6">
                 <div class="mb-8">
                     <div class="flex items-center space-x-3 mb-2">
                         <span class="text-2xl">⚡</span>
@@ -347,7 +347,7 @@
                 @endforeach
             </div>
 
-            <div id="section-policies" class="content-section hidden">
+            <div id="section-policies" class="content-section hidden mt-6 space-y-6">
                 <div class="mb-8">
                     <div class="flex items-center space-x-3 mb-2">
                         <span class="text-2xl">🛡️</span>
@@ -363,7 +363,7 @@
                 @endforeach
             </div>
 
-            <div id="section-rules" class="content-section hidden">
+            <div id="section-rules" class="content-section hidden mt-6 space-y-6">
                 <div class="mb-8">
                     <div class="flex items-center space-x-3 mb-2">
                         <span class="text-2xl">📏</span>
@@ -379,7 +379,7 @@
                 @endforeach
             </div>
 
-            <div id="section-listeners" class="content-section hidden">
+            <div id="section-listeners" class="content-section hidden mt-6 space-y-6">
                 <div class="mb-8">
                     <div class="flex items-center space-x-3 mb-2">
                         <span class="text-2xl">👂</span>
@@ -395,7 +395,7 @@
                 @endforeach
             </div>
 
-            <div id="section-observers" class="content-section hidden">
+            <div id="section-observers" class="content-section hidden mt-6 space-y-6">
                 <div class="mb-8">
                     <div class="flex items-center space-x-3 mb-2">
                         <span class="text-2xl">👁️</span>
