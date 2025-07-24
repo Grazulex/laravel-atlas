@@ -15,14 +15,27 @@
         'type' => 'code'
     ])
 
-    {{-- Constructor Dependencies --}}
-    @if (!empty($rule['dependencies']))
-        @include('atlas::exports.partials.common.property-item', [
-            'icon' => '🔗',
-            'label' => 'Dependencies',
-            'value' => implode(', ', array_map('class_basename', $rule['dependencies'])),
-            'type' => 'code'
-        ])
+    {{-- Constructor Parameters --}}
+    @if (!empty($rule['constructor_parameters']))
+        <div class="mb-3">
+            <h4 class="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                📝 Constructor Parameters
+            </h4>
+            <div class="space-y-1">
+                @foreach ($rule['constructor_parameters'] as $param)
+                    <div class="text-xs bg-blue-50 dark:bg-blue-900/20 rounded p-2">
+                        <div class="flex items-center justify-between">
+                            <span class="font-mono text-blue-600 dark:text-blue-400">
+                                ${{ $param['name'] }}@if($param['type']): {{ $param['type'] }}@endif
+                            </span>
+                            @if($param['has_default'])
+                                <span class="text-gray-500 dark:text-gray-400">= {{ $param['default_value'] }}</span>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
     @endif
 
     {{-- Implemented Interfaces --}}
