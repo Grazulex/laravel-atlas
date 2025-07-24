@@ -24,9 +24,14 @@
         /* Page layout */
         .container {
             width: 100%;
-            max-width: 210mm; /* A4 width */
+            max-width: 190mm; /* A4 width minus margins */
             margin: 0 auto;
-            padding: 10mm;
+            padding: 8mm 10mm; /* Smaller top/bottom padding, consistent sides */
+        }
+
+        @page {
+            margin: 10mm; /* Standard margins all around */
+            size: A4;
         }
 
         /* Header */
@@ -80,16 +85,16 @@
 
         /* Sections */
         .section {
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             page-break-inside: avoid;
         }
 
         .section-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             color: #1f2937;
-            margin-bottom: 15px;
-            padding: 8px 0;
+            margin-bottom: 12px;
+            padding: 6px 0;
             border-bottom: 1px solid #e5e7eb;
         }
 
@@ -97,70 +102,76 @@
         .cards-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 15px;
+            gap: 12px;
         }
 
         .card {
             border: 1px solid #e5e7eb;
-            border-radius: 6px;
+            border-radius: 4px;
             background: white;
             page-break-inside: avoid;
             overflow: hidden;
+            margin-bottom: 8px;
         }
 
         .card-header {
             background: #f8fafc;
-            padding: 10px 12px;
+            padding: 8px 10px;
             border-bottom: 1px solid #e5e7eb;
         }
 
         .card-title {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
             color: #1f2937;
+            line-height: 1.3;
         }
 
         .card-subtitle {
-            font-size: 11px;
+            font-size: 10px;
             color: #6b7280;
             margin-top: 2px;
+            line-height: 1.2;
         }
 
         .card-content {
-            padding: 12px;
+            padding: 10px;
         }
 
         /* Properties */
         .property-item {
-            margin-bottom: 8px;
-            font-size: 11px;
+            margin-bottom: 6px;
+            font-size: 10px;
+            line-height: 1.3;
         }
 
         .property-label {
             font-weight: bold;
             color: #374151;
-            margin-bottom: 2px;
+            margin-bottom: 1px;
         }
 
         .property-value {
             color: #6b7280;
             font-family: monospace;
-            word-break: break-all;
+            word-break: break-word;
+            font-size: 9px;
         }
 
         /* Tables */
         .detail-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
-            font-size: 10px;
+            margin-top: 8px;
+            font-size: 9px;
         }
 
         .detail-table th,
         .detail-table td {
-            padding: 6px 8px;
+            padding: 4px 6px;
             border: 1px solid #e5e7eb;
             text-align: left;
+            vertical-align: top;
         }
 
         .detail-table th {
@@ -175,21 +186,25 @@
 
         /* Footer */
         .card-footer {
-            padding: 8px 12px;
+            padding: 6px 10px;
             border-top: 1px solid #e5e7eb;
             background: #f8fafc;
-            font-size: 10px;
+            font-size: 9px;
             color: #6b7280;
         }
 
         .footer-info {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 8px;
         }
 
         /* Page breaks */
         .page-break {
+            page-break-before: always;
+        }
+
+        .section-break {
             page-break-before: always;
         }
 
@@ -307,7 +322,7 @@
 
         {{-- Controllers Section --}}
         @if (count($controllers) > 0)
-            <div class="section page-break">
+            <div class="section section-break">
                 <h2 class="section-title">CONTROLLERS ({{ count($controllers) }})</h2>
                 <div class="cards-grid">
                     @foreach ($controllers as $item)
@@ -319,7 +334,7 @@
 
         {{-- Routes Section --}}
         @if (count($routes) > 0)
-            <div class="section page-break">
+            <div class="section section-break">
                 <h2 class="section-title">ROUTES ({{ count($routes) }})</h2>
                 <div class="cards-grid">
                     @foreach ($routes as $item)
@@ -331,7 +346,7 @@
 
         {{-- Commands Section --}}
         @if (count($commands) > 0)
-            <div class="section page-break">
+            <div class="section section-break">
                 <h2 class="section-title">COMMANDS ({{ count($commands) }})</h2>
                 <div class="cards-grid">
                     @foreach ($commands as $item)
@@ -343,7 +358,7 @@
 
         {{-- Services Section --}}
         @if (count($services) > 0)
-            <div class="section page-break">
+            <div class="section section-break">
                 <h2 class="section-title">SERVICES ({{ count($services) }})</h2>
                 <div class="cards-grid">
                     @foreach ($services as $item)
@@ -355,7 +370,7 @@
 
         {{-- Jobs Section --}}
         @if (count($jobs) > 0)
-            <div class="section page-break">
+            <div class="section section-break">
                 <h2 class="section-title">JOBS ({{ count($jobs) }})</h2>
                 <div class="cards-grid">
                     @foreach ($jobs as $item)
@@ -367,7 +382,7 @@
 
         {{-- Events Section --}}
         @if (count($events) > 0)
-            <div class="section page-break">
+            <div class="section section-break">
                 <h2 class="section-title">EVENTS ({{ count($events) }})</h2>
                 <div class="cards-grid">
                     @foreach ($events as $item)
@@ -379,7 +394,7 @@
 
         {{-- Middlewares Section --}}
         @if (count($middlewares) > 0)
-            <div class="section page-break">
+            <div class="section section-break">
                 <h2 class="section-title">MIDDLEWARES ({{ count($middlewares) }})</h2>
                 <div class="cards-grid">
                     @foreach ($middlewares as $item)
@@ -391,7 +406,7 @@
 
         {{-- Form Requests Section --}}
         @if (count($form_requests) > 0)
-            <div class="section page-break">
+            <div class="section section-break">
                 <h2 class="section-title">FORM REQUESTS ({{ count($form_requests) }})</h2>
                 <div class="cards-grid">
                     @foreach ($form_requests as $item)
@@ -403,7 +418,7 @@
 
         {{-- Notifications Section --}}
         @if (count($notifications) > 0)
-            <div class="section page-break">
+            <div class="section section-break">
                 <h2 class="section-title">NOTIFICATIONS ({{ count($notifications) }})</h2>
                 <div class="cards-grid">
                     @foreach ($notifications as $item)
@@ -415,7 +430,7 @@
 
         {{-- Resources Section --}}
         @if (count($resources) > 0)
-            <div class="section page-break">
+            <div class="section section-break">
                 <h2 class="section-title">RESOURCES ({{ count($resources) }})</h2>
                 <div class="cards-grid">
                     @foreach ($resources as $item)
@@ -427,7 +442,7 @@
 
         {{-- Actions Section --}}
         @if (count($actions) > 0)
-            <div class="section page-break">
+            <div class="section section-break">
                 <h2 class="section-title">ACTIONS ({{ count($actions) }})</h2>
                 <div class="cards-grid">
                     @foreach ($actions as $item)
@@ -439,7 +454,7 @@
 
         {{-- Policies Section --}}
         @if (count($policies) > 0)
-            <div class="section page-break">
+            <div class="section section-break">
                 <h2 class="section-title">POLICIES ({{ count($policies) }})</h2>
                 <div class="cards-grid">
                     @foreach ($policies as $item)
@@ -451,7 +466,7 @@
 
         {{-- Rules Section --}}
         @if (count($rules) > 0)
-            <div class="section page-break">
+            <div class="section section-break">
                 <h2 class="section-title">RULES ({{ count($rules) }})</h2>
                 <div class="cards-grid">
                     @foreach ($rules as $item)
@@ -463,7 +478,7 @@
 
         {{-- Listeners Section --}}
         @if (count($listeners) > 0)
-            <div class="section page-break">
+            <div class="section section-break">
                 <h2 class="section-title">LISTENERS ({{ count($listeners) }})</h2>
                 <div class="cards-grid">
                     @foreach ($listeners as $item)
@@ -475,7 +490,7 @@
 
         {{-- Observers Section --}}
         @if (count($observers) > 0)
-            <div class="section page-break">
+            <div class="section section-break">
                 <h2 class="section-title">OBSERVERS ({{ count($observers) }})</h2>
                 <div class="cards-grid">
                     @foreach ($observers as $item)
