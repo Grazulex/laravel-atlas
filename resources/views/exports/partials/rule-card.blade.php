@@ -9,6 +9,15 @@
         'class' => $rule['class'] ?? $rule['name']
     ])
 
+    {{-- Description --}}
+    @if (!empty($rule['description']))
+        <div class="mb-4">
+            <p class="text-xs text-gray-600 dark:text-gray-300 italic bg-gray-50 dark:bg-gray-700/50 rounded p-3">
+                {{ $rule['description'] }}
+            </p>
+        </div>
+    @endif
+
     {{-- Key Properties Grid (Always 3 columns on large screens) --}}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         {{-- Namespace --}}
@@ -86,36 +95,5 @@
     @include('atlas::exports.partials.common.card-footer', [
         'class' => $rule['class'] ?? $rule['name'],
         'file' => $rule['file'] ?? 'N/A'
-    ])
-</div>
-                    <div class="text-xs bg-purple-50 dark:bg-purple-900/20 rounded p-2">
-                        <span class="font-mono text-purple-600 dark:text-purple-400">{{ class_basename($interface) }}</span>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    @endif
-
-    {{-- Has Message Method --}}
-    @include('atlas::exports.partials.common.property-item', [
-        'icon' => '💬',
-        'label' => 'Has Message Method',
-        'value' => $rule['message_method'] ? 'Yes' : 'No',
-        'type' => 'simple'
-    ])
-
-    {{-- Méthodes --}}
-    @include('atlas::exports.partials.common.collapsible-methods', [
-        'methods' => $rule['methods'] ?? [],
-        'componentId' => 'rule-' . md5($rule['class']),
-        'title' => 'Méthodes',
-        'icon' => '⚙️',
-        'collapsed' => true
-    ])
-
-    {{-- Footer --}}
-    @include('atlas::exports.partials.common.card-footer', [
-        'class' => $rule['class'],
-        'file' => $rule['file']
     ])
 </div>
