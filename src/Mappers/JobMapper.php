@@ -203,6 +203,7 @@ class JobMapper implements ComponentMapper
     protected function extractMethods(ReflectionClass $reflection): array
     {
         $methods = [];
+        $classTraits = $reflection->getTraitNames();
         
         foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
             // Ignorer les méthodes magiques
@@ -215,20 +216,30 @@ class JobMapper implements ComponentMapper
             
             // Déterminer la source de la méthode
             if ($declaringClass->getName() !== $reflection->getName()) {
-                // Vérifier si c'est un trait
-                foreach ($reflection->getTraitNames() as $traitName) {
-                    if (str_contains($traitName, class_basename($declaringClass->getName()))) {
-                        $source = 'trait: ' . class_basename($traitName);
-                        break;
+                $declaringClassName = $declaringClass->getName();
+                
+                // Vérifier si c'est un trait en parcourant les traits utilisés
+                foreach ($classTraits as $traitName) {
+                    // Essayer de créer une réflexion du trait
+                    try {
+                        $traitReflection = new ReflectionClass($traitName);
+                        if ($traitReflection->hasMethod($method->getName())) {
+                            $source = 'trait: ' . class_basename($traitName);
+                            break;
+                        }
+                    } catch (\Exception $e) {
+                        // Ignorer les erreurs de réflexion
                     }
                 }
                 
-                // Si ce n'est pas un trait, c'est probablement une classe parente ou une interface
+                // Si ce n'est toujours pas trouvé, vérifier les interfaces et classes parentes
                 if ($source === 'class') {
                     if ($declaringClass->isInterface()) {
-                        $source = 'interface: ' . class_basename($declaringClass->getName());
+                        $source = 'interface: ' . class_basename($declaringClassName);
+                    } elseif ($declaringClass->isTrait()) {
+                        $source = 'trait: ' . class_basename($declaringClassName);
                     } else {
-                        $source = 'parent: ' . class_basename($declaringClass->getName());
+                        $source = 'parent: ' . class_basename($declaringClassName);
                     }
                 }
             }
