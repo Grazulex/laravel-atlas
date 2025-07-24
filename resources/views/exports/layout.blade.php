@@ -150,55 +150,6 @@
         </div>
 
         <div id="section-notifications" class="content-section hidden">
-            <h2 class="text-xl font-bold">📢 Notifications</h2>
-            @foreach ($notifications as $notification)
-                @include('atlas::exports.partials.notification-card', ['notification' => $notification])
-            @endforeach
-        </div>
-
-        <div id="section-middlewares" class="content-section hidden">
-            <h2 class="text-xl font-bold">🛡️ Middlewares</h2>
-            @foreach ($middlewares as $middleware)
-                @include('atlas::exports.partials.middleware-card', ['middleware' => $middleware])
-            @endforeach
-        </div>
-
-        <div id="section-form_requests" class="content-section hidden">
-            <h2 class="text-xl font-bold">📋 Form Requests</h2>
-            @foreach ($form_requests as $formRequest)
-                @include('atlas::exports.partials.form-request-card', ['formRequest' => $formRequest])
-            @endforeach
-        </div>
-
-        <div id="section-events" class="content-section hidden">
-            <h2 class="text-xl font-bold">⚡ Events</h2>
-            @foreach ($events as $event)
-                @include('atlas::exports.partials.event-card', ['event' => $event])
-            @endforeach
-        </div>
-
-        <div id="section-controllers" class="content-section hidden">
-            <h2 class="text-xl font-bold">🎮 Controllers</h2>
-            @foreach ($controllers as $controller)
-                @include('atlas::exports.partials.controller-card', ['controller' => $controller])
-            @endforeach
-        </div>
-
-        <div id="section-resources" class="content-section hidden">
-            <h2 class="text-xl font-bold">🔗 API Resources</h2>
-            @foreach ($resources as $resource)
-                @include('atlas::exports.partials.resource-card', ['resource' => $resource])
-            @endforeach
-        </div>
-
-        <div id="section-jobs" class="content-section hidden">
-            <h2 class="text-xl font-bold">⚡ Jobs</h2>
-            @foreach ($jobs as $job)
-                @include('atlas::exports.partials.job-card', ['job' => $job])
-            @endforeach
-        </div>
-
-        <div id="section-notifications" class="content-section hidden">
             <div class="mb-8">
                 <div class="flex items-center space-x-3 mb-2">
                     <span class="text-2xl">📢</span>
