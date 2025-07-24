@@ -18,6 +18,16 @@
 
     {{-- Properties Grid --}}
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+        {{-- Traits --}}
+        @if (!empty($event['traits']))
+            @include('atlas::exports.partials.common.property-item', [
+                'icon' => '🧩',
+                'label' => 'Traits',
+                'type' => 'list',
+                'items' => $event['traits']
+            ])
+        @endif
+
         {{-- Properties --}}
         @if (!empty($event['properties']))
             @include('atlas::exports.partials.common.property-item', [

@@ -99,6 +99,7 @@ class EventMapper implements ComponentMapper
         return [
             'class' => $class,
             'name' => $reflection->getShortName(),
+            'traits' => $this->extractTraits($reflection),
             'properties' => $this->extractProperties($reflection),
             'broadcastable' => $this->isBroadcastable($reflection),
             'channels' => $this->extractBroadcastChannels($source),
@@ -115,6 +116,22 @@ class EventMapper implements ComponentMapper
             }
         }
         return false;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    protected function extractTraits(ReflectionClass $reflection): array
+    {
+        $traits = [];
+        $traitNames = $reflection->getTraitNames();
+        
+        foreach ($traitNames as $trait) {
+            // Garder seulement le nom de classe (pas le namespace complet)
+            $traits[] = class_basename($trait);
+        }
+        
+        return $traits;
     }
 
     /**
