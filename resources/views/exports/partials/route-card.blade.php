@@ -4,7 +4,9 @@
         'icon' => '🛣️',
         'title' => $route['uri'],
         'badge' => strtoupper($route['type']),
-        'badgeColor' => 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200'
+        'badgeColor' => 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200',
+        'namespace' => $route['namespace'] ?? null,
+        'class' => $route['class'] ?? null
     ])
 
     {{-- Description --}}
@@ -70,5 +72,11 @@
     @include('atlas::exports.partials.common.flow-section', [
         'flow' => $route['flow'] ?? [],
         'type' => 'route'
+    ])
+
+    {{-- Footer --}}
+    @include('atlas::exports.partials.common.card-footer', [
+        'class' => $route['class'] ?? 'N/A',
+        'file' => $route['file'] ?? 'N/A'
     ])
 </div>

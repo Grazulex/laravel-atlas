@@ -4,7 +4,9 @@
         'icon' => '⚡',
         'title' => class_basename($job['class']),
         'badge' => 'Job',
-        'badgeColor' => 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-200'
+        'badgeColor' => 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-200',
+        'namespace' => $job['namespace'],
+        'class' => $job['class']
     ])
 
     {{-- Queueable Badge --}}
@@ -107,4 +109,10 @@
             @endif
         @endforeach
     </div>
+
+    {{-- Footer --}}
+    @include('atlas::exports.partials.common.card-footer', [
+        'class' => $job['class'],
+        'file' => $job['file']
+    ])
 </div>

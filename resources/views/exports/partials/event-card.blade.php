@@ -4,7 +4,9 @@
         'icon' => '⚡',
         'title' => class_basename($event['class']),
         'badge' => 'Event',
-        'badgeColor' => 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200'
+        'badgeColor' => 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200',
+        'namespace' => $event['namespace'],
+        'class' => $event['class']
     ])
 
     {{-- Broadcastable Badge --}}
@@ -71,5 +73,11 @@
     @include('atlas::exports.partials.common.flow-section', [
         'flow' => $event['flow'] ?? [],
         'type' => 'event'
+    ])
+
+    {{-- Footer --}}
+    @include('atlas::exports.partials.common.card-footer', [
+        'class' => $event['class'],
+        'file' => $event['file']
     ])
 </div>

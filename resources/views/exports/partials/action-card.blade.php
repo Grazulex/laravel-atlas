@@ -4,15 +4,9 @@
         'icon' => '⚡',
         'title' => $action['name'],
         'badge' => 'Action',
-        'badgeColor' => 'bg-orange-100 text-orange-600 dark:bg-orange-900 dark:text-orange-300'
-    ])
-
-    {{-- Namespace --}}
-    @include('atlas::exports.partials.common.property-item', [
-        'icon' => '📦',
-        'label' => 'Namespace',
-        'value' => $action['namespace'],
-        'type' => 'code'
+        'badgeColor' => 'bg-orange-100 text-orange-600 dark:bg-orange-900 dark:text-orange-300',
+        'namespace' => $action['namespace'],
+        'class' => $action['class']
     ])
 
     {{-- Constructor Dependencies --}}

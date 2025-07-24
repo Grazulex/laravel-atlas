@@ -50,16 +50,14 @@ class ActionMapper implements ComponentMapper
             $files = $recursive ? File::allFiles($path) : File::files($path);
 
             foreach ($files as $file) {
-                foreach ($files as $file) {
-                    $fqcn = $this->resolveClassFromFile($file->getRealPath());
+                $fqcn = $this->resolveClassFromFile($file->getRealPath());
 
-                    if (
-                        $fqcn &&
-                        ! isset($seen[$fqcn])
-                    ) {
-                        $seen[$fqcn] = true;
-                        $actions[] = $this->analyzeAction($fqcn, $file->getRealPath());
-                    }
+                if (
+                    $fqcn &&
+                    ! isset($seen[$fqcn])
+                ) {
+                    $seen[$fqcn] = true;
+                    $actions[] = $this->analyzeAction($fqcn, $file->getRealPath());
                 }
             }
         }

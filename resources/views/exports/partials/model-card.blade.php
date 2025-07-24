@@ -4,7 +4,9 @@
         'icon' => '🧱',
         'title' => class_basename($model['class']),
         'badge' => $model['table'],
-        'badgeColor' => 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
+        'badgeColor' => 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300',
+        'namespace' => $model['namespace'],
+        'class' => $model['class']
     ])
 
     {{-- Description --}}
@@ -121,5 +123,11 @@
     @include('atlas::exports.partials.common.flow-section', [
         'flow' => $model['flow'] ?? [],
         'type' => 'model'
+    ])
+
+    {{-- Footer --}}
+    @include('atlas::exports.partials.common.card-footer', [
+        'class' => $model['class'],
+        'file' => $model['file']
     ])
 </div>

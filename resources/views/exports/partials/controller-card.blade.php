@@ -4,7 +4,9 @@
         'icon' => '🎮',
         'title' => class_basename($controller['class']),
         'badge' => 'Controller',
-        'badgeColor' => 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200'
+        'badgeColor' => 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200',
+        'namespace' => $controller['namespace'],
+        'class' => $controller['class']
     ])
 
     {{-- Properties Grid --}}
@@ -72,5 +74,11 @@
     @include('atlas::exports.partials.common.flow-section', [
         'flow' => $controller['flow'] ?? [],
         'type' => 'controller'
+    ])
+
+    {{-- Footer --}}
+    @include('atlas::exports.partials.common.card-footer', [
+        'class' => $controller['class'],
+        'file' => $controller['file']
     ])
 </div>
