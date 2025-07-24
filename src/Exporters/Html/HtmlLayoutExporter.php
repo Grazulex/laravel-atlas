@@ -95,6 +95,22 @@ class HtmlLayoutExporter
             $observersData = $data['observers']['data'];
         }
 
+        // Get project information from composer.json
+        $projectName = 'Laravel Project';
+        $projectDescription = 'Atlas - Code Architecture';
+        $createdAt = date('d/m/Y H:i');
+        
+        $composerPath = base_path('composer.json');
+        if (file_exists($composerPath)) {
+            $composer = json_decode(file_get_contents($composerPath), true);
+            if (isset($composer['name'])) {
+                $projectName = $composer['name'];
+            }
+            if (isset($composer['description'])) {
+                $projectDescription = 'Atlas - ' . $composer['description'];
+            }
+        }
+
         return View::make('atlas::exports.layout', [
             'models' => $modelsData,
             'commands' => $commandsData,
@@ -112,6 +128,9 @@ class HtmlLayoutExporter
             'rules' => $rulesData,
             'listeners' => $listenersData,
             'observers' => $observersData,
+            'project_name' => $projectName,
+            'project_description' => $projectDescription,
+            'created_at' => $createdAt,
         ])->render();
     }
 }

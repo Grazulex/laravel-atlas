@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laravel Atlas – {{ count($models) }} Models, {{ count($commands) }} Commands, {{ count($routes) }} Routes, {{ count($services) }} Services, {{ count($notifications) }} Notifications, {{ count($middlewares) }} Middlewares, {{ count($form_requests) }} Form Requests, {{ count($events) }} Events, {{ count($controllers) }} Controllers, {{ count($resources) }} Resources, {{ count($jobs) }} Jobs</title>
+    <title>{{ $project_name }} – Atlas – {{ count($models) }} Models, {{ count($commands) }} Commands, {{ count($routes) }} Routes, {{ count($services) }} Services, {{ count($notifications) }} Notifications, {{ count($middlewares) }} Middlewares, {{ count($form_requests) }} Form Requests, {{ count($events) }} Events, {{ count($controllers) }} Controllers, {{ count($resources) }} Resources, {{ count($jobs) }} Jobs</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
@@ -27,11 +27,20 @@
         }
 
         function updateDarkModeButton(isDark) {
-            const button = document.getElementById('dark-mode-toggle');
-            const icon = document.getElementById('dark-mode-icon');
-            if (button && icon) {
-                icon.textContent = isDark ? '☀️' : '🌙';
-                button.title = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+            // Update desktop button
+            const desktopButton = document.getElementById('dark-mode-toggle-desktop');
+            const desktopIcon = document.getElementById('dark-mode-icon-desktop');
+            if (desktopButton && desktopIcon) {
+                desktopIcon.textContent = isDark ? '☀️' : '🌙';
+                desktopButton.title = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+            }
+            
+            // Update mobile button
+            const mobileButton = document.getElementById('dark-mode-toggle-mobile');
+            const mobileIcon = document.getElementById('dark-mode-icon-mobile');
+            if (mobileButton && mobileIcon) {
+                mobileIcon.textContent = isDark ? '☀️' : '🌙';
+                mobileButton.title = isDark ? 'Switch to light mode' : 'Switch to dark mode';
             }
         }
 
@@ -186,12 +195,12 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                     </svg>
                 </button>
-                <h1 class="text-xl font-bold text-indigo-600 dark:text-indigo-400">Laravel Atlas</h1>
+                <h1 class="text-xl font-bold text-indigo-600 dark:text-indigo-400">{{ $project_name }}</h1>
             </div>
-            <button id="dark-mode-toggle" onclick="toggleDarkMode()" 
+            <button id="dark-mode-toggle-desktop" onclick="toggleDarkMode()" 
                     class="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                     title="Toggle dark mode">
-                <span id="dark-mode-icon" class="text-lg">🌙</span>
+                <span id="dark-mode-icon-desktop" class="text-lg">🌙</span>
             </button>
         </div>
     </div>
@@ -207,14 +216,14 @@
                             <span class="text-white font-bold text-lg">A</span>
                         </div>
                         <div>
-                            <h1 class="text-xl font-bold text-gray-900 dark:text-white">Laravel Atlas</h1>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Code Architecture</p>
+                            <h1 class="text-xl font-bold text-gray-900 dark:text-white">{{ $project_name }}</h1>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Atlas - {{ $created_at }}</p>
                         </div>
                     </div>
-                    <button id="dark-mode-toggle" onclick="toggleDarkMode()" 
+                    <button id="dark-mode-toggle-mobile" onclick="toggleDarkMode()" 
                             class="hidden lg:flex p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                             title="Toggle dark mode">
-                        <span id="dark-mode-icon" class="text-lg">🌙</span>
+                        <span id="dark-mode-icon-mobile" class="text-lg">🌙</span>
                     </button>
                 </div>
 
@@ -384,7 +393,7 @@
                 {{-- Footer --}}
                 <div class="p-4 border-t border-gray-200 dark:border-gray-700">
                     <div class="text-xs text-gray-500 dark:text-gray-400 text-center">
-                        <p class="font-medium">Laravel Atlas</p>
+                        <p class="font-medium">{{ $project_name }}</p>
                         <p>Architecture Documentation</p>
                     </div>
                 </div>
