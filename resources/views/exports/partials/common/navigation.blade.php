@@ -19,7 +19,7 @@
     </div>
 
     {{-- Navigation Sections --}}
-    <div class="flex-1 overflow-y-auto py-4">
+    <div class="flex-1 overflow-y-auto py-4 nav-scroll">
         {{-- Core Components --}}
         <div class="px-4 mb-6">
             <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">

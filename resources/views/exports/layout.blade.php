@@ -65,6 +65,57 @@
             background-color: #1e293b;
             color: #f8fafc;
         }
+        
+        /* Custom scrollbar styles */
+        .scrollbar-hide {
+            -ms-overflow-style: none;  /* Internet Explorer 10+ */
+            scrollbar-width: none;  /* Firefox */
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;  /* Safari and Chrome */
+        }
+        
+        .scrollbar-show:hover {
+            scrollbar-width: thin;
+        }
+        .scrollbar-show:hover::-webkit-scrollbar {
+            display: block;
+            width: 6px;
+        }
+        .scrollbar-show:hover::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .scrollbar-show:hover::-webkit-scrollbar-thumb {
+            background-color: rgba(156, 163, 175, 0.5);
+            border-radius: 3px;
+        }
+        .scrollbar-show:hover::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(156, 163, 175, 0.8);
+        }
+        
+        /* Navigation scrollbar */
+        .nav-scroll {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .nav-scroll::-webkit-scrollbar {
+            display: none;
+        }
+        
+        /* Gradient fade effects for long content */
+        .fade-bottom::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background: linear-gradient(to bottom, transparent, white);
+            pointer-events: none;
+        }
+        .dark .fade-bottom::after {
+            background: linear-gradient(to bottom, transparent, #1f2937);
+        }
     </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen">
