@@ -213,6 +213,12 @@
             page-break-inside: avoid;
         }
 
+        /* Page break with top margin for the next element */
+        .page-break-with-margin {
+            page-break-before: always;
+            padding-top: 20mm; /* Top margin for new page */
+        }
+
         /* Hide elements not suitable for PDF */
         .pdf-hidden {
             display: none;
@@ -314,10 +320,9 @@
                 <h2 class="section-title">MODELS ({{ count($models) }})</h2>
                 <div class="cards-grid">
                     @foreach ($models as $index => $item)
-                        @if ($index > 0)
-                            <div class="page-break"></div>
-                        @endif
-                        @include('atlas::exports.pdf.model-card')
+                        <div class="@if($index > 0) page-break-with-margin @endif">
+                            @include('atlas::exports.pdf.model-card')
+                        </div>
                     @endforeach
                 </div>
             </div>
@@ -328,8 +333,10 @@
             <div class="section section-break">
                 <h2 class="section-title">CONTROLLERS ({{ count($controllers) }})</h2>
                 <div class="cards-grid">
-                    @foreach ($controllers as $item)
-                        @include('atlas::exports.pdf.controller-card')
+                    @foreach ($controllers as $index => $item)
+                        <div class="@if($index > 0) page-break-with-margin @endif">
+                            @include('atlas::exports.pdf.controller-card')
+                        </div>
                     @endforeach
                 </div>
             </div>

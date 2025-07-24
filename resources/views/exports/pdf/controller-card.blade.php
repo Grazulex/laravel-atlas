@@ -1,86 +1,138 @@
-{{-- Controller Card for PDF --}}
-<div class="card no-break">
+{{-- PDF Controller Card - Complete Controller on one or few pages --}}
+<div class="card">
+    {{-- Header --}}
     <div class="card-header">
-        <div class="card-title">{{ class_basename($item['class'] ?? 'Unknown') }}</div>
-        <div class="card-subtitle">{{ !empty($item['methods']) ? count($item['methods']) . ' methods' : 'No methods' }}</div>
+        <div class="card-title">
+            CONTROLLER: {{ class_basename($item['class'] ?? 'Unknown') }}
+            @if (!empty($item['middlewares']))
+                <span style="font-size: 8px; background: #f3f4f6; color: #6b7280; padding: 1px 4px; border-radius: 2px; margin-left: 6px;">
+                    {{ count($item['middlewares']) }} middleware(s)
+                </span>
+            @endif
+        </div>
+        <div class="card-subtitle">{{ $item['namespace'] ?? dirname(str_replace('\\', '/', $item['class'] ?? '')) }}</div>
     </div>
-    
+
     <div class="card-content">
-        {{-- Basic Properties --}}
-        <div class="property-item">
-            <div class="property-label">NAMESPACE:</div>
-            <div class="property-value">{{ dirname(str_replace('\\', '/', $item['class'] ?? '')) }}</div>
-        </div>
-        
-        <div class="property-item">
-            <div class="property-label">METHODS:</div>
-            <div class="property-value">{{ !empty($item['methods']) ? count($item['methods']) . ' methods' : 'None' }}</div>
-        </div>
-
-        <div class="property-item">
-            <div class="property-label">TRAITS:</div>
-            <div class="property-value">{{ !empty($item['traits']) ? count($item['traits']) . ' traits' : 'None' }}</div>
-        </div>
-
-        <div class="property-item">
-            <div class="property-label">MIDDLEWARES:</div>
-            <div class="property-value">{{ !empty($item['middlewares']) ? count($item['middlewares']) . ' middlewares' : 'None' }}</div>
+        {{-- Key Properties (Summary) - Compact --}}
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 8px; padding: 6px; background: #f8fafc; border-radius: 3px; border: 1px solid #e5e7eb;">
+            <div class="property-item">
+                <div class="property-label">Methods</div>
+                <div class="property-value">{{ !empty($item['methods']) ? count($item['methods']) : 0 }} methods</div>
+            </div>
+            <div class="property-item">
+                <div class="property-label">Traits</div>
+                <div class="property-value">{{ !empty($item['traits']) ? count($item['traits']) : 0 }} traits</div>
+            </div>
+            <div class="property-item">
+                <div class="property-label">Actions</div>
+                <div class="property-value">{{ !empty($item['actions']) ? count($item['actions']) : 0 }} actions</div>
+            </div>
         </div>
 
-        {{-- Methods Table --}}
-        @if (!empty($item['methods']) && count($item['methods']) <= 15)
-            <table class="detail-table">
-                <thead>
-                    <tr>
-                        <th>Method</th>
-                        <th>Visibility</th>
-                        <th>Parameters</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($item['methods'] as $method)
-                        <tr>
-                            <td>{{ $method['name'] ?? 'N/A' }}</td>
-                            <td>{{ $method['visibility'] ?? 'public' }}</td>
-                            <td>{{ !empty($method['parameters']) ? count($method['parameters']) : '0' }}</td>
-                        </tr>
+        {{-- Middlewares - Compact --}}
+        @if (!empty($item['middlewares']))
+            <div style="margin-bottom: 8px;">
+                <div style="font-weight: bold; font-size: 9px; color: #374151; margin-bottom: 3px; border-bottom: 1px solid #e5e7eb; padding-bottom: 1px;">
+                    MIDDLEWARES ({{ count($item['middlewares']) }})
+                </div>
+                <div style="background: #f8fafc; padding: 4px; border-radius: 2px; font-size: 7px; border: 1px solid #e5e7eb;">
+                    @foreach ($item['middlewares'] as $index => $middleware)
+                        <span style="background: #e0e7ff; color: #3730a3; padding: 1px 3px; border-radius: 1px; margin-right: 2px; margin-bottom: 1px; display: inline-block; font-weight: bold;">{{ $middleware }}</span>@if($index < count($item['middlewares']) - 1) @endif
                     @endforeach
-                </tbody>
-            </table>
+                </div>
+            </div>
         @endif
 
-        {{-- Actions Table --}}
-        @if (!empty($item['actions']) && count($item['actions']) <= 10)
-            <div class="property-item">
-                <div class="property-label">ACTIONS:</div>
-            </div>
-            <table class="detail-table">
-                <thead>
-                    <tr>
-                        <th>Action</th>
-                        <th>Route</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($item['actions'] as $action)
-                        <tr>
-                            <td>{{ $action['method'] ?? 'N/A' }}</td>
-                            <td>{{ $action['route'] ?? 'N/A' }}</td>
-                        </tr>
+        {{-- Traits - Compact --}}
+        @if (!empty($item['traits']))
+            <div style="margin-bottom: 8px;">
+                <div style="font-weight: bold; font-size: 9px; color: #374151; margin-bottom: 3px; border-bottom: 1px solid #e5e7eb; padding-bottom: 1px;">
+                    TRAITS ({{ count($item['traits']) }})
+                </div>
+                <div style="background: #f8fafc; padding: 4px; border-radius: 2px; font-size: 7px; border: 1px solid #e5e7eb;">
+                    @foreach ($item['traits'] as $index => $trait)
+                        <span style="background: #f3e8ff; color: #7c2d12; padding: 1px 3px; border-radius: 1px; margin-right: 2px; margin-bottom: 1px; display: inline-block; font-weight: bold;">{{ class_basename($trait) }}</span>@if($index < count($item['traits']) - 1) @endif
                     @endforeach
-                </tbody>
-            </table>
+                </div>
+            </div>
+        @endif
+
+        {{-- Methods Table - Same card --}}
+        @if (!empty($item['methods']))
+            <div style="margin-bottom: 8px; border-top: 2px solid #4f46e5; padding-top: 6px;">
+                <div style="font-weight: bold; font-size: 9px; color: #374151; margin-bottom: 3px; border-bottom: 1px solid #e5e7eb; padding-bottom: 1px;">
+                    METHODS ({{ count($item['methods']) }})
+                </div>
+                <table class="detail-table">
+                    <thead>
+                        <tr>
+                            <th style="background: #f8fafc;">Method</th>
+                            <th style="background: #f8fafc;">Visibility</th>
+                            <th style="background: #f8fafc;">Parameters</th>
+                            <th style="background: #f8fafc;">Return Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (array_slice($item['methods'], 0, 20) as $method)
+                            <tr>
+                                <td style="font-family: monospace; color: #1d4ed8; font-weight: bold; font-size: 7px;">{{ $method['name'] ?? 'N/A' }}</td>
+                                <td style="font-weight: bold; font-size: 7px;">{{ substr($method['visibility'] ?? 'public', 0, 3) }}</td>
+                                <td style="font-size: 6px;">
+                                    @if (!empty($method['parameters']))
+                                        {{ count($method['parameters']) }}
+                                    @else
+                                        0
+                                    @endif
+                                </td>
+                                <td style="font-size: 6px; font-family: monospace;">{{ $method['return_type'] ?? 'mixed' }}</td>
+                            </tr>
+                        @endforeach
+                        @if (count($item['methods']) > 20)
+                            <tr>
+                                <td colspan="4" style="text-align: center; font-style: italic; color: #6b7280; font-size: 7px;">
+                                    ... and {{ count($item['methods']) - 20 }} more methods
+                                </td>
+                            </tr>
+                        @endif
+                    </tbody>
+                </table>
+            </div>
+        @endif
+
+        {{-- Actions Table - Same card --}}
+        @if (!empty($item['actions']))
+            <div style="margin-bottom: 8px; border-top: 2px solid #059669; padding-top: 6px;">
+                <div style="font-weight: bold; font-size: 9px; color: #374151; margin-bottom: 3px; border-bottom: 1px solid #e5e7eb; padding-bottom: 1px;">
+                    ACTIONS ({{ count($item['actions']) }})
+                </div>
+                <table class="detail-table">
+                    <thead>
+                        <tr>
+                            <th style="background: #f8fafc;">Action</th>
+                            <th style="background: #f8fafc;">Route</th>
+                            <th style="background: #f8fafc;">Method</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($item['actions'] as $action)
+                            <tr>
+                                <td style="font-family: monospace; color: #1d4ed8; font-weight: bold; font-size: 7px;">{{ $action['method'] ?? 'N/A' }}</td>
+                                <td style="font-family: monospace; color: #7c3aed; font-weight: bold; font-size: 7px;">{{ $action['route'] ?? 'N/A' }}</td>
+                                <td style="font-weight: bold; font-size: 7px;">{{ $action['http_method'] ?? 'GET' }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         @endif
     </div>
 
+    {{-- Footer with file info --}}
     <div class="card-footer">
         <div class="footer-info">
-            <div>
-                <strong>Class:</strong> {{ $item['class'] ?? 'Unknown' }}
-            </div>
-            <div>
-                <strong>File:</strong> {{ basename($item['file'] ?? 'N/A') }}
-            </div>
+            <span style="font-weight: bold;">FILE: {{ basename($item['file'] ?? 'N/A') }}</span>
+            <span style="font-weight: bold;">CLASS: {{ $item['class'] ?? 'Unknown' }}</span>
         </div>
     </div>
 </div>
