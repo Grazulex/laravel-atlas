@@ -1,5 +1,4 @@
-<div class="bg-white rounded-lg shadow-sm p-4 mb-4 border border-gray-200 dark:bg-gray-800 dark:border-gray-700 card-container">
-    <div class="card-content">
+<div class="bg-white rounded-lg shadow-sm p-4 mb-4 border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
 {{-- Header --}}
     @include('atlas::exports.partials.common.card-header', [
         'icon' => '🧱',
@@ -218,13 +217,10 @@
             'type' => 'model'
         ])
     </div>
-    </div>
 
     {{-- Footer --}}
-    <div class="card-footer">
-        @include('atlas::exports.partials.common.card-footer', [
-            'class' => $item['class'],
-            'file' => $item['file']
-        ])
-    </div>
+    @include('atlas::exports.partials.common.card-footer', [
+        'class' => $item['class'],
+        'file' => $item['file']
+    ])
 </div>

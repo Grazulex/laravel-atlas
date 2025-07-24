@@ -160,17 +160,18 @@
         }
         
         /* Card layout with footer at bottom */
-        .card-container {
+        .grid.auto-rows-fr > div {
             display: flex;
             flex-direction: column;
-            height: 100%;
         }
         
-        .card-content {
-            flex: 1;
+        /* Push footer to bottom by making the content before it expand */
+        .grid.auto-rows-fr > div > *:last-child {
+            margin-top: auto;
         }
         
-        .card-footer {
+        /* Ensure the footer section has the proper spacing */
+        .grid.auto-rows-fr > div > *:last-child[class*="border-t"] {
             margin-top: auto;
         }
     </style>
