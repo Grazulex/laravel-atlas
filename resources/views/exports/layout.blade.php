@@ -79,10 +79,10 @@
         
         /* Ensure content sections are hidden by default */
         .content-section {
-            display: none !important;
+            display: none;
         }
         .content-section.show {
-            display: block !important;
+            display: block;
         }
         
         /* Custom scrollbar styles */
