@@ -4,8 +4,11 @@
     @param string $label - Property label
     @param string $value - Property value (optional)
     @param array $items - Array of items for lists (optional)
-    @param string $type - Display type: 'simple', 'list', 'code', 'table', 'properties', 'methods', 'dependencies', 'transformations' (default: simple)
+    @param string $type - Display type: 'simple', 'list', 'code', 'table', 'properties', 'methods', 'dependencies', 'transformations', 'parameters' (default: simple)
 --}}
+@php
+    $type = $type ?? 'simple';
+@endphp
 <div class="min-h-[2rem]">
     <span class="block text-xs text-gray-400 dark:text-gray-500 font-semibold mb-1">{{ $icon ?? '' }} {{ $label }}</span>
     
