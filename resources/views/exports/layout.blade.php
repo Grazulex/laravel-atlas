@@ -157,14 +157,14 @@
         <div class="p-6 max-w-7xl mx-auto">
             <div id="section-models" class="content-section hidden mt-6 space-y-6">
                 <div class="mb-8">
-                    <div class="flex items-center space-x-3 mb-2">
+                    <div class="mb-8"><div class="flex items-center space-x-3 mb-2">
                         <span class="text-2xl">🧱</span>
                         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Models</h2>
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
                             {{ count($models) }} {{ count($models) === 1 ? 'Model' : 'Models' }}
                         </span>
                     </div>
-                    <p class="text-gray-600 dark:text-gray-400">Database entities and their relationships, attributes, and behaviors.</p>
+                    <p class="text-gray-600 dark:text-gray-400">Database entities and their relationships, attributes, and behaviors.</p></div>
                 </div>
                 @foreach ($models as $model)
                     @include('atlas::exports.partials.model-card', ['model' => $model])
@@ -173,14 +173,14 @@
 
             <div id="section-commands" class="content-section hidden mt-6 space-y-6">
                 <div class="mb-8">
-                    <div class="flex items-center space-x-3 mb-2">
+                    <div class="mb-8"><div class="flex items-center space-x-3 mb-2">
                         <span class="text-2xl">💬</span>
                         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Commands</h2>
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
                             {{ count($commands) }} {{ count($commands) === 1 ? 'Command' : 'Commands' }}
                         </span>
                     </div>
-                    <p class="text-gray-600 dark:text-gray-400">Artisan commands for CLI operations and automation tasks.</p>
+                    <p class="text-gray-600 dark:text-gray-400">Artisan commands for CLI operations and automation tasks.</p></div>
                 </div>
                 @foreach ($commands as $command)
                     @include('atlas::exports.partials.command-card', ['command' => $command])
@@ -189,14 +189,14 @@
 
             <div id="section-routes" class="content-section hidden mt-6 space-y-6">
                 <div class="mb-8">
-                    <div class="flex items-center space-x-3 mb-2">
+                    <div class="mb-8"><div class="flex items-center space-x-3 mb-2">
                         <span class="text-2xl">🛣️</span>
                         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Routes</h2>
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
                             {{ count($routes) }} {{ count($routes) === 1 ? 'Route' : 'Routes' }}
                         </span>
                     </div>
-                    <p class="text-gray-600 dark:text-gray-400">Application endpoints and URL patterns for handling HTTP requests.</p>
+                    <p class="text-gray-600 dark:text-gray-400">Application endpoints and URL patterns for handling HTTP requests.</p></div>
                 </div>
                 @foreach ($routes as $route)
                     @include('atlas::exports.partials.route-card', ['route' => $route])
@@ -205,14 +205,14 @@
 
             <div id="section-services" class="content-section hidden mt-6 space-y-6">
                 <div class="mb-8">
-                    <div class="flex items-center space-x-3 mb-2">
+                    <div class="mb-8"><div class="flex items-center space-x-3 mb-2">
                         <span class="text-2xl">🔧</span>
                         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Services</h2>
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
                             {{ count($services) }} {{ count($services) === 1 ? 'Service' : 'Services' }}
                         </span>
                     </div>
-                    <p class="text-gray-600 dark:text-gray-400">Business logic components and application services.</p>
+                    <p class="text-gray-600 dark:text-gray-400">Business logic components and application services.</p></div>
                 </div>
                 @foreach ($services as $service)
                     @include('atlas::exports.partials.service-card', ['service' => $service])
@@ -221,14 +221,14 @@
 
             <div id="section-notifications" class="content-section hidden mt-6 space-y-6">
                 <div class="mb-8">
-                    <div class="flex items-center space-x-3 mb-2">
+                    <div class="mb-8"><div class="flex items-center space-x-3 mb-2">
                         <span class="text-2xl">📢</span>
                         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Notifications</h2>
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
                             {{ count($notifications) }} {{ count($notifications) === 1 ? 'Notification' : 'Notifications' }}
                         </span>
                     </div>
-                    <p class="text-gray-600 dark:text-gray-400">User notifications and alert systems for various channels.</p>
+                    <p class="text-gray-600 dark:text-gray-400">User notifications and alert systems for various channels.</p></div>
                 </div>
                 @foreach ($notifications as $notification)
                     @include('atlas::exports.partials.notification-card', ['notification' => $notification])
@@ -237,14 +237,14 @@
 
             <div id="section-middlewares" class="content-section hidden mt-6 space-y-6">
                 <div class="mb-8">
-                    <div class="flex items-center space-x-3 mb-2">
+                    <div class="mb-8"><div class="flex items-center space-x-3 mb-2">
                         <span class="text-2xl">🛡️</span>
                         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Middlewares</h2>
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
                             {{ count($middlewares) }} {{ count($middlewares) === 1 ? 'Middleware' : 'Middlewares' }}
                         </span>
                     </div>
-                    <p class="text-gray-600 dark:text-gray-400">Request filters and HTTP middleware for authentication, authorization, and processing.</p>
+                    <p class="text-gray-600 dark:text-gray-400">Request filters and HTTP middleware for authentication, authorization, and processing.</p></div>
                 </div>
                 @foreach ($middlewares as $middleware)
                     @include('atlas::exports.partials.middleware-card', ['middleware' => $middleware])
@@ -253,14 +253,14 @@
 
             <div id="section-form_requests" class="content-section hidden mt-6 space-y-6">
                 <div class="mb-8">
-                    <div class="flex items-center space-x-3 mb-2">
+                    <div class="mb-8"><div class="flex items-center space-x-3 mb-2">
                         <span class="text-2xl">📋</span>
                         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Form Requests</h2>
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
                             {{ count($form_requests) }} {{ count($form_requests) === 1 ? 'Form Request' : 'Form Requests' }}
                         </span>
                     </div>
-                    <p class="text-gray-600 dark:text-gray-400">Input validation classes for handling form data and request validation.</p>
+                    <p class="text-gray-600 dark:text-gray-400">Input validation classes for handling form data and request validation.</p></div>
                 </div>
                 @foreach ($form_requests as $form_request)
                     @include('atlas::exports.partials.form-request-card', ['form_request' => $form_request])
@@ -269,14 +269,14 @@
 
             <div id="section-events" class="content-section hidden mt-6 space-y-6">
                 <div class="mb-8">
-                    <div class="flex items-center space-x-3 mb-2">
+                    <div class="mb-8"><div class="flex items-center space-x-3 mb-2">
                         <span class="text-2xl">⚡</span>
                         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Events</h2>
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
                             {{ count($events) }} {{ count($events) === 1 ? 'Event' : 'Events' }}
                         </span>
                     </div>
-                    <p class="text-gray-600 dark:text-gray-400">System events for decoupled communication and event-driven architecture.</p>
+                    <p class="text-gray-600 dark:text-gray-400">System events for decoupled communication and event-driven architecture.</p></div>
                 </div>
                 @foreach ($events as $event)
                     @include('atlas::exports.partials.event-card', ['event' => $event])
@@ -285,14 +285,14 @@
 
             <div id="section-controllers" class="content-section hidden mt-6 space-y-6">
                 <div class="mb-8">
-                    <div class="flex items-center space-x-3 mb-2">
+                    <div class="mb-8"><div class="flex items-center space-x-3 mb-2">
                         <span class="text-2xl">🎮</span>
                         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Controllers</h2>
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
                             {{ count($controllers) }} {{ count($controllers) === 1 ? 'Controller' : 'Controllers' }}
                         </span>
                     </div>
-                    <p class="text-gray-600 dark:text-gray-400">HTTP request handlers and application logic controllers.</p>
+                    <p class="text-gray-600 dark:text-gray-400">HTTP request handlers and application logic controllers.</p></div>
                 </div>
                 @foreach ($controllers as $controller)
                     @include('atlas::exports.partials.controller-card', ['controller' => $controller])
@@ -301,14 +301,14 @@
 
             <div id="section-resources" class="content-section hidden mt-6 space-y-6">
                 <div class="mb-8">
-                    <div class="flex items-center space-x-3 mb-2">
+                    <div class="mb-8"><div class="flex items-center space-x-3 mb-2">
                         <span class="text-2xl">🔗</span>
                         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">API Resources</h2>
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
                             {{ count($resources) }} {{ count($resources) === 1 ? 'Resource' : 'Resources' }}
                         </span>
                     </div>
-                    <p class="text-gray-600 dark:text-gray-400">API data transformers for consistent JSON responses and resource formatting.</p>
+                    <p class="text-gray-600 dark:text-gray-400">API data transformers for consistent JSON responses and resource formatting.</p></div>
                 </div>
                 @foreach ($resources as $resource)
                     @include('atlas::exports.partials.resource-card', ['resource' => $resource])
@@ -317,14 +317,14 @@
 
             <div id="section-jobs" class="content-section hidden mt-6 space-y-6">
                 <div class="mb-8">
-                    <div class="flex items-center space-x-3 mb-2">
+                    <div class="mb-8"><div class="flex items-center space-x-3 mb-2">
                         <span class="text-2xl">⚙️</span>
                         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Jobs</h2>
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
                             {{ count($jobs) }} {{ count($jobs) === 1 ? 'Job' : 'Jobs' }}
                         </span>
                     </div>
-                    <p class="text-gray-600 dark:text-gray-400">Background tasks and queued jobs for asynchronous processing.</p>
+                    <p class="text-gray-600 dark:text-gray-400">Background tasks and queued jobs for asynchronous processing.</p></div>
                 </div>
                 @foreach ($jobs as $job)
                     @include('atlas::exports.partials.job-card', ['job' => $job])
@@ -333,14 +333,14 @@
 
             <div id="section-actions" class="content-section hidden mt-6 space-y-6">
                 <div class="mb-8">
-                    <div class="flex items-center space-x-3 mb-2">
+                    <div class="mb-8"><div class="flex items-center space-x-3 mb-2">
                         <span class="text-2xl">⚡</span>
                         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Actions</h2>
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
                             {{ count($actions ?? []) }} {{ count($actions ?? []) === 1 ? 'Action' : 'Actions' }}
                         </span>
                     </div>
-                    <p class="text-gray-600 dark:text-gray-400">Single responsibility actions for specific business operations.</p>
+                    <p class="text-gray-600 dark:text-gray-400">Single responsibility actions for specific business operations.</p></div>
                 </div>
                 @foreach ($actions ?? [] as $action)
                     @include('atlas::exports.partials.action-card', ['action' => $action])
@@ -349,14 +349,14 @@
 
             <div id="section-policies" class="content-section hidden mt-6 space-y-6">
                 <div class="mb-8">
-                    <div class="flex items-center space-x-3 mb-2">
+                    <div class="mb-8"><div class="flex items-center space-x-3 mb-2">
                         <span class="text-2xl">🛡️</span>
                         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Policies</h2>
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
                             {{ count($policies ?? []) }} {{ count($policies ?? []) === 1 ? 'Policy' : 'Policies' }}
                         </span>
                     </div>
-                    <p class="text-gray-600 dark:text-gray-400">Authorization logic and access control policies for resource protection.</p>
+                    <p class="text-gray-600 dark:text-gray-400">Authorization logic and access control policies for resource protection.</p></div>
                 </div>
                 @foreach ($policies ?? [] as $policy)
                     @include('atlas::exports.partials.policy-card', ['policy' => $policy])
@@ -365,14 +365,14 @@
 
             <div id="section-rules" class="content-section hidden mt-6 space-y-6">
                 <div class="mb-8">
-                    <div class="flex items-center space-x-3 mb-2">
+                    <div class="mb-8"><div class="flex items-center space-x-3 mb-2">
                         <span class="text-2xl">📏</span>
                         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Rules</h2>
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
                             {{ count($rules ?? []) }} {{ count($rules ?? []) === 1 ? 'Rule' : 'Rules' }}
                         </span>
                     </div>
-                    <p class="text-gray-600 dark:text-gray-400">Custom validation rules for complex input validation scenarios.</p>
+                    <p class="text-gray-600 dark:text-gray-400">Custom validation rules for complex input validation scenarios.</p></div>
                 </div>
                 @foreach ($rules ?? [] as $rule)
                     @include('atlas::exports.partials.rule-card', ['rule' => $rule])
@@ -381,14 +381,14 @@
 
             <div id="section-listeners" class="content-section hidden mt-6 space-y-6">
                 <div class="mb-8">
-                    <div class="flex items-center space-x-3 mb-2">
+                    <div class="mb-8"><div class="flex items-center space-x-3 mb-2">
                         <span class="text-2xl">👂</span>
                         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Listeners</h2>
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
                             {{ count($listeners ?? []) }} {{ count($listeners ?? []) === 1 ? 'Listener' : 'Listeners' }}
                         </span>
                     </div>
-                    <p class="text-gray-600 dark:text-gray-400">Event handlers for responding to system events and notifications.</p>
+                    <p class="text-gray-600 dark:text-gray-400">Event handlers for responding to system events and notifications.</p></div>
                 </div>
                 @foreach ($listeners ?? [] as $listener)
                     @include('atlas::exports.partials.listener-card', ['listener' => $listener])
@@ -397,14 +397,14 @@
 
             <div id="section-observers" class="content-section hidden mt-6 space-y-6">
                 <div class="mb-8">
-                    <div class="flex items-center space-x-3 mb-2">
+                    <div class="mb-8"><div class="flex items-center space-x-3 mb-2">
                         <span class="text-2xl">👁️</span>
                         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Observers</h2>
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
                             {{ count($observers ?? []) }} {{ count($observers ?? []) === 1 ? 'Observer' : 'Observers' }}
                         </span>
                     </div>
-                    <p class="text-gray-600 dark:text-gray-400">Model observers for monitoring and responding to Eloquent model events.</p>
+                    <p class="text-gray-600 dark:text-gray-400">Model observers for monitoring and responding to Eloquent model events.</p></div>
                 </div>
                 @foreach ($observers ?? [] as $observer)
                     @include('atlas::exports.partials.observer-card', ['observer' => $observer])
