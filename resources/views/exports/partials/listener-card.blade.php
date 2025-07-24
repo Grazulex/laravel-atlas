@@ -15,67 +15,79 @@
         'type' => 'code'
     ])
 
-    {{-- Listened Events --}}
-    @if (!empty($listener['events']))
-        <div class="mb-3">
-            <h4 class="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                🎯 Listens to Events
-            </h4>
-            <div class="space-y-1">
-                @foreach ($listener['events'] as $event)
-                    <div class="text-xs bg-indigo-50 dark:bg-indigo-900/20 rounded p-2">
-                        <span class="font-mono text-indigo-600 dark:text-indigo-400">{{ class_basename($event) }}</span>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    @endif
+    {{-- Handle Method Status --}}
+    @include('atlas::exports.partials.common.property-item', [
+        'icon' => '🔧',
+        'label' => 'Has Handle Method',
+        'value' => $listener['handle_method'] ? 'Yes' : 'No',
+        'type' => 'simple'
+    ])
 
-    {{-- Constructor Dependencies --}}
-    @if (!empty($listener['dependencies']))
-        @include('atlas::exports.partials.common.property-item', [
-            'icon' => '🔗',
-            'label' => 'Dependencies',
-            'value' => implode(', ', array_map('class_basename', $listener['dependencies'])),
-            'type' => 'code'
-        ])
-    @endif
-
-    {{-- Handle Method --}}
-    @if (!empty($listener['handle_method']))
+    {{-- Methods --}}
+    @if (!empty($listener['methods']))
         <div class="mb-3">
-            <h4 class="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                🔧 Handle Method
-            </h4>
-            <div class="text-xs bg-indigo-50 dark:bg-indigo-900/20 rounded p-2">
-                <div class="font-mono">
-                    <span class="text-purple-600 dark:text-purple-400">handle</span>
-                    <span class="text-gray-500">(</span>
-                    @foreach ($listener['handle_method']['parameters'] as $index => $param)
-                        @if ($index > 0), @endif
-                        @if ($param['type'])
-                            <span class="text-gray-600 dark:text-gray-400">{{ class_basename($param['type']) }}</span>
-                        @endif
-                        <span class="text-blue-600 dark:text-blue-400">${{ $param['name'] }}</span>
+            @include('atlas::exports.partials.common.property-item', [
+                'icon' => '🧾',
+                'label' => 'Public Methods',
+                'type' => 'table'
+            ])
+            <table class="w-full text-xs border rounded overflow-hidden mt-1">
+                <thead class="bg-gray-100 dark:bg-gray-700 text-left">
+                    <tr>
+                        <th class="p-2">Method</th>
+                        <th class="p-2">Parameters</th>
+                        <th class="p-2">Return Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($listener['methods'] as $method)
+                        <tr class="border-t dark:border-gray-600">
+                            <td class="p-2">
+                                <code class="text-purple-600 dark:text-purple-400">{{ $method['name'] }}</code>
+                                @if ($method['is_static'])
+                                    <span class="text-[10px] text-orange-600 ml-1">[static]</span>
+                                @endif
+                            </td>
+                            <td class="p-2">
+                                @if (!empty($method['parameters']))
+                                    <div class="space-y-1">
+                                        @foreach ($method['parameters'] as $param)
+                                            <div class="text-[10px]">
+                                                @if ($param['type'])
+                                                    <span class="text-gray-600 dark:text-gray-400">{{ class_basename($param['type']) }}</span>
+                                                @endif
+                                                <span class="text-blue-600 dark:text-blue-400">${{ $param['name'] }}</span>
+                                                @if ($param['has_default'])
+                                                    <span class="text-yellow-600">[default]</span>
+                                                @endif
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <span class="text-gray-400">-</span>
+                                @endif
+                            </td>
+                            <td class="p-2">
+                                @if ($method['return_type'])
+                                    <code class="text-green-600 dark:text-green-400">{{ class_basename($method['return_type']) }}</code>
+                                @else
+                                    <span class="text-gray-400">void</span>
+                                @endif
+                            </td>
+                        </tr>
                     @endforeach
-                    <span class="text-gray-500">)</span>
-                    @if ($listener['handle_method']['return_type'])
-                        : <span class="text-green-600 dark:text-green-400">{{ class_basename($listener['handle_method']['return_type']) }}</span>
-                    @endif
-                </div>
-            </div>
+                </tbody>
+            </table>
         </div>
     @endif
 
     {{-- Should Queue --}}
-    @if (isset($listener['should_queue']))
-        @include('atlas::exports.partials.common.property-item', [
-            'icon' => '⏰',
-            'label' => 'Should Queue',
-            'value' => $listener['should_queue'] ? 'Yes' : 'No',
-            'type' => 'simple'
-        ])
-    @endif
+    @include('atlas::exports.partials.common.property-item', [
+        'icon' => '⏰',
+        'label' => 'Should Queue',
+        'value' => $listener['queued'] ? 'Yes' : 'No',
+        'type' => 'simple'
+    ])
 
     {{-- Footer --}}
     @include('atlas::exports.partials.common.card-footer', [
