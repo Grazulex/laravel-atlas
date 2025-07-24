@@ -134,59 +134,6 @@
         </div>
     @endif
 
-    {{-- Methods Table --}}
-    @if (!empty($form_request['methods']))
-        <div class="mb-4">
-            @include('atlas::exports.partials.common.property-item', [
-                'icon' => '🔧',
-                'label' => 'Methods',
-                'type' => 'table'
-            ])
-            <table class="w-full text-xs border rounded overflow-hidden mt-1">
-                <thead class="bg-gray-100 dark:bg-gray-700 text-left">
-                    <tr>
-                        <th class="p-2">Method</th>
-                        <th class="p-2">Visibility</th>
-                        <th class="p-2">Return Type</th>
-                        <th class="p-2">Type</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($form_request['methods'] as $method)
-                        <tr class="border-t dark:border-gray-600">
-                            <td class="p-2">
-                                <code>{{ $method['name'] }}</code>
-                                @if ($method['is_important'])
-                                    <span class="ml-1 text-[10px] text-blue-600">[core]</span>
-                                @endif
-                            </td>
-                            <td class="p-2">
-                                <span class="text-[10px] px-1.5 py-0.5 rounded 
-                                    {{ $method['visibility'] === 'public' ? 'bg-green-100 text-green-700' : 
-                                       ($method['visibility'] === 'protected' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700') }}
-                                    dark:bg-opacity-20">
-                                    {{ $method['visibility'] }}
-                                </span>
-                            </td>
-                            <td class="p-2 text-gray-600 dark:text-gray-300">
-                                {{ $method['return_type'] ?? 'mixed' }}
-                            </td>
-                            <td class="p-2">
-                                @if (in_array($method['name'], ['authorize', 'rules', 'attributes', 'messages']))
-                                    <span class="text-[10px] text-green-600">[validation]</span>
-                                @elseif (in_array($method['name'], ['withValidator', 'prepareForValidation']))
-                                    <span class="text-[10px] text-blue-600">[lifecycle]</span>
-                                @else
-                                    <span class="text-[10px] text-gray-500">[helper]</span>
-                                @endif
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    @endif
-
     {{-- Méthodes --}}
     @include('atlas::exports.partials.common.collapsible-methods', [
         'methods' => $form_request['methods'] ?? [],

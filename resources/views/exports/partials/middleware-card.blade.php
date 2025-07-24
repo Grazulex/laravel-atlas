@@ -44,69 +44,6 @@
         ])
     </div>
 
-    {{-- Methods Table --}}
-    @if (!empty($middleware['methods']))
-        <div class="mb-4">
-            @include('atlas::exports.partials.common.property-item', [
-                'icon' => '📋',
-                'label' => 'Methods',
-                'type' => 'table'
-            ])
-            <table class="w-full text-xs border rounded overflow-hidden mt-1">
-                <thead class="bg-gray-100 dark:bg-gray-700 text-left">
-                    <tr>
-                        <th class="p-2">Method</th>
-                        <th class="p-2">Visibility</th>
-                        <th class="p-2">Parameters</th>
-                        <th class="p-2">Type</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($middleware['methods'] as $method)
-                        <tr class="border-t dark:border-gray-600">
-                            <td class="p-2">
-                                <code>{{ $method['name'] }}</code>
-                                @if ($method['is_important'])
-                                    <span class="ml-1 text-[10px] text-blue-600">[core]</span>
-                                @endif
-                            </td>
-                            <td class="p-2">
-                                <span class="text-[10px] px-1.5 py-0.5 rounded 
-                                    {{ $method['visibility'] === 'public' ? 'bg-green-100 text-green-700' : 
-                                       ($method['visibility'] === 'protected' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700') }}
-                                    dark:bg-opacity-20">
-                                    {{ $method['visibility'] }}
-                                </span>
-                            </td>
-                            <td class="p-2 text-gray-600 dark:text-gray-300">
-                                @if (!empty($method['parameters']))
-                                    @foreach ($method['parameters'] as $param)
-                                        <div class="text-[10px]">
-                                            {{ $param['type'] ? $param['type'] . ' ' : '' }}{{ $param['name'] }}{{ $param['has_default'] ? ' = default' : '' }}
-                                        </div>
-                                    @endforeach
-                                @else
-                                    <span class="text-gray-400">-</span>
-                                @endif
-                            </td>
-                            <td class="p-2">
-                                @if ($method['name'] === 'handle')
-                                    <span class="text-[10px] text-blue-600">[handler]</span>
-                                @elseif ($method['name'] === 'terminate')
-                                    <span class="text-[10px] text-purple-600">[terminate]</span>
-                                @elseif ($method['name'] === '__construct')
-                                    <span class="text-[10px] text-green-600">[constructor]</span>
-                                @else
-                                    <span class="text-[10px] text-gray-500">[helper]</span>
-                                @endif
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    @endif
-
     {{-- Flow Section --}}
     @include('atlas::exports.partials.common.flow-section', [
         'flow' => $middleware['flow'] ?? [],
