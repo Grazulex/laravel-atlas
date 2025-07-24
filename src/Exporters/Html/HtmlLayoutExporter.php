@@ -24,6 +24,7 @@ class HtmlLayoutExporter
         $eventsData = [];
         $controllersData = [];
         $resourcesData = [];
+        $jobsData = [];
 
         if (isset($data['models']) && is_array($data['models']) && isset($data['models']['data'])) {
             $modelsData = $data['models']['data'];
@@ -65,6 +66,10 @@ class HtmlLayoutExporter
             $resourcesData = $data['resources']['data'];
         }
 
+        if (isset($data['jobs']) && is_array($data['jobs']) && isset($data['jobs']['data'])) {
+            $jobsData = $data['jobs']['data'];
+        }
+
         return View::make('atlas::exports.layout', [
             'models' => $modelsData,
             'commands' => $commandsData,
@@ -76,6 +81,7 @@ class HtmlLayoutExporter
             'events' => $eventsData,
             'controllers' => $controllersData,
             'resources' => $resourcesData,
+            'jobs' => $jobsData,
         ])->render();
     }
 }
