@@ -9,6 +9,15 @@
         'class' => $job['class']
     ])
 
+    {{-- Description --}}
+    @if (!empty($job['description']))
+        <div class="mb-4">
+            <p class="text-xs text-gray-600 dark:text-gray-300 italic bg-gray-50 dark:bg-gray-700/50 rounded p-3">
+                {{ $job['description'] }}
+            </p>
+        </div>
+    @endif
+
     {{-- Key Properties Grid (Always 3 columns on large screens) --}}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         {{-- Queueable Status --}}
@@ -34,9 +43,6 @@
             'value' => !empty($job['properties']) ? count($job['properties']) . ' properties' : '0 properties',
             'type' => 'simple'
         ])
-    </div>
-        @if(count($job['constructor']['parameters']) > 0)
-            @include('atlas::exports.partials.common.property-item', [
     </div>
 
     {{-- Detailed Tables Section --}}
