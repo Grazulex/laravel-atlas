@@ -218,10 +218,13 @@
             'type' => 'model'
         ])
     </div>
+    </div>
 
     {{-- Footer --}}
-    @include('atlas::exports.partials.common.card-footer', [
-        'class' => $item['class'],
-        'file' => $item['file']
-    ])
+    <div class="card-footer">
+        @include('atlas::exports.partials.common.card-footer', [
+            'class' => $item['class'],
+            'file' => $item['file']
+        ])
+    </div>
 </div>
