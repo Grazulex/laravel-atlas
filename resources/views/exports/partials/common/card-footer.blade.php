@@ -3,7 +3,10 @@
     $fileSize = 'N/A';
     $lastModified = 'N/A';
     
-    if (!empty($file) && $file !== 'N/A' && file_exists($file)) {
+    // Skip file stats for special cases like closures
+    $isSpecialCase = in_array($file, ['N/A', 'Inline Closure', 'Unknown']);
+    
+    if (!empty($file) && !$isSpecialCase && file_exists($file)) {
         $fileSize = number_format(filesize($file) / 1024, 1) . ' KB';
         $lastModified = date('d/m/Y H:i', filemtime($file));
     }
@@ -26,7 +29,7 @@
         </div>
         
         {{-- File Stats --}}
-        @if (!empty($file) && $file !== 'N/A')
+        @if (!empty($file) && !$isSpecialCase && file_exists($file))
             <div class="space-y-1 text-right md:text-left">
                 <div class="flex items-center justify-end md:justify-start space-x-1">
                     <span>💾</span>
