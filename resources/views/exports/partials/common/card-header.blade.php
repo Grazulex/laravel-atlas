@@ -41,14 +41,6 @@
         @endif
     @endif
     
-    @if (!empty($class))
-        <div class="mb-2">
-            <p class="text-xs text-gray-500 dark:text-gray-500 font-mono">
-                🏷️ {{ $class }}
-            </p>
-        </div>
-    @endif
-    
     {{-- Horizontal separator --}}
     <div class="border-t border-gray-200 dark:border-gray-600"></div>
 </div>
