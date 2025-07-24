@@ -48,10 +48,10 @@
     @elseif ($type === 'dependencies')
         @if (!empty($items))
             <div class="text-xs space-y-1">
-                @foreach ($items as $type => $deps)
+                @foreach ($items as $depType => $deps)
                     @if (!empty($deps))
                         <div>
-                            <span class="text-gray-500 capitalize">{{ $type }}:</span>
+                            <span class="text-gray-500 capitalize">{{ $depType }}:</span>
                             <span class="text-gray-700 dark:text-gray-300">{{ implode(', ', $deps) }}</span>
                         </div>
                     @endif
