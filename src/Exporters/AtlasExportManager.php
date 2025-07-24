@@ -7,6 +7,7 @@ namespace LaravelAtlas\Exporters;
 use InvalidArgumentException;
 use LaravelAtlas\Exporters\Html\HtmlLayoutExporter;
 use LaravelAtlas\Exporters\Json\JsonExporter;
+use LaravelAtlas\Exporters\Pdf\PdfLayoutExporter;
 use LaravelAtlas\Facades\Atlas;
 
 class AtlasExportManager
@@ -23,6 +24,9 @@ class AtlasExportManager
                 $type => $data,
             ]),
             'json' => (new JsonExporter)->render($data),
+            'pdf' => (new PdfLayoutExporter)->render([
+                $type => $data,
+            ]),
             default => throw new InvalidArgumentException("Unsupported export format: $format"),
         };
     }
@@ -48,6 +52,7 @@ class AtlasExportManager
         return match ($format) {
             'html' => (new HtmlLayoutExporter)->render($allData),
             'json' => (new JsonExporter)->render($allData),
+            'pdf' => (new PdfLayoutExporter)->render($allData),
             default => throw new InvalidArgumentException("Unsupported export format: $format"),
         };
     }
