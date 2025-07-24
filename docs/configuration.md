@@ -33,8 +33,8 @@ return [
         'output_path' => env('ATLAS_OUTPUT_PATH', base_path('atlas')),
         'formats' => [
             'json' => env('ATLAS_FORMAT_JSON', true),
-            'markdown' => env('ATLAS_FORMAT_MARKDOWN', true),
             'html' => env('ATLAS_FORMAT_HTML', true),
+            'pdf' => env('ATLAS_FORMAT_PDF', true),
         ],
     ],
     
