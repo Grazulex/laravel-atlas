@@ -21,16 +21,16 @@
 
         $(function () {
             // Ensure all sections are hidden at start
-            $('.content-section').hide();
+            $('.content-section').removeClass('show');
             
             $('[data-section]').on('click', function () {
                 const section = $(this).data('section');
                 
                 // Hide all sections first
-                $('.content-section').hide();
+                $('.content-section').removeClass('show');
                 
                 // Show the selected section
-                $('#section-' + section).show();
+                $('#section-' + section).addClass('show');
 
                 // Remove active state from all nav items
                 $('.nav-item')
@@ -53,12 +53,15 @@
                     .addClass('bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200');
             });
 
-            // Activate first section by default
-            $('[data-section]').first().click();
-
+            // Mobile menu toggle
             $('#menu-toggle').on('click', function () {
                 $('#sidebar').toggleClass('hidden');
             });
+
+            // Activate first section by default after a brief delay
+            setTimeout(function() {
+                $('[data-section]').first().click();
+            }, 100);
         });
     </script>
     <style>
@@ -72,6 +75,14 @@
         .dark code {
             background-color: #1e293b;
             color: #f8fafc;
+        }
+        
+        /* Ensure content sections are hidden by default */
+        .content-section {
+            display: none !important;
+        }
+        .content-section.show {
+            display: block !important;
         }
         
         /* Custom scrollbar styles */
