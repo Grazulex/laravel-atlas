@@ -2,18 +2,18 @@
 {{-- Header --}}
     @include('atlas::exports.partials.common.card-header', [
         'icon' => '🛡️',
-        'title' => class_basename($middleware['class']),
-        'badge' => $middleware['has_terminate'] ? 'Terminable' : 'Standard',
-        'badgeColor' => $middleware['has_terminate'] ? 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300',
-        'namespace' => $middleware['namespace'],
-        'class' => $middleware['class']
+        'title' => class_basename($item['class']),
+        'badge' => $item['has_terminate'] ? 'Terminable' : 'Standard',
+        'badgeColor' => $item['has_terminate'] ? 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300',
+        'namespace' => $item['namespace'],
+        'class' => $item['class']
     ])
 
     {{-- Description --}}
-    @if (!empty($middleware['description']))
+    @if (!empty($item['description']))
         <div class="mb-4">
             <p class="text-xs text-gray-600 dark:text-gray-300 italic bg-gray-50 dark:bg-gray-700/50 rounded p-3">
-                {{ $middleware['description'] }}
+                {{ $item['description'] }}
             </p>
         </div>
     @endif
@@ -24,7 +24,7 @@
         @include('atlas::exports.partials.common.property-item', [
             'icon' => '⚡',
             'label' => 'Terminable',
-            'value' => $middleware['has_terminate'] ? 'Yes' : 'No',
+            'value' => $item['has_terminate'] ? 'Yes' : 'No',
             'type' => 'simple'
         ])
 
@@ -32,7 +32,7 @@
         @include('atlas::exports.partials.common.property-item', [
             'icon' => '🧩',
             'label' => 'Dependencies',
-            'value' => !empty($middleware['dependencies']) ? count($middleware['dependencies']) . ' dependencies' : '0 dependencies',
+            'value' => !empty($item['dependencies']) ? count($item['dependencies']) . ' dependencies' : '0 dependencies',
             'type' => 'simple'
         ])
 
@@ -40,7 +40,7 @@
         @include('atlas::exports.partials.common.property-item', [
             'icon' => '⚙️',
             'label' => 'Parameters',
-            'value' => !empty($middleware['parameters']) ? count($middleware['parameters']) . ' parameters' : '0 parameters',
+            'value' => !empty($item['parameters']) ? count($item['parameters']) . ' parameters' : '0 parameters',
             'type' => 'simple'
         ])
     </div>
@@ -48,17 +48,17 @@
     {{-- Detailed Tables Section --}}
     <div class="space-y-6">
         {{-- Constructor Dependencies --}}
-        @if (!empty($middleware['dependencies']))
+        @if (!empty($item['dependencies']))
             <div>
                 <div class="flex items-center mb-3">
                     <span class="text-sm mr-2">🧩</span>
                     <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Constructor Dependencies ({{ count($middleware['dependencies']) }})
+                        Constructor Dependencies ({{ count($item['dependencies']) }})
                     </h4>
                 </div>
                 <div class="bg-gray-50 dark:bg-gray-700/50 rounded p-3">
                     <div class="flex flex-wrap gap-2">
-                        @foreach ($middleware['dependencies'] as $dependency)
+                        @foreach ($item['dependencies'] as $dependency)
                             @if ($dependency)
                                 <span class="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200 font-medium">
                                     {{ class_basename($dependency) }}
@@ -71,17 +71,17 @@
         @endif
 
         {{-- Handle Parameters --}}
-        @if (!empty($middleware['parameters']))
+        @if (!empty($item['parameters']))
             <div>
                 <div class="flex items-center mb-3">
                     <span class="text-sm mr-2">⚙️</span>
                     <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Handle Parameters ({{ count($middleware['parameters']) }})
+                        Handle Parameters ({{ count($item['parameters']) }})
                     </h4>
                 </div>
                 <div class="bg-gray-50 dark:bg-gray-700/50 rounded p-3">
                     <div class="space-y-2">
-                        @foreach ($middleware['parameters'] as $param)
+                        @foreach ($item['parameters'] as $param)
                             <div class="text-xs bg-white dark:bg-gray-800 rounded p-2 border">
                                 <span class="text-purple-600 dark:text-purple-400">{{ $param['type'] }}</span>
                                 <code class="text-blue-600 dark:text-blue-400">${{ $param['name'] }}</code>
@@ -103,8 +103,8 @@
     <div class="mt-6 space-y-4">
         {{-- Methods Section --}}
         @include('atlas::exports.partials.common.collapsible-methods', [
-            'methods' => $middleware['methods'] ?? [],
-            'componentId' => 'middleware-' . md5($middleware['class']),
+            'methods' => $item['methods'] ?? [],
+            'componentId' => 'middleware-' . md5($item['class']),
             'title' => 'Methods',
             'icon' => '⚙️',
             'collapsed' => true
@@ -112,14 +112,14 @@
 
         {{-- Flow Section --}}
         @include('atlas::exports.partials.common.flow-section', [
-            'flow' => $middleware['flow'] ?? [],
+            'flow' => $item['flow'] ?? [],
             'type' => 'middleware'
         ])
     </div>
 
     {{-- Footer --}}
     @include('atlas::exports.partials.common.card-footer', [
-        'class' => $middleware['class'],
-        'file' => $middleware['file'] ?? 'N/A'
+        'class' => $item['class'],
+        'file' => $item['file'] ?? 'N/A'
     ])
 </div>
