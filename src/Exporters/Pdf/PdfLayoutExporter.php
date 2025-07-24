@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Exporters\Pdf;
 
+use Dompdf\Options;
+use Dompdf\Dompdf;
 use Illuminate\Support\Facades\View;
 
 class PdfLayoutExporter
@@ -99,7 +101,7 @@ class PdfLayoutExporter
         $projectName = 'Laravel Project';
         $projectDescription = 'Atlas - Code Architecture';
         $createdAt = date('d/m/Y H:i');
-        
+
         $composerPath = base_path('composer.json');
         if (file_exists($composerPath)) {
             $composerContent = file_get_contents($composerPath);
@@ -140,18 +142,20 @@ class PdfLayoutExporter
         ])->render();
 
         // Configuration de Dompdf
-        $options = new \Dompdf\Options();
+        $options = new Options;
         $options->set('defaultFont', 'Arial');
         $options->set('isHtml5ParserEnabled', true);
         $options->set('isPhpEnabled', false);
         $options->set('isRemoteEnabled', false);
-        
+
         // Créer l'instance Dompdf
-        $dompdf = new \Dompdf\Dompdf($options);
+        $dompdf = new Dompdf($options);
         $dompdf->loadHtml($html);
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
 
-        return $dompdf->output();
+        $output = $dompdf->output();
+
+        return $output ?? '';
     }
 }
