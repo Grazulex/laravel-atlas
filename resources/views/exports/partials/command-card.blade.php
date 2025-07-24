@@ -11,73 +11,111 @@
 
     {{-- Description --}}
     @if (!empty($command['description']))
-        <p class="text-xs text-gray-600 dark:text-gray-300 italic mb-3">{{ $command['description'] }}</p>
+        <div class="mb-4">
+            <p class="text-xs text-gray-600 dark:text-gray-300 italic bg-gray-50 dark:bg-gray-700/50 rounded p-3">
+                {{ $command['description'] }}
+            </p>
+        </div>
     @endif
 
-    {{-- Properties Grid --}}
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+    {{-- Key Properties Grid (Always 3 columns on large screens) --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         {{-- Signature --}}
         @include('atlas::exports.partials.common.property-item', [
             'icon' => '🔤',
             'label' => 'Signature',
-            'value' => $command['signature'] ?? null,
-            'type' => 'code'
+            'value' => $command['signature'] ?? 'Not Set',
+            'type' => 'simple'
+        ])
+
+        {{-- Arguments Count --}}
+        @include('atlas::exports.partials.common.property-item', [
+            'icon' => '📝',
+            'label' => 'Arguments',
+            'value' => !empty($command['parsed_signature']['arguments']) ? count($command['parsed_signature']['arguments']) . ' arguments' : '0 arguments',
+            'type' => 'simple'
+        ])
+
+        {{-- Options Count --}}
+        @include('atlas::exports.partials.common.property-item', [
+            'icon' => '⚙️',
+            'label' => 'Options',
+            'value' => !empty($command['parsed_signature']['options']) ? count($command['parsed_signature']['options']) . ' options' : '0 options',
+            'type' => 'simple'
         ])
     </div>
 
-    {{-- Signature Table --}}
-    @if (!empty($command['parsed_signature']))
-        <div class="mb-4">
-            @include('atlas::exports.partials.common.property-item', [
-                'icon' => '🧾',
-                'label' => 'Arguments & Options',
-                'type' => 'table'
-            ])
-            <table class="w-full text-xs border rounded overflow-hidden mt-1">
-                <thead class="bg-gray-100 dark:bg-gray-700 text-left">
-                    <tr>
-                        <th class="p-2">Name</th>
-                        <th class="p-2">Type</th>
-                        <th class="p-2">Details</th>
-                        <th class="p-2">Modifier</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($command['parsed_signature'] as $sig)
-                        <tr class="border-t dark:border-gray-600">
-                            <td class="p-2"><code>{{ $sig['name'] }}</code></td>
-                            <td class="p-2">{{ ucfirst($sig['type']) }}</td>
-                            <td class="p-2 text-gray-600 dark:text-gray-300">{{ $sig['description'] ?? '-' }}</td>
-                            <td class="p-2">
-                                @if ($sig['modifier'] === '*')
-                                    <span class="text-[10px] text-blue-600">[array]</span>
-                                @elseif ($sig['modifier'] === '=')
-                                    <span class="text-[10px] text-yellow-600">[default]</span>
-                                @else
-                                    <span class="text-[10px] text-gray-500">[required]</span>
-                                @endif
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    @endif
+    {{-- Detailed Tables Section --}}
+    <div class="space-y-6">
+        {{-- Arguments & Options Table --}}
+        @if (!empty($command['parsed_signature']))
+            <div>
+                <div class="flex items-center mb-3">
+                    <span class="text-sm mr-2">🧾</span>
+                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Arguments & Options ({{ count($command['parsed_signature']) }})
+                    </h4>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs border rounded-lg overflow-hidden">
+                        <thead class="bg-gray-100 dark:bg-gray-700">
+                            <tr>
+                                <th class="p-3 text-left font-medium">Name</th>
+                                <th class="p-3 text-left font-medium">Type</th>
+                                <th class="p-3 text-left font-medium">Details</th>
+                                <th class="p-3 text-left font-medium">Modifier</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y dark:divide-gray-600">
+                            @foreach ($command['parsed_signature'] as $sig)
+                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                    <td class="p-3">
+                                        <code class="text-blue-600 dark:text-blue-400">{{ $sig['name'] }}</code>
+                                    </td>
+                                    <td class="p-3">{{ ucfirst($sig['type']) }}</td>
+                                    <td class="p-3 text-gray-600 dark:text-gray-300">{{ $sig['description'] ?? '—' }}</td>
+                                    <td class="p-3">
+                                        @if ($sig['modifier'] === '*')
+                                            <span class="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200 font-medium">array</span>
+                                        @elseif ($sig['modifier'] === '=')
+                                            <span class="text-xs px-2 py-1 rounded-full bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-200 font-medium">default</span>
+                                        @else
+                                            <span class="text-xs px-2 py-1 rounded-full bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200 font-medium">required</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        @endif
+    </div>
 
-    {{-- Flow Section --}}
-    @include('atlas::exports.partials.common.flow-section', [
-        'flow' => $command['flow'] ?? [],
-        'type' => 'command'
-    ])
+    {{-- Interactive Sections --}}
+    <div class="mt-6 space-y-4">
+        {{-- Methods Section --}}
+        @include('atlas::exports.partials.common.collapsible-methods', [
+            'methods' => $command['methods'] ?? [],
+            'componentId' => 'command-' . md5($command['class']),
+            'title' => 'Methods',
+            'icon' => '⚙️',
+            'collapsed' => true
+        ])
 
-    {{-- Méthodes --}}
-    @include('atlas::exports.partials.common.collapsible-methods', [
-        'methods' => $command['methods'] ?? [],
-        'componentId' => 'command-' . md5($command['class']),
-        'title' => 'Méthodes',
-        'icon' => '⚙️',
-        'collapsed' => true
+        {{-- Flow Section --}}
+        @include('atlas::exports.partials.common.flow-section', [
+            'flow' => $command['flow'] ?? [],
+            'type' => 'command'
+        ])
+    </div>
+
+    {{-- Footer --}}
+    @include('atlas::exports.partials.common.card-footer', [
+        'class' => $command['class'],
+        'file' => $command['file'] ?? 'N/A'
     ])
+</div>
 
     {{-- Footer --}}
     @include('atlas::exports.partials.common.card-footer', [
