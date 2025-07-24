@@ -114,6 +114,3 @@
         'file' => $item['file'] ?? 'N/A'
     ])
 </div>
-        'file' => $item['file']
-    ])
-</div>
