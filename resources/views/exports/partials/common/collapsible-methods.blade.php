@@ -29,26 +29,34 @@
                     <div class="flex items-start justify-between">
                         <div class="font-mono flex-1">
                             <div class="flex items-center space-x-2 mb-1">
-                                <span class="text-blue-600 dark:text-blue-400 font-semibold">{{ $method['name'] }}()</span>
-                                @if(!empty($method['return_type']))
-                                    <span class="text-green-600 dark:text-green-400 text-xs">{{ $method['return_type'] }}</span>
+                                @if(is_array($method))
+                                    <span class="text-blue-600 dark:text-blue-400 font-semibold">{{ $method['name'] ?? 'Unknown' }}()</span>
+                                    @if(!empty($method['returnType']) || !empty($method['return_type']))
+                                        <span class="text-green-600 dark:text-green-400 text-xs">{{ $method['returnType'] ?? $method['return_type'] ?? 'mixed' }}</span>
+                                    @endif
+                                @else
+                                    <span class="text-blue-600 dark:text-blue-400 font-semibold">{{ $method }}()</span>
                                 @endif
                             </div>
                             
-                            @if(!empty($method['parameters']) && count($method['parameters']) > 0)
+                            @if(is_array($method) && !empty($method['parameters']) && is_array($method['parameters']) && count($method['parameters']) > 0)
                                 <div class="text-gray-600 dark:text-gray-400 text-xs mb-1">
                                     Paramètres: 
                                     @foreach($method['parameters'] as $index => $param)
                                         @if($index > 0), @endif
-                                        @if(!empty($param['type']))
-                                            <span class="text-purple-600 dark:text-purple-400">{{ $param['type'] }}</span>
+                                        @if(is_array($param))
+                                            @if(!empty($param['type']))
+                                                <span class="text-purple-600 dark:text-purple-400">{{ $param['type'] }}</span>
+                                            @endif
+                                            <span class="text-blue-600 dark:text-blue-400">${{ $param['name'] ?? 'param' }}</span>
+                                        @else
+                                            <span class="text-blue-600 dark:text-blue-400">{{ $param }}</span>
                                         @endif
-                                        <span class="text-blue-600 dark:text-blue-400">${{ $param['name'] }}</span>
                                     @endforeach
                                 </div>
                             @endif
                             
-                            @if(!empty($method['description']))
+                            @if(is_array($method) && !empty($method['description']))
                                 <div class="text-gray-500 dark:text-gray-400 text-xs italic">
                                     {{ $method['description'] }}
                                 </div>
@@ -56,7 +64,7 @@
                         </div>
                         
                         <div class="ml-3 flex-shrink-0">
-                            @if(!empty($method['source']))
+                            @if(is_array($method) && !empty($method['source']))
                                 @if($method['source'] === 'class')
                                     <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
                                         Classe
