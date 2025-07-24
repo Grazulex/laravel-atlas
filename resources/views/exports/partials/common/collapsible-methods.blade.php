@@ -13,8 +13,8 @@
             </span>
         </h4>
         <div class="flex items-center space-x-2">
-            <span class="text-xs text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300">
-                {{ $collapsed ?? true ? 'Afficher' : 'Masquer' }}
+            <span id="text-methods-{{ $componentId }}" class="text-xs text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300">
+                {{ $collapsed ?? true ? 'Show' : 'Hide' }}
             </span>
             <span id="icon-methods-{{ $componentId }}" class="text-xs text-gray-500 transform transition-transform duration-200 {{ $collapsed ?? true ? '' : 'rotate-180' }}">
                 ▼
@@ -43,7 +43,7 @@
                                 
                                 @if(is_array($method) && !empty($method['parameters']) && is_array($method['parameters']) && count($method['parameters']) > 0)
                                     <div class="text-gray-600 dark:text-gray-400 text-xs mb-1">
-                                        Paramètres: 
+                                        Parameters: 
                                         @foreach($method['parameters'] as $index => $param)
                                             @if($index > 0), @endif
                                             @if(is_array($param))
@@ -69,7 +69,7 @@
                                 @if(is_array($method) && !empty($method['source']))
                                     @if($method['source'] === 'class')
                                         <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
-                                            Classe
+                                            Class
                                         </span>
                                     @elseif(str_contains($method['source'], 'trait'))
                                         <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300">
@@ -97,7 +97,7 @@
         
         @if(count($methods) > 10)
             <div class="mt-2 text-xs text-gray-500 dark:text-gray-400 text-center">
-                {{ count($methods) }} méthodes au total
+                {{ count($methods) }} methods total
             </div>
         @endif
     </div>
@@ -108,15 +108,13 @@ if (typeof toggleSection === 'undefined') {
     function toggleSection(sectionId) {
         const section = document.getElementById(sectionId);
         const icon = document.getElementById('icon-' + sectionId);
+        const textSpan = document.getElementById('text-' + sectionId);
         
-        if (section && icon) {
+        if (section && icon && textSpan) {
             if (section.classList.contains('hidden')) {
                 section.classList.remove('hidden');
                 icon.classList.add('rotate-180');
-                // Update button text
-                const button = icon.closest('button');
-                const spanText = button.querySelector('span:nth-last-child(2)');
-                if (spanText) spanText.textContent = 'Masquer';
+                textSpan.textContent = 'Hide';
                 
                 // Check scroll state after showing
                 setTimeout(() => {
@@ -125,10 +123,7 @@ if (typeof toggleSection === 'undefined') {
             } else {
                 section.classList.add('hidden');
                 icon.classList.remove('rotate-180');
-                // Update button text
-                const button = icon.closest('button');
-                const spanText = button.querySelector('span:nth-last-child(2)');
-                if (spanText) spanText.textContent = 'Afficher';
+                textSpan.textContent = 'Show';
             }
         }
     }
