@@ -24,15 +24,7 @@ class RuleMapper implements ComponentMapper
     public function scan(array $options = []): array
     {
         $rules = [];
-        $defaultPaths = [app_path('Rules')];
-        
-        // Ajouter le beta_app s'il existe
-        $betaAppPath = base_path('beta_app/app/Rules');
-        if (is_dir($betaAppPath)) {
-            $defaultPaths[] = $betaAppPath;
-        }
-        
-        $paths = $options['paths'] ?? $defaultPaths;
+        $paths = $options['paths'] ?? [app_path('Rules')];
         $recursive = $options['recursive'] ?? true;
         $seen = [];
 
@@ -44,12 +36,16 @@ class RuleMapper implements ComponentMapper
             $files = $recursive ? File::allFiles($path) : File::files($path);
 
             foreach ($files as $file) {
-                if ($this->isRuleFile($file->getRealPath())) {
-                    $ruleData = $this->analyzeRuleFile($file->getRealPath());
-                    if ($ruleData && !isset($seen[$ruleData['class']])) {
-                        $seen[$ruleData['class']] = true;
-                        $rules[] = $ruleData;
-                    }
+                $fqcn = ClassResolver::resolveFromPath($file->getRealPath());
+
+                if (
+                    $fqcn &&
+                    class_exists($fqcn) &&
+                    $this->implementsRule($fqcn) &&
+                    ! isset($seen[$fqcn])
+                ) {
+                    $seen[$fqcn] = true;
+                    $rules[] = $this->analyzeRule($fqcn, $file->getRealPath());
                 }
             }
         }
@@ -59,154 +55,6 @@ class RuleMapper implements ComponentMapper
             'count' => count($rules),
             'data' => $rules,
         ];
-    }
-
-    /**
-     * Vérifier si un fichier est une rule en analysant son contenu
-     */
-    protected function isRuleFile(string $filePath): bool
-    {
-        if (!file_exists($filePath) || !str_ends_with($filePath, '.php')) {
-            return false;
-        }
-
-        $content = file_get_contents($filePath);
-        if ($content === false) {
-            return false;
-        }
-
-        // Vérifier si la classe implémente l'une des interfaces de validation
-        return str_contains($content, 'ValidationRule') || 
-               str_contains($content, 'Illuminate\Contracts\Validation\Rule');
-    }
-
-    /**
-     * Analyser un fichier de rule sans charger la classe
-     */
-    protected function analyzeRuleFile(string $filePath): ?array
-    {
-        $content = file_get_contents($filePath);
-        if ($content === false) {
-            return null;
-        }
-
-        // Extraire le namespace
-        $namespace = '';
-        if (preg_match('/namespace\s+([^;]+);/', $content, $namespaceMatches)) {
-            $namespace = trim($namespaceMatches[1]);
-        }
-
-        // Extraire le nom de classe
-        $className = '';
-        if (preg_match('/class\s+(\w+)/', $content, $classMatches)) {
-            $className = $classMatches[1];
-        }
-
-        if (!$className) {
-            return null;
-        }
-
-        $fqcn = $namespace ? $namespace . '\\' . $className : $className;
-
-        // Extraire les méthodes publiques
-        $methods = $this->extractMethodsFromContent($content);
-
-        // Déterminer le type de rule
-        $implements = [];
-        if (str_contains($content, 'ValidationRule')) {
-            $implements[] = 'Illuminate\Contracts\Validation\ValidationRule';
-        }
-        if (str_contains($content, 'Illuminate\Contracts\Validation\Rule')) {
-            $implements[] = 'Illuminate\Contracts\Validation\Rule';
-        }
-
-        return [
-            'class' => $fqcn,
-            'file' => $filePath,
-            'namespace' => $namespace,
-            'name' => $className,
-            'methods' => $methods,
-            'implements' => $implements,
-            'message_method' => str_contains($content, 'function message'),
-            'is_abstract' => str_contains($content, 'abstract class'),
-            'is_final' => str_contains($content, 'final class'),
-        ];
-    }
-
-    /**
-     * Extraire les méthodes d'un contenu de fichier
-     */
-    protected function extractMethodsFromContent(string $content): array
-    {
-        $methods = [];
-        
-        // Pattern pour trouver les méthodes publiques
-        if (preg_match_all('/public\s+function\s+(\w+)\s*\([^)]*\)/', $content, $matches)) {
-            foreach ($matches[1] as $methodName) {
-                if ($methodName !== '__construct') {
-                    $methods[] = [
-                        'name' => $methodName,
-                        'parameters' => [], // Simplifié pour éviter la complexité
-                        'return_type' => null,
-                        'is_static' => false,
-                    ];
-                }
-            }
-        }
-
-        return $methods;
-    }
-
-    /**
-     * Résoudre le nom de classe à partir d'un fichier
-     */
-    protected function resolveClassFromFile(string $filePath): ?string
-    {
-        // D'abord essayer avec ClassResolver
-        $fqcn = ClassResolver::resolveFromPath($filePath);
-        if ($fqcn && class_exists($fqcn)) {
-            return $fqcn;
-        }
-
-        // Si ça ne fonctionne pas, essayer de charger manuellement le fichier
-        if (!file_exists($filePath)) {
-            return null;
-        }
-
-        // Lire le contenu du fichier pour extraire le namespace et le nom de classe
-        $content = file_get_contents($filePath);
-        if ($content === false) {
-            return null;
-        }
-
-        // Extraire le namespace
-        if (preg_match('/namespace\s+([^;]+);/', $content, $namespaceMatches)) {
-            $namespace = trim($namespaceMatches[1]);
-        } else {
-            $namespace = '';
-        }
-
-        // Extraire le nom de classe
-        if (preg_match('/class\s+(\w+)/', $content, $classMatches)) {
-            $className = $classMatches[1];
-        } else {
-            return null;
-        }
-
-        // Construire le FQCN
-        $fqcn = $namespace ? $namespace . '\\' . $className : $className;
-
-        // Essayer de charger le fichier
-        try {
-            require_once $filePath;
-            if (class_exists($fqcn)) {
-                return $fqcn;
-            }
-        } catch (\Throwable $e) {
-            // Ignorer les erreurs de chargement
-        }
-
-        return null;
     }
 
     protected function implementsRule(string $fqcn): bool
@@ -240,7 +88,7 @@ class RuleMapper implements ComponentMapper
             'name' => $reflection->getShortName(),
             'methods' => $this->extractMethods($reflection),
             'implements' => $reflection->getInterfaceNames(),
-            'message_method' => $this->hasMessageMethod($reflection),
+            'message_method' => $reflection->hasMethod('message'),
             'is_abstract' => $reflection->isAbstract(),
             'is_final' => $reflection->isFinal(),
         ];
@@ -272,10 +120,5 @@ class RuleMapper implements ComponentMapper
         }
 
         return $methods;
-    }
-
-    protected function hasMessageMethod(ReflectionClass $reflection): bool
-    {
-        return $reflection->hasMethod('message');
     }
 }
