@@ -414,8 +414,10 @@
             <div class="section section-break">
                 <h2 class="section-title">SERVICES ({{ count($services) }})</h2>
                 <div class="cards-grid">
-                    @foreach ($services as $item)
-                        @include('atlas::exports.pdf.service-card')
+                    @foreach ($services as $index => $item)
+                        <div class="@if($index > 0) page-break-with-margin @endif">
+                            @include('atlas::exports.pdf.service-card')
+                        </div>
                     @endforeach
                 </div>
             </div>
@@ -426,8 +428,10 @@
             <div class="section section-break">
                 <h2 class="section-title">JOBS ({{ count($jobs) }})</h2>
                 <div class="cards-grid">
-                    @foreach ($jobs as $item)
-                        @include('atlas::exports.pdf.job-card')
+                    @foreach ($jobs as $index => $item)
+                        <div class="@if($index > 0) page-break-with-margin @endif">
+                            @include('atlas::exports.pdf.job-card')
+                        </div>
                     @endforeach
                 </div>
             </div>
@@ -437,11 +441,30 @@
         @if (count($events) > 0)
             <div class="section section-break">
                 <h2 class="section-title">EVENTS ({{ count($events) }})</h2>
-                <div class="cards-grid">
-                    @foreach ($events as $item)
-                        @include('atlas::exports.pdf.event-card')
-                    @endforeach
-                </div>
+                
+                {{-- Events Table --}}
+                <table class="detail-table table-with-page-margin" style="font-size: 8px;">
+                    <thead>
+                        <tr>
+                            <th style="background: #f8fafc; width: 30%;">Event Name</th>
+                            <th style="background: #f8fafc; width: 25%;">Class</th>
+                            <th style="background: #f8fafc; width: 25%;">Namespace</th>
+                            <th style="background: #f8fafc; width: 20%;">Properties</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($events as $event)
+                            <tr>
+                                <td style="font-family: monospace; color: #dc2626; font-weight: bold; font-size: 7px;">{{ class_basename($event['class'] ?? 'Unknown') }}</td>
+                                <td style="font-family: monospace; color: #1d4ed8; font-size: 7px;">{{ $event['class'] ?? 'Unknown' }}</td>
+                                <td style="font-family: monospace; color: #7c3aed; font-size: 6px;">{{ $event['namespace'] ?? '-' }}</td>
+                                <td style="font-size: 6px;">
+                                    {{ !empty($event['properties']) ? count($event['properties']) . ' props' : '0 props' }}
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         @endif
 
@@ -449,11 +472,28 @@
         @if (count($middlewares) > 0)
             <div class="section section-break">
                 <h2 class="section-title">MIDDLEWARES ({{ count($middlewares) }})</h2>
-                <div class="cards-grid">
-                    @foreach ($middlewares as $item)
-                        @include('atlas::exports.pdf.middleware-card')
-                    @endforeach
-                </div>
+                
+                {{-- Middlewares Table --}}
+                <table class="detail-table table-with-page-margin" style="font-size: 8px;">
+                    <thead>
+                        <tr>
+                            <th style="background: #f8fafc; width: 25%;">Middleware Name</th>
+                            <th style="background: #f8fafc; width: 35%;">Class</th>
+                            <th style="background: #f8fafc; width: 20%;">Type</th>
+                            <th style="background: #f8fafc; width: 20%;">Priority</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($middlewares as $middleware)
+                            <tr>
+                                <td style="font-family: monospace; color: #f59e0b; font-weight: bold; font-size: 7px;">{{ class_basename($middleware['class'] ?? 'Unknown') }}</td>
+                                <td style="font-family: monospace; color: #1d4ed8; font-size: 7px;">{{ $middleware['class'] ?? 'Unknown' }}</td>
+                                <td style="font-size: 7px; font-weight: bold;">{{ $middleware['type'] ?? 'Global' }}</td>
+                                <td style="font-size: 7px;">{{ $middleware['priority'] ?? '-' }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         @endif
 
@@ -461,11 +501,30 @@
         @if (count($form_requests) > 0)
             <div class="section section-break">
                 <h2 class="section-title">FORM REQUESTS ({{ count($form_requests) }})</h2>
-                <div class="cards-grid">
-                    @foreach ($form_requests as $item)
-                        @include('atlas::exports.pdf.request-card')
-                    @endforeach
-                </div>
+                
+                {{-- Form Requests Table --}}
+                <table class="detail-table table-with-page-margin" style="font-size: 8px;">
+                    <thead>
+                        <tr>
+                            <th style="background: #f8fafc; width: 25%;">Request Name</th>
+                            <th style="background: #f8fafc; width: 35%;">Class</th>
+                            <th style="background: #f8fafc; width: 20%;">Rules</th>
+                            <th style="background: #f8fafc; width: 20%;">Authorized</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($form_requests as $request)
+                            <tr>
+                                <td style="font-family: monospace; color: #8b5cf6; font-weight: bold; font-size: 7px;">{{ class_basename($request['class'] ?? 'Unknown') }}</td>
+                                <td style="font-family: monospace; color: #1d4ed8; font-size: 7px;">{{ $request['class'] ?? 'Unknown' }}</td>
+                                <td style="font-size: 7px;">
+                                    {{ !empty($request['rules']) ? count($request['rules']) . ' rules' : '0 rules' }}
+                                </td>
+                                <td style="font-size: 7px; font-weight: bold;">{{ !empty($request['authorize']) ? 'Yes' : 'No' }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         @endif
 
@@ -473,11 +532,33 @@
         @if (count($notifications) > 0)
             <div class="section section-break">
                 <h2 class="section-title">NOTIFICATIONS ({{ count($notifications) }})</h2>
-                <div class="cards-grid">
-                    @foreach ($notifications as $item)
-                        @include('atlas::exports.pdf.notification-card')
-                    @endforeach
-                </div>
+                
+                {{-- Notifications Table --}}
+                <table class="detail-table table-with-page-margin" style="font-size: 8px;">
+                    <thead>
+                        <tr>
+                            <th style="background: #f8fafc; width: 25%;">Notification Name</th>
+                            <th style="background: #f8fafc; width: 30%;">Class</th>
+                            <th style="background: #f8fafc; width: 25%;">Channels</th>
+                            <th style="background: #f8fafc; width: 20%;">Queue</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($notifications as $notification)
+                            <tr>
+                                <td style="font-family: monospace; color: #ef4444; font-weight: bold; font-size: 7px;">{{ class_basename($notification['class'] ?? 'Unknown') }}</td>
+                                <td style="font-family: monospace; color: #1d4ed8; font-size: 7px;">{{ $notification['class'] ?? 'Unknown' }}</td>
+                                <td style="font-size: 6px;">
+                                    {{ !empty($notification['channels']) ? implode(', ', array_slice($notification['channels'], 0, 3)) : '-' }}
+                                    @if (!empty($notification['channels']) && count($notification['channels']) > 3)
+                                        ...
+                                    @endif
+                                </td>
+                                <td style="font-size: 7px; font-weight: bold;">{{ !empty($notification['queued']) ? 'Yes' : 'No' }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         @endif
 
@@ -485,11 +566,28 @@
         @if (count($resources) > 0)
             <div class="section section-break">
                 <h2 class="section-title">RESOURCES ({{ count($resources) }})</h2>
-                <div class="cards-grid">
-                    @foreach ($resources as $item)
-                        @include('atlas::exports.pdf.resource-card')
-                    @endforeach
-                </div>
+                
+                {{-- Resources Table --}}
+                <table class="detail-table table-with-page-margin" style="font-size: 8px;">
+                    <thead>
+                        <tr>
+                            <th style="background: #f8fafc; width: 25%;">Resource Name</th>
+                            <th style="background: #f8fafc; width: 35%;">Class</th>
+                            <th style="background: #f8fafc; width: 20%;">Type</th>
+                            <th style="background: #f8fafc; width: 20%;">Collection</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($resources as $resource)
+                            <tr>
+                                <td style="font-family: monospace; color: #06b6d4; font-weight: bold; font-size: 7px;">{{ class_basename($resource['class'] ?? 'Unknown') }}</td>
+                                <td style="font-family: monospace; color: #1d4ed8; font-size: 7px;">{{ $resource['class'] ?? 'Unknown' }}</td>
+                                <td style="font-size: 7px; font-weight: bold;">{{ $resource['type'] ?? 'Resource' }}</td>
+                                <td style="font-size: 7px; font-weight: bold;">{{ !empty($resource['is_collection']) ? 'Yes' : 'No' }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         @endif
 
@@ -498,8 +596,10 @@
             <div class="section section-break">
                 <h2 class="section-title">ACTIONS ({{ count($actions) }})</h2>
                 <div class="cards-grid">
-                    @foreach ($actions as $item)
-                        @include('atlas::exports.pdf.action-card')
+                    @foreach ($actions as $index => $item)
+                        <div class="@if($index > 0) page-break-with-margin @endif">
+                            @include('atlas::exports.pdf.action-card')
+                        </div>
                     @endforeach
                 </div>
             </div>
@@ -510,8 +610,10 @@
             <div class="section section-break">
                 <h2 class="section-title">POLICIES ({{ count($policies) }})</h2>
                 <div class="cards-grid">
-                    @foreach ($policies as $item)
-                        @include('atlas::exports.pdf.policy-card')
+                    @foreach ($policies as $index => $item)
+                        <div class="@if($index > 0) page-break-with-margin @endif">
+                            @include('atlas::exports.pdf.policy-card')
+                        </div>
                     @endforeach
                 </div>
             </div>
@@ -521,11 +623,26 @@
         @if (count($rules) > 0)
             <div class="section section-break">
                 <h2 class="section-title">RULES ({{ count($rules) }})</h2>
-                <div class="cards-grid">
-                    @foreach ($rules as $item)
-                        @include('atlas::exports.pdf.rule-card')
-                    @endforeach
-                </div>
+                
+                {{-- Rules Table --}}
+                <table class="detail-table table-with-page-margin" style="font-size: 8px;">
+                    <thead>
+                        <tr>
+                            <th style="background: #f8fafc; width: 25%;">Rule Name</th>
+                            <th style="background: #f8fafc; width: 40%;">Class</th>
+                            <th style="background: #f8fafc; width: 35%;">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($rules as $rule)
+                            <tr>
+                                <td style="font-family: monospace; color: #84cc16; font-weight: bold; font-size: 7px;">{{ class_basename($rule['class'] ?? 'Unknown') }}</td>
+                                <td style="font-family: monospace; color: #1d4ed8; font-size: 7px;">{{ $rule['class'] ?? 'Unknown' }}</td>
+                                <td style="font-size: 7px;">{{ $rule['description'] ?? 'Custom validation rule' }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         @endif
 
@@ -533,11 +650,28 @@
         @if (count($listeners) > 0)
             <div class="section section-break">
                 <h2 class="section-title">LISTENERS ({{ count($listeners) }})</h2>
-                <div class="cards-grid">
-                    @foreach ($listeners as $item)
-                        @include('atlas::exports.pdf.listener-card')
-                    @endforeach
-                </div>
+                
+                {{-- Listeners Table --}}
+                <table class="detail-table table-with-page-margin" style="font-size: 8px;">
+                    <thead>
+                        <tr>
+                            <th style="background: #f8fafc; width: 25%;">Listener Name</th>
+                            <th style="background: #f8fafc; width: 30%;">Event</th>
+                            <th style="background: #f8fafc; width: 25%;">Class</th>
+                            <th style="background: #f8fafc; width: 20%;">Queue</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($listeners as $listener)
+                            <tr>
+                                <td style="font-family: monospace; color: #059669; font-weight: bold; font-size: 7px;">{{ class_basename($listener['class'] ?? 'Unknown') }}</td>
+                                <td style="font-family: monospace; color: #dc2626; font-size: 7px;">{{ $listener['event'] ?? '-' }}</td>
+                                <td style="font-family: monospace; color: #1d4ed8; font-size: 6px;">{{ $listener['class'] ?? 'Unknown' }}</td>
+                                <td style="font-size: 7px; font-weight: bold;">{{ !empty($listener['queued']) ? 'Yes' : 'No' }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         @endif
 
@@ -546,8 +680,10 @@
             <div class="section section-break">
                 <h2 class="section-title">OBSERVERS ({{ count($observers) }})</h2>
                 <div class="cards-grid">
-                    @foreach ($observers as $item)
-                        @include('atlas::exports.pdf.observer-card')
+                    @foreach ($observers as $index => $item)
+                        <div class="@if($index > 0) page-break-with-margin @endif">
+                            @include('atlas::exports.pdf.observer-card')
+                        </div>
                     @endforeach
                 </div>
             </div>
