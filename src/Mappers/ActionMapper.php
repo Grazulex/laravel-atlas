@@ -24,7 +24,15 @@ class ActionMapper implements ComponentMapper
     public function scan(array $options = []): array
     {
         $actions = [];
-        $paths = $options['paths'] ?? [app_path('Actions')];
+        $defaultPaths = [app_path('Actions')];
+        
+        // Ajouter le beta_app s'il existe
+        $betaAppPath = base_path('beta_app/app/Actions');
+        if (is_dir($betaAppPath)) {
+            $defaultPaths[] = $betaAppPath;
+        }
+        
+        $paths = $options['paths'] ?? $defaultPaths;
         $recursive = $options['recursive'] ?? true;
 
         $seen = [];

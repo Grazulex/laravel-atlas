@@ -24,7 +24,15 @@ class ListenerMapper implements ComponentMapper
     public function scan(array $options = []): array
     {
         $listeners = [];
-        $paths = $options['paths'] ?? [app_path('Listeners')];
+        $defaultPaths = [app_path('Listeners')];
+        
+        // Ajouter le beta_app s'il existe
+        $betaAppPath = base_path('beta_app/app/Listeners');
+        if (is_dir($betaAppPath)) {
+            $defaultPaths[] = $betaAppPath;
+        }
+        
+        $paths = $options['paths'] ?? $defaultPaths;
         $recursive = $options['recursive'] ?? true;
         $seen = [];
 

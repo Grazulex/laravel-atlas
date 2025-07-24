@@ -24,7 +24,15 @@ class ObserverMapper implements ComponentMapper
     public function scan(array $options = []): array
     {
         $observers = [];
-        $paths = $options['paths'] ?? [app_path('Observers')];
+        $defaultPaths = [app_path('Observers')];
+        
+        // Ajouter le beta_app s'il existe
+        $betaAppPath = base_path('beta_app/app/Observers');
+        if (is_dir($betaAppPath)) {
+            $defaultPaths[] = $betaAppPath;
+        }
+        
+        $paths = $options['paths'] ?? $defaultPaths;
         $recursive = $options['recursive'] ?? true;
         $seen = [];
 

@@ -24,7 +24,15 @@ class RuleMapper implements ComponentMapper
     public function scan(array $options = []): array
     {
         $rules = [];
-        $paths = $options['paths'] ?? [app_path('Rules')];
+        $defaultPaths = [app_path('Rules')];
+        
+        // Ajouter le beta_app s'il existe
+        $betaAppPath = base_path('beta_app/app/Rules');
+        if (is_dir($betaAppPath)) {
+            $defaultPaths[] = $betaAppPath;
+        }
+        
+        $paths = $options['paths'] ?? $defaultPaths;
         $recursive = $options['recursive'] ?? true;
         $seen = [];
 
