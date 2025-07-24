@@ -45,6 +45,14 @@ class RuleMapper implements ComponentMapper
 
             foreach ($files as $file) {
                 $fqcn = $this->resolveClassFromFile($file->getRealPath());
+                
+                // Debug temporaire
+                if ($fqcn) {
+                    error_log("RuleMapper found class: $fqcn");
+                    error_log("Implements rule: " . ($this->implementsRule($fqcn) ? 'YES' : 'NO'));
+                } else {
+                    error_log("RuleMapper could not resolve class for: " . $file->getRealPath());
+                }
 
                 if (
                     $fqcn &&
@@ -118,8 +126,19 @@ class RuleMapper implements ComponentMapper
 
     protected function implementsRule(string $fqcn): bool
     {
-        return in_array('Illuminate\Contracts\Validation\Rule', class_implements($fqcn) ?: []) ||
-               in_array('Illuminate\Contracts\Validation\ValidationRule', class_implements($fqcn) ?: []);
+        if (!class_exists($fqcn)) {
+            return false;
+        }
+
+        try {
+            $reflection = new ReflectionClass($fqcn);
+            $interfaces = $reflection->getInterfaceNames();
+            
+            return in_array('Illuminate\Contracts\Validation\Rule', $interfaces) ||
+                   in_array('Illuminate\Contracts\Validation\ValidationRule', $interfaces);
+        } catch (\Throwable $e) {
+            return false;
+        }
     }
 
     /**
