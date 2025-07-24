@@ -184,6 +184,11 @@
             color: #6b7280;
         }
 
+        /* Table with page break margin */
+        .table-with-page-margin {
+            margin-top: 20mm; /* Top margin when table breaks to new page */
+        }
+
         /* Footer */
         .card-footer {
             padding: 6px 10px;
@@ -348,7 +353,7 @@
                 <h2 class="section-title">ROUTES ({{ count($routes) }})</h2>
                 
                 {{-- Routes Table --}}
-                <table class="detail-table" style="font-size: 8px;">
+                <table class="detail-table table-with-page-margin" style="font-size: 8px;">
                     <thead>
                         <tr>
                             <th style="background: #f8fafc; width: 8%;">Method</th>
@@ -395,8 +400,10 @@
             <div class="section section-break">
                 <h2 class="section-title">COMMANDS ({{ count($commands) }})</h2>
                 <div class="cards-grid">
-                    @foreach ($commands as $item)
-                        @include('atlas::exports.pdf.command-card')
+                    @foreach ($commands as $index => $item)
+                        <div class="@if($index > 0) page-break-with-margin @endif">
+                            @include('atlas::exports.pdf.command-card')
+                        </div>
                     @endforeach
                 </div>
             </div>
