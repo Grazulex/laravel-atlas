@@ -144,7 +144,7 @@ class JobMapper implements ComponentMapper
             if ($property->getDeclaringClass()->getName() === $reflection->getName()) {
                 $properties[] = [
                     'name' => $property->getName(),
-                    'visibility' => $property->isPublic() ? 'public' : ($property->isProtected() ? 'protected' : 'private'),
+                    'type' => $property->isPublic() ? 'public' : ($property->isProtected() ? 'protected' : 'private'),
                     'static' => $property->isStatic(),
                     'hasDefault' => $property->hasDefaultValue(),
                 ];
