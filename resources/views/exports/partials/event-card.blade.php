@@ -35,9 +35,6 @@
             'type' => 'simple'
         ])
     </div>
-        @endif
-
-    </div>
 
     {{-- Detailed Tables Section --}}
     <div class="space-y-6">
