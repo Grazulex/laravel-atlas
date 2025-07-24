@@ -133,6 +133,36 @@
                     {{ count($jobs) }}
                 </span>
             </button>
+            <button data-section="actions" class="block text-left px-3 py-2 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900 w-full">
+                ⚡ Actions
+                <span class="ml-2 text-xs bg-gray-200 dark:bg-gray-700 dark:text-gray-100 text-gray-800 px-1.5 py-0.5 rounded">
+                    {{ count($actions ?? []) }}
+                </span>
+            </button>
+            <button data-section="policies" class="block text-left px-3 py-2 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900 w-full">
+                🛡️ Policies
+                <span class="ml-2 text-xs bg-gray-200 dark:bg-gray-700 dark:text-gray-100 text-gray-800 px-1.5 py-0.5 rounded">
+                    {{ count($policies ?? []) }}
+                </span>
+            </button>
+            <button data-section="rules" class="block text-left px-3 py-2 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900 w-full">
+                📏 Rules
+                <span class="ml-2 text-xs bg-gray-200 dark:bg-gray-700 dark:text-gray-100 text-gray-800 px-1.5 py-0.5 rounded">
+                    {{ count($rules ?? []) }}
+                </span>
+            </button>
+            <button data-section="listeners" class="block text-left px-3 py-2 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900 w-full">
+                👂 Listeners
+                <span class="ml-2 text-xs bg-gray-200 dark:bg-gray-700 dark:text-gray-100 text-gray-800 px-1.5 py-0.5 rounded">
+                    {{ count($listeners ?? []) }}
+                </span>
+            </button>
+            <button data-section="observers" class="block text-left px-3 py-2 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900 w-full">
+                👁️ Observers
+                <span class="ml-2 text-xs bg-gray-200 dark:bg-gray-700 dark:text-gray-100 text-gray-800 px-1.5 py-0.5 rounded">
+                    {{ count($observers ?? []) }}
+                </span>
+            </button>
             <button onclick="toggleDarkMode()" class="block text-left px-3 py-2 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900 w-full">
                 🌓 Toggle Theme
             </button>
@@ -214,6 +244,41 @@
             <h2 class="text-xl font-bold">⚡ Jobs</h2>
             @foreach ($jobs as $job)
                 @include('atlas::exports.partials.job-card', ['job' => $job])
+            @endforeach
+        </div>
+
+        <div id="section-actions" class="content-section hidden">
+            <h2 class="text-xl font-bold">⚡ Actions</h2>
+            @foreach ($actions ?? [] as $action)
+                @include('atlas::exports.partials.action-card', ['action' => $action])
+            @endforeach
+        </div>
+
+        <div id="section-policies" class="content-section hidden">
+            <h2 class="text-xl font-bold">🛡️ Policies</h2>
+            @foreach ($policies ?? [] as $policy)
+                @include('atlas::exports.partials.policy-card', ['policy' => $policy])
+            @endforeach
+        </div>
+
+        <div id="section-rules" class="content-section hidden">
+            <h2 class="text-xl font-bold">📏 Rules</h2>
+            @foreach ($rules ?? [] as $rule)
+                @include('atlas::exports.partials.rule-card', ['rule' => $rule])
+            @endforeach
+        </div>
+
+        <div id="section-listeners" class="content-section hidden">
+            <h2 class="text-xl font-bold">👂 Listeners</h2>
+            @foreach ($listeners ?? [] as $listener)
+                @include('atlas::exports.partials.listener-card', ['listener' => $listener])
+            @endforeach
+        </div>
+
+        <div id="section-observers" class="content-section hidden">
+            <h2 class="text-xl font-bold">👁️ Observers</h2>
+            @foreach ($observers ?? [] as $observer)
+                @include('atlas::exports.partials.observer-card', ['observer' => $observer])
             @endforeach
         </div>
     </div>

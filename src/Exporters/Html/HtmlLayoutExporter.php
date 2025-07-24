@@ -25,6 +25,11 @@ class HtmlLayoutExporter
         $controllersData = [];
         $resourcesData = [];
         $jobsData = [];
+        $actionsData = [];
+        $policiesData = [];
+        $rulesData = [];
+        $listenersData = [];
+        $observersData = [];
 
         if (isset($data['models']) && is_array($data['models']) && isset($data['models']['data'])) {
             $modelsData = $data['models']['data'];
@@ -70,6 +75,26 @@ class HtmlLayoutExporter
             $jobsData = $data['jobs']['data'];
         }
 
+        if (isset($data['actions']) && is_array($data['actions']) && isset($data['actions']['data'])) {
+            $actionsData = $data['actions']['data'];
+        }
+
+        if (isset($data['policies']) && is_array($data['policies']) && isset($data['policies']['data'])) {
+            $policiesData = $data['policies']['data'];
+        }
+
+        if (isset($data['rules']) && is_array($data['rules']) && isset($data['rules']['data'])) {
+            $rulesData = $data['rules']['data'];
+        }
+
+        if (isset($data['listeners']) && is_array($data['listeners']) && isset($data['listeners']['data'])) {
+            $listenersData = $data['listeners']['data'];
+        }
+
+        if (isset($data['observers']) && is_array($data['observers']) && isset($data['observers']['data'])) {
+            $observersData = $data['observers']['data'];
+        }
+
         return View::make('atlas::exports.layout', [
             'models' => $modelsData,
             'commands' => $commandsData,
@@ -82,6 +107,11 @@ class HtmlLayoutExporter
             'controllers' => $controllersData,
             'resources' => $resourcesData,
             'jobs' => $jobsData,
+            'actions' => $actionsData,
+            'policies' => $policiesData,
+            'rules' => $rulesData,
+            'listeners' => $listenersData,
+            'observers' => $observersData,
         ])->render();
     }
 }
