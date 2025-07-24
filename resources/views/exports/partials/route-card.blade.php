@@ -139,8 +139,22 @@
     </div>
 
     {{-- Footer --}}
+    @php
+        $footerClass = 'Route';
+        $footerFile = 'Route Definition';
+        
+        if ($item['is_closure']) {
+            $footerClass = 'Closure';
+            $footerFile = 'Inline Closure';
+        } else {
+            if (!empty($item['controller'])) {
+                $footerClass = $item['controller'];
+                $footerFile = $item['controller_file'] ?? ($item['file'] ?? 'Controller File');
+            }
+        }
+    @endphp
     @include('atlas::exports.partials.common.card-footer', [
-        'class' => $item['is_closure'] ? 'Closure' : ($item['controller'] ?? 'N/A'),
-        'file' => $item['is_closure'] ? 'Inline Closure' : ($item['file'] ?? 'N/A')
+        'class' => $footerClass,
+        'file' => $footerFile
     ])
 </div>
