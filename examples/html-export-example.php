@@ -3,11 +3,13 @@
 /**
  * Laravel Atlas - HTML Export Example
  *
- * This example demonstrates how to generate interactive HTML reports:
+ * This example demonstrates how to generate interactive HTML reports for all 16 component types:
  * - Complete architecture dashboard
  * - Component-specific HTML reports
  * - Interactive features (dark mode, responsive design)
  * - Professional styling with Tailwind CSS
+ * - All 16 component types: models, routes, commands, services, notifications, middlewares, 
+ *   form_requests, events, controllers, resources, jobs, actions, policies, rules, listeners, observers
  */
 
 use LaravelAtlas\Facades\Atlas;
@@ -43,6 +45,15 @@ $componentTypes = [
     'notifications' => 'Notification System',
     'middlewares' => 'HTTP Middlewares',
     'form_requests' => 'Form Request Validation',
+    'events' => 'Event System',
+    'controllers' => 'Controller Classes',
+    'resources' => 'API Resources',
+    'jobs' => 'Queue Jobs',
+    'actions' => 'Action Classes',
+    'policies' => 'Authorization Policies',
+    'rules' => 'Validation Rules',
+    'listeners' => 'Event Listeners',
+    'observers' => 'Model Observers',
 ];
 
 $componentReports = [];
@@ -126,6 +137,15 @@ foreach ($componentTypes as $type => $description) {
         'notifications' => '📢',
         'middlewares' => '🛡️',
         'form_requests' => '📋',
+        'events' => '⚡',
+        'controllers' => '🎮',
+        'resources' => '🔄',
+        'jobs' => '⚙️',
+        'actions' => '🎯',
+        'policies' => '🔐',
+        'rules' => '✅',
+        'listeners' => '👂',
+        'observers' => '👁️',
     ][$type] ?? '📄';
     
     $indexHtml .= <<<HTML

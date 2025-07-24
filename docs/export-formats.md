@@ -1,6 +1,6 @@
 # Export Formats
 
-Laravel Atlas supports multiple export formats for different use cases and workflows.
+Laravel Atlas supports 3 export formats for different use cases and workflows.
 
 ## Available Formats
 
@@ -9,7 +9,7 @@ Laravel Atlas supports multiple export formats for different use cases and workf
 
 ```bash
 # Generate JSON export
-php artisan atlas:generate --format=json --output=storage/atlas/map.json
+php artisan atlas:export --format=json --output=storage/atlas/map.json
 
 # Programmatic usage
 $jsonData = Atlas::export('models', 'json');
@@ -22,15 +22,15 @@ $data = json_decode($jsonData, true);
 - Perfect for API consumption
 - Suitable for custom processing
 
-### 2. HTML Export ⭐ **NEW**
+### 2. HTML Export ⭐
 **Best for**: Interactive documentation, team reviews, visual presentations
 
 ```bash
 # Generate complete HTML dashboard
-php artisan atlas:generate --format=html --output=public/docs/architecture.html
+php artisan atlas:export --format=html --output=public/docs/architecture.html
 
 # Component-specific HTML reports
-php artisan atlas:generate --type=models --format=html --output=public/docs/models.html
+php artisan atlas:export --type=models --format=html --output=public/docs/models.html
 ```
 
 **Features:**
@@ -59,41 +59,28 @@ php artisan atlas:generate --type=models --format=html --output=public/docs/mode
 </html>
 ```
 
-### 3. Markdown Export
-**Best for**: Documentation, README files, static site generators
+### 3. PDF Export 📄 **NEW**
+**Best for**: Professional documentation, presentations, compliance reports
 
 ```bash
-# Generate markdown documentation
-php artisan atlas:generate --format=markdown --output=docs/ARCHITECTURE.md
+# Generate PDF documentation
+php artisan atlas:export --format=pdf --output=docs/ARCHITECTURE.pdf
 
 # Programmatic usage
-$markdownDoc = Atlas::export('routes', 'markdown');
-file_put_contents('docs/routes.md', $markdownDoc);
+$pdfDoc = Atlas::export('routes', 'pdf');
+file_put_contents('docs/routes.pdf', $pdfDoc);
 ```
 
 **Features:**
-- Human-readable format
-- GitHub/GitLab compatible
-- Perfect for README files
-- Static site generator friendly
+- 📄 **Professional Layout** - Clean, enterprise-ready document formatting
+- 📊 **Comprehensive Coverage** - All 16 component types in structured sections
+- 🎨 **Optimized for Print** - A4 format with proper page breaks and typography
+- 📝 **Complete Documentation** - Detailed component information with metadata
+- 🔧 **Self-contained** - Complete PDF files ready for sharing and archiving
 
-### 4. PHP Export
-**Best for**: Advanced processing, Laravel integration, data manipulation
-
-```bash
-# Generate PHP code export
-php artisan atlas:generate --format=php --output=storage/atlas/map.php
-
-# Programmatic usage
-$phpData = Atlas::export('services', 'php');
-file_put_contents('storage/atlas/services.php', $phpData);
-```
-
-**Features:**
-- Native PHP data structures
-- Include in other PHP scripts
-- Perfect for advanced processing
-- Laravel-friendly format
+**Requirements:**
+- `dompdf/dompdf` package (included as suggested dependency)
+- `ext-gd` PHP extension for image processing
 
 ## Export Examples
 
@@ -101,26 +88,35 @@ file_put_contents('storage/atlas/services.php', $phpData);
 
 ```bash
 # Export all components to different formats
-php artisan atlas:generate --format=json --output=reports/architecture.json
-php artisan atlas:generate --format=html --output=reports/architecture.html
-php artisan atlas:generate --format=markdown --output=reports/ARCHITECTURE.md
-php artisan atlas:generate --format=php --output=reports/architecture.php
+php artisan atlas:export --format=json --output=reports/architecture.json
+php artisan atlas:export --format=html --output=reports/architecture.html
+php artisan atlas:export --format=pdf --output=reports/ARCHITECTURE.pdf
 ```
 
 ### Component-Specific Exports
 
 ```bash
 # Models documentation
-php artisan atlas:generate --type=models --format=html --output=docs/models.html
-php artisan atlas:generate --type=models --format=markdown --output=docs/models.md
+php artisan atlas:export --type=models --format=html --output=docs/models.html
+php artisan atlas:export --type=models --format=pdf --output=docs/models.pdf
 
 # Routes mapping
-php artisan atlas:generate --type=routes --format=html --output=docs/routes.html
-php artisan atlas:generate --type=routes --format=json --output=api/routes.json
+php artisan atlas:export --type=routes --format=html --output=docs/routes.html
+php artisan atlas:export --type=routes --format=json --output=api/routes.json
 
 # Services documentation
-php artisan atlas:generate --type=services --format=html --output=docs/services.html
-php artisan atlas:generate --type=services --format=markdown --output=docs/services.md
+php artisan atlas:export --type=services --format=html --output=docs/services.html
+php artisan atlas:export --type=services --format=pdf --output=docs/services.pdf
+
+# All 16 component types
+php artisan atlas:export --type=events --format=html --output=docs/events.html
+php artisan atlas:export --type=controllers --format=pdf --output=docs/controllers.pdf
+php artisan atlas:export --type=jobs --format=json --output=api/jobs.json
+php artisan atlas:export --type=actions --format=html --output=docs/actions.html
+php artisan atlas:export --type=policies --format=pdf --output=docs/policies.pdf
+php artisan atlas:export --type=rules --format=html --output=docs/rules.html
+php artisan atlas:export --type=listeners --format=json --output=api/listeners.json
+php artisan atlas:export --type=observers --format=pdf --output=docs/observers.pdf
 ```
 
 ### Programmatic Export
@@ -132,23 +128,140 @@ use LaravelAtlas\Facades\Atlas;
 $htmlReport = Atlas::export('all', 'html');
 file_put_contents('public/atlas/architecture.html', $htmlReport);
 
-// Generate component-specific reports
-$components = ['models', 'routes', 'commands', 'services', 'notifications', 'middlewares', 'form_requests'];
+// Generate comprehensive PDF documentation
+$pdfReport = Atlas::export('all', 'pdf');
+file_put_contents('docs/architecture.pdf', $pdfReport);
+
+// Generate component-specific reports for all 16 component types
+$components = ['models', 'routes', 'commands', 'services', 'notifications', 'middlewares', 
+               'form_requests', 'events', 'controllers', 'resources', 'jobs', 'actions', 
+               'policies', 'rules', 'listeners', 'observers'];
 
 foreach ($components as $component) {
     // HTML reports for visual documentation
     $html = Atlas::export($component, 'html');
     file_put_contents("public/docs/{$component}.html", $html);
     
-    // Markdown for README inclusion
-    $markdown = Atlas::export($component, 'markdown');
-    file_put_contents("docs/{$component}.md", $markdown);
+    // PDF for professional documentation
+    $pdf = Atlas::export($component, 'pdf');
+    file_put_contents("docs/pdf/{$component}.pdf", $pdf);
     
     // JSON for API consumption
     $json = Atlas::export($component, 'json');
     file_put_contents("api/atlas/{$component}.json", $json);
 }
 ```
+
+## HTML Export Features in Detail
+
+### Interactive Dashboard
+The HTML export creates a complete interactive dashboard with:
+
+1. **Professional Header**
+   - Project name and description
+   - Generation timestamp
+   - Dark mode toggle
+
+2. **Navigation Sidebar**
+   - Component type navigation
+   - Live component counts
+   - Easy section switching
+
+3. **Component Sections**
+   - Detailed component cards
+   - Syntax-highlighted code examples
+   - Collapsible detailed information
+   - Responsive layout
+
+4. **Modern Styling**
+   - Tailwind CSS framework
+   - Dark mode support
+   - Professional appearance
+   - Mobile-optimized
+
+### Example HTML Component Card
+
+```html
+<div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+    <div class="flex items-center justify-between mb-2">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">User Model</h3>
+        <span class="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded text-sm">
+            Eloquent Model
+        </span>
+    </div>
+    <p class="text-gray-600 dark:text-gray-300 text-sm mb-3">User authentication and profile management</p>
+    
+    <!-- Detailed information sections -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Attributes, relationships, methods, etc. -->
+    </div>
+</div>
+```
+
+## PDF Export Features in Detail
+
+### Professional Documentation
+The PDF export creates enterprise-ready documentation with:
+
+1. **Document Structure**
+   - Professional header with project information
+   - Table of contents with component sections
+   - Proper page breaks and formatting
+   - A4 optimized layout
+
+2. **Component Documentation**
+   - Structured sections for each component type
+   - Detailed component information and metadata
+   - Code examples and relationships
+   - Dependency mapping
+
+3. **Typography and Layout**
+   - Clean, readable fonts
+   - Professional spacing and margins
+   - Consistent styling throughout
+   - Print-optimized formatting
+
+4. **Self-contained Document**
+   - Complete PDF with all information
+   - No external dependencies
+   - Suitable for sharing and archiving
+   - Compatible with document management systems
+
+## Use Cases by Format
+
+### Development Teams
+- **HTML**: Team reviews, architecture presentations, onboarding documentation
+- **PDF**: Professional presentations, compliance reports, archived documentation
+- **JSON**: API integration, automated analysis, data processing
+
+### CI/CD Integration
+```bash
+# Generate documentation in CI/CD pipeline
+php artisan atlas:export --format=html --output=public/docs/architecture.html
+php artisan atlas:export --format=json --output=api/architecture.json
+php artisan atlas:export --format=pdf --output=docs/ARCHITECTURE.pdf
+
+# Deploy HTML documentation
+cp public/docs/architecture.html /var/www/html/docs/
+```
+
+### Enterprise Documentation
+```bash
+# Generate comprehensive documentation suite
+php artisan atlas:export --format=html --output=enterprise/architecture-dashboard.html
+php artisan atlas:export --format=pdf --output=enterprise/architecture-report.pdf
+php artisan atlas:export --format=json --output=enterprise/architecture-data.json
+```
+
+## Customization
+
+All export formats can be customized:
+
+- **HTML**: Modify Blade templates in `resources/views/exports/`
+- **PDF**: Custom styling and layout options
+- **JSON**: Data structure customization
+
+See the [API Reference](api-reference.md) for detailed customization options.
 
 ## HTML Export Features in Detail
 

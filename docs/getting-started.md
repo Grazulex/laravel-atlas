@@ -22,48 +22,35 @@ This creates a `config/atlas.php` file where you can customize Atlas behavior.
 
 ## Your First Atlas Report
 
-### 1. Quick Start - JSON Export
-
-Generate a basic JSON report of your application:
-
-```bash
-php artisan atlas:generate
-```
-
-This scans all available components and outputs JSON data to the console.
-
-### 2. Interactive HTML Dashboard
+### 1. Quick Start - HTML Interactive Dashboard
 
 Generate an interactive HTML dashboard:
 
 ```bash
-php artisan atlas:generate --format=html --output=public/atlas/architecture.html
+php artisan atlas:export
 ```
 
-Open `public/atlas/architecture.html` in your browser to see:
-- 🌓 Dark mode toggle
-- 📱 Responsive navigation
-- 📊 Component cards with details
-- 🎨 Professional styling
+This scans all available components and generates an HTML dashboard with dark mode support.
 
-### 3. Component-Specific Analysis
+### 2. Generate Specific Component Reports
 
-Analyze specific component types:
+Generate specific component analysis:
 
 ```bash
-# Models with relationships
-php artisan atlas:generate --type=models --format=html --output=docs/models.html
+php artisan atlas:export --type=models --format=html --output=docs/models.html
+```
 
-# Routes with middleware
-php artisan atlas:generate --type=routes --format=markdown --output=docs/routes.md
+### 3. Generate PDF Documentation
 
-# Services with dependencies
-php artisan atlas:generate --type=services --format=json --output=api/services.json
+Generate professional PDF documentation:
+
+```bash
+php artisan atlas:export --format=pdf --output=docs/architecture.pdf
 ```
 
 ## Available Component Types
 
-Laravel Atlas analyzes **7 component types**:
+Laravel Atlas analyzes **16 component types**:
 
 | Component | Description | Example Use Case |
 |-----------|-------------|------------------|
@@ -74,6 +61,15 @@ Laravel Atlas analyzes **7 component types**:
 | **notifications** | Notification classes | Communication flow analysis |
 | **middlewares** | HTTP middleware | Security and filtering analysis |
 | **form_requests** | Form request validation | Input validation documentation |
+| **events** | Event classes | Event-driven architecture mapping |
+| **controllers** | Controller classes | Request handling documentation |
+| **resources** | API resource classes | API response transformation |
+| **jobs** | Queue job classes | Background processing documentation |
+| **actions** | Single action controllers | Action-oriented architecture |
+| **policies** | Authorization policies | Access control documentation |
+| **rules** | Custom validation rules | Validation logic documentation |
+| **listeners** | Event listeners | Event handling documentation |
+| **observers** | Model observers | Model lifecycle documentation |
 
 ## Export Formats
 
@@ -85,16 +81,16 @@ Choose the right format for your needs:
 - **Use case**: Architecture reviews, onboarding documentation
 
 ```bash
-php artisan atlas:generate --format=html --output=docs/architecture.html
+php artisan atlas:export --format=html --output=docs/architecture.html
 ```
 
-### Markdown - Static Documentation
-- **Best for**: README files, static sites, version control
-- **Features**: GitHub-compatible, human-readable
-- **Use case**: Documentation sites, README inclusion
+### PDF - Professional Documentation
+- **Best for**: Presentations, compliance reports, archival documentation
+- **Features**: Professional layout, A4 format, complete documentation
+- **Use case**: Business presentations, compliance documentation
 
 ```bash
-php artisan atlas:generate --format=markdown --output=docs/ARCHITECTURE.md
+php artisan atlas:export --format=pdf --output=docs/architecture.pdf
 ```
 
 ### JSON - Data Processing
@@ -103,16 +99,7 @@ php artisan atlas:generate --format=markdown --output=docs/ARCHITECTURE.md
 - **Use case**: CI/CD integration, custom analysis tools
 
 ```bash
-php artisan atlas:generate --format=json --output=api/architecture.json
-```
-
-### PHP - Laravel Integration
-- **Best for**: Laravel integration, advanced processing
-- **Features**: Native PHP data structures
-- **Use case**: Custom Laravel commands, data manipulation
-
-```bash
-php artisan atlas:generate --format=php --output=storage/atlas/architecture.php
+php artisan atlas:export --format=json --output=api/architecture.json
 ```
 
 ## Basic Usage Examples
@@ -121,16 +108,16 @@ php artisan atlas:generate --format=php --output=storage/atlas/architecture.php
 
 ```bash
 # Generate complete architecture analysis
-php artisan atlas:generate --type=all --format=html --output=public/docs/architecture.html
+php artisan atlas:export --type=all --format=html --output=public/docs/architecture.html
 
 # Generate specific component documentation
-php artisan atlas:generate --type=models --format=markdown --output=docs/models.md
-php artisan atlas:generate --type=routes --format=json --output=api/routes.json
+php artisan atlas:export --type=models --format=pdf --output=docs/models.pdf
+php artisan atlas:export --type=routes --format=json --output=api/routes.json
 
 # Generate multiple formats
-php artisan atlas:generate --format=html --output=reports/architecture.html
-php artisan atlas:generate --format=markdown --output=reports/architecture.md
-php artisan atlas:generate --format=json --output=reports/architecture.json
+php artisan atlas:export --format=html --output=reports/architecture.html
+php artisan atlas:export --format=pdf --output=reports/architecture.pdf
+php artisan atlas:export --format=json --output=reports/architecture.json
 ```
 
 ### Programmatic Usage
@@ -145,12 +132,12 @@ $services = Atlas::scan('services');
 
 // Generate reports
 $htmlReport = Atlas::export('all', 'html');
-$markdownDoc = Atlas::export('models', 'markdown');
+$pdfDoc = Atlas::export('models', 'pdf');
 $jsonData = Atlas::export('routes', 'json');
 
 // Save to files
 file_put_contents('public/atlas/dashboard.html', $htmlReport);
-file_put_contents('docs/models.md', $markdownDoc);
+file_put_contents('docs/models.pdf', $pdfDoc);
 file_put_contents('api/routes.json', $jsonData);
 ```
 
@@ -166,8 +153,8 @@ return [
         'output_path' => env('ATLAS_OUTPUT_PATH', base_path('atlas')),
         'formats' => [
             'json' => env('ATLAS_FORMAT_JSON', true),
-            'markdown' => env('ATLAS_FORMAT_MARKDOWN', true),
             'html' => env('ATLAS_FORMAT_HTML', true),
+            'pdf' => env('ATLAS_FORMAT_PDF', true),
         ],
     ],
     
