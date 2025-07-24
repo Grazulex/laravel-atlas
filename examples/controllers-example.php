@@ -2,7 +2,7 @@
 
 /**
  * Laravel Atlas - Controllers Analysis Example
- * 
+ *
  * This example demonstrates how to analyze Laravel controller classes
  * using Laravel Atlas.
  */
@@ -18,26 +18,26 @@ echo "===============================================\n\n";
 echo "1. Scanning controllers in the application...\n";
 try {
     $controllersData = Atlas::scan('controllers');
-    
-    echo "   ✅ Found " . count($controllersData['data']) . " controller classes\n";
+
+    echo '   ✅ Found ' . count($controllersData['data']) . " controller classes\n";
     echo "   📊 Controller analysis completed\n\n";
-    
+
     // Display some controller information
-    if (!empty($controllersData['data'])) {
+    if (! empty($controllersData['data'])) {
         echo "   📋 Controller Classes Found:\n";
         foreach (array_slice($controllersData['data'], 0, 3) as $controller) {
-            echo "      • " . ($controller['name'] ?? 'Unknown') . "\n";
+            echo '      • ' . ($controller['name'] ?? 'Unknown') . "\n";
             if (isset($controller['actions'])) {
-                echo "        Actions: " . count($controller['actions']) . "\n";
+                echo '        Actions: ' . count($controller['actions']) . "\n";
             }
             if (isset($controller['middleware'])) {
-                echo "        Middleware: " . count($controller['middleware']) . "\n";
+                echo '        Middleware: ' . count($controller['middleware']) . "\n";
             }
         }
         echo "\n";
     }
 } catch (Exception $e) {
-    echo "   ❌ Error: " . $e->getMessage() . "\n\n";
+    echo '   ❌ Error: ' . $e->getMessage() . "\n\n";
 }
 
 // Example 2: Advanced controllers scanning with options
@@ -48,11 +48,11 @@ try {
         'include_dependencies' => true,
         'include_middleware' => true,
     ]);
-    
+
     echo "   ✅ Detailed controllers analysis completed\n";
-    echo "   📊 Total controllers with detailed info: " . count($detailedControllersData['data']) . "\n\n";
+    echo '   📊 Total controllers with detailed info: ' . count($detailedControllersData['data']) . "\n\n";
 } catch (Exception $e) {
-    echo "   ❌ Error: " . $e->getMessage() . "\n\n";
+    echo '   ❌ Error: ' . $e->getMessage() . "\n\n";
 }
 
 // Example 3: Export controllers to different formats
@@ -62,15 +62,15 @@ echo "3. Exporting controllers to different formats...\n";
 try {
     $jsonOutput = Atlas::export('controllers', 'json');
     $jsonFile = __DIR__ . '/../storage/atlas/controllers-analysis.json';
-    
-    if (!is_dir(dirname($jsonFile))) {
+
+    if (! is_dir(dirname($jsonFile))) {
         mkdir(dirname($jsonFile), 0755, true);
     }
     file_put_contents($jsonFile, $jsonOutput);
-    
+
     echo "   ✅ JSON export saved to: {$jsonFile}\n";
 } catch (Exception $e) {
-    echo "   ❌ JSON export error: " . $e->getMessage() . "\n";
+    echo '   ❌ JSON export error: ' . $e->getMessage() . "\n";
 }
 
 // HTML Export
@@ -78,10 +78,10 @@ try {
     $htmlOutput = Atlas::export('controllers', 'html');
     $htmlFile = __DIR__ . '/../storage/atlas/controllers-analysis.html';
     file_put_contents($htmlFile, $htmlOutput);
-    
+
     echo "   ✅ HTML export saved to: {$htmlFile}\n";
 } catch (Exception $e) {
-    echo "   ❌ HTML export error: " . $e->getMessage() . "\n";
+    echo '   ❌ HTML export error: ' . $e->getMessage() . "\n";
 }
 
 // PDF Export
@@ -89,10 +89,10 @@ try {
     $pdfOutput = Atlas::export('controllers', 'pdf');
     $pdfFile = __DIR__ . '/../storage/atlas/controllers-analysis.pdf';
     file_put_contents($pdfFile, $pdfOutput);
-    
+
     echo "   ✅ PDF export saved to: {$pdfFile}\n";
 } catch (Exception $e) {
-    echo "   ❌ PDF export error: " . $e->getMessage() . "\n";
+    echo '   ❌ PDF export error: ' . $e->getMessage() . "\n";
 }
 
 echo "\n4. Controllers Analysis Information:\n";

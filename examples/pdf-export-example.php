@@ -2,7 +2,7 @@
 
 /**
  * Laravel Atlas - PDF Export Example
- * 
+ *
  * This example demonstrates how to generate professional PDF documentation
  * using Laravel Atlas's PDF export functionality.
  */
@@ -18,18 +18,18 @@ echo "=====================================\n\n";
 echo "1. Generating comprehensive PDF documentation...\n";
 try {
     $pdfContent = Atlas::export('all', 'pdf');
-    
+
     // Save to file
     $outputPath = __DIR__ . '/../storage/atlas/complete-architecture.pdf';
-    if (!is_dir(dirname($outputPath))) {
+    if (! is_dir(dirname($outputPath))) {
         mkdir(dirname($outputPath), 0755, true);
     }
     file_put_contents($outputPath, $pdfContent);
-    
+
     echo "   ✅ Complete PDF documentation saved to: {$outputPath}\n";
-    echo "   📄 Size: " . number_format(strlen($pdfContent)) . " bytes\n\n";
+    echo '   📄 Size: ' . number_format(strlen($pdfContent)) . " bytes\n\n";
 } catch (Exception $e) {
-    echo "   ❌ Error: " . $e->getMessage() . "\n\n";
+    echo '   ❌ Error: ' . $e->getMessage() . "\n\n";
 }
 
 // Example 2: Generate component-specific PDF reports
@@ -40,12 +40,12 @@ foreach ($components as $component) {
     try {
         echo "   📊 Generating {$component} PDF report...\n";
         $pdfContent = Atlas::export($component, 'pdf');
-        
+
         $outputPath = __DIR__ . "/../storage/atlas/{$component}-report.pdf";
         file_put_contents($outputPath, $pdfContent);
-        
+
         echo "      ✅ {$component} PDF saved to: {$outputPath}\n";
-        echo "      📄 Size: " . number_format(strlen($pdfContent)) . " bytes\n";
+        echo '      📄 Size: ' . number_format(strlen($pdfContent)) . " bytes\n";
     } catch (Exception $e) {
         echo "      ❌ Error generating {$component} PDF: " . $e->getMessage() . "\n";
     }

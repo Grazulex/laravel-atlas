@@ -8,7 +8,7 @@
  * - Component-specific HTML reports
  * - Interactive features (dark mode, responsive design)
  * - Professional styling with Tailwind CSS
- * - All 16 component types: models, routes, commands, services, notifications, middlewares, 
+ * - All 16 component types: models, routes, commands, services, notifications, middlewares,
  *   form_requests, events, controllers, resources, jobs, actions, policies, rules, listeners, observers
  */
 
@@ -59,17 +59,17 @@ $componentTypes = [
 $componentReports = [];
 foreach ($componentTypes as $type => $description) {
     echo "Generating {$description} HTML report...\n";
-    
+
     $htmlContent = Atlas::export($type, 'html');
     $filename = "{$outputDir}/{$type}-report.html";
-    
+
     file_put_contents($filename, $htmlContent);
     $componentReports[$type] = [
         'filename' => $filename,
         'size' => strlen($htmlContent),
         'description' => $description,
     ];
-    
+
     echo "✅ Saved: {$filename} ({$componentReports[$type]['size']} characters)\n";
 }
 
@@ -147,7 +147,7 @@ foreach ($componentTypes as $type => $description) {
         'listeners' => '👂',
         'observers' => '👁️',
     ][$type] ?? '📄';
-    
+
     $indexHtml .= <<<HTML
                 
                 <!-- {$description} Report -->
@@ -161,7 +161,7 @@ foreach ($componentTypes as $type => $description) {
 HTML;
 }
 
-$indexHtml .= <<<HTML
+$indexHtml .= <<<'HTML'
             </div>
             
             <div class="mt-8 bg-gray-50 rounded-lg p-6">

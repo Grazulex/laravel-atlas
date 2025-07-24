@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Exporters\Pdf;
 
-use Dompdf\Options;
 use Dompdf\Dompdf;
+use Dompdf\Options;
 use Illuminate\Support\Facades\View;
 
 class PdfLayoutExporter
