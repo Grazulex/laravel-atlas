@@ -37,7 +37,12 @@
             <div class="text-xs space-y-1">
                 @foreach ($items as $method)
                     <div class="flex items-center justify-between">
-                        <span class="text-gray-700 dark:text-gray-300 font-mono">{{ $method['name'] }}()</span>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-gray-700 dark:text-gray-300 font-mono">{{ $method['name'] }}()</span>
+                            @if(isset($method['source']) && $method['source'] !== 'class')
+                                <span class="text-xs text-gray-500 italic">({{ $method['source'] }})</span>
+                            @endif
+                        </div>
                         <span class="text-indigo-600 dark:text-indigo-400 font-mono">{{ $method['returnType'] }}</span>
                     </div>
                 @endforeach

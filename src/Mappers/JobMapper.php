@@ -205,20 +205,39 @@ class JobMapper implements ComponentMapper
         $methods = [];
         
         foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
-            // Ne garder que les méthodes définies dans cette classe (pas héritées)
-            if ($method->getDeclaringClass()->getName() !== $reflection->getName()) {
-                continue;
-            }
-
             // Ignorer les méthodes magiques
             if (str_starts_with($method->getName(), '__')) {
                 continue;
+            }
+
+            $source = 'class';
+            $declaringClass = $method->getDeclaringClass();
+            
+            // Déterminer la source de la méthode
+            if ($declaringClass->getName() !== $reflection->getName()) {
+                // Vérifier si c'est un trait
+                foreach ($reflection->getTraitNames() as $traitName) {
+                    if (str_contains($traitName, class_basename($declaringClass->getName()))) {
+                        $source = 'trait: ' . class_basename($traitName);
+                        break;
+                    }
+                }
+                
+                // Si ce n'est pas un trait, c'est probablement une classe parente ou une interface
+                if ($source === 'class') {
+                    if ($declaringClass->isInterface()) {
+                        $source = 'interface: ' . class_basename($declaringClass->getName());
+                    } else {
+                        $source = 'parent: ' . class_basename($declaringClass->getName());
+                    }
+                }
             }
 
             $methods[] = [
                 'name' => $method->getName(),
                 'returnType' => $this->getMethodReturnType($method),
                 'isStatic' => $method->isStatic(),
+                'source' => $source,
             ];
         }
 
