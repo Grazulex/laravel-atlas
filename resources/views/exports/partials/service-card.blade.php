@@ -1,5 +1,5 @@
 <div class="bg-white rounded-lg shadow-sm p-4 mb-4 border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-    {{-- Header --}}
+{{-- Header --}}
     @include('atlas::exports.partials.common.card-header', [
         'icon' => '🔧',
         'title' => class_basename($service['class']),
