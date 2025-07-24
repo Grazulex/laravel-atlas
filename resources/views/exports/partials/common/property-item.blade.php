@@ -41,9 +41,14 @@
                             <span class="text-gray-700 dark:text-gray-300 font-mono">{{ $method['name'] }}()</span>
                             <span class="text-indigo-600 dark:text-indigo-400 font-mono">{{ $method['returnType'] }}</span>
                         </div>
-                        @if(isset($method['source']) && $method['source'] !== 'class')
-                            <div class="text-xs text-gray-500 italic mt-0.5">
-                                {{ $method['source'] }}
+                        {{-- Debug: afficher toujours la source --}}
+                        @if(isset($method['source']))
+                            <div class="text-xs {{ $method['source'] === 'class' ? 'text-green-500' : 'text-orange-500' }} italic mt-0.5">
+                                Source: {{ $method['source'] }}
+                            </div>
+                        @else
+                            <div class="text-xs text-red-500 italic mt-0.5">
+                                No source info
                             </div>
                         @endif
                     </div>
