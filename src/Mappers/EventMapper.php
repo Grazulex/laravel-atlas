@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Mappers;
 
-use Illuminate\Contracts\Events\ShouldBroadcast;
 use Illuminate\Support\Facades\File;
 use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
@@ -68,9 +67,11 @@ class EventMapper implements ComponentMapper
             }
         }
 
-        // Vérifier si implémente ShouldBroadcast
-        if ($reflection->implementsInterface(ShouldBroadcast::class)) {
-            return true;
+        // Vérifier si implémente une interface de broadcast (sans forcer l'import)
+        foreach ($reflection->getInterfaceNames() as $interface) {
+            if (str_contains($interface, 'ShouldBroadcast')) {
+                return true;
+            }
         }
 
         // Vérifier si c'est dans le namespace Events
@@ -99,11 +100,21 @@ class EventMapper implements ComponentMapper
             'class' => $class,
             'name' => $reflection->getShortName(),
             'properties' => $this->extractProperties($reflection),
-            'broadcastable' => $reflection->implementsInterface(ShouldBroadcast::class),
+            'broadcastable' => $this->isBroadcastable($reflection),
             'channels' => $this->extractBroadcastChannels($source),
             'listeners' => $this->findListeners($class),
             'flow' => $this->analyzeFlow($source),
         ];
+    }
+
+    protected function isBroadcastable(ReflectionClass $reflection): bool
+    {
+        foreach ($reflection->getInterfaceNames() as $interface) {
+            if (str_contains($interface, 'ShouldBroadcast')) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
