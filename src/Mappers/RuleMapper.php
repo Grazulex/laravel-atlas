@@ -28,37 +28,15 @@ class RuleMapper implements ComponentMapper
         $recursive = $options['recursive'] ?? true;
         $seen = [];
 
-        echo "RuleMapper Debug:\n";
-        echo "Default paths: " . json_encode($paths) . "\n";
-        echo "app_path('Rules'): " . app_path('Rules') . "\n";
-        echo "base_path(): " . base_path() . "\n";
-
         foreach ($paths as $path) {
-            echo "Checking path: $path\n";
-            echo "Path exists: " . (is_dir($path) ? 'YES' : 'NO') . "\n";
-            
             if (! is_dir($path)) {
-                echo "Skipping non-existent path\n";
                 continue;
             }
 
             $files = $recursive ? File::allFiles($path) : File::files($path);
-            echo "Files found: " . count($files) . "\n";
 
             foreach ($files as $file) {
-                // Debug: afficher tous les fichiers trouvés
-                echo "Checking file: " . $file->getRealPath() . "\n";
-                
                 $fqcn = ClassResolver::resolveFromPath($file->getRealPath());
-                echo "Resolved FQCN: " . ($fqcn ?: 'NULL') . "\n";
-                
-                if ($fqcn) {
-                    echo "Class exists: " . (class_exists($fqcn) ? 'YES' : 'NO') . "\n";
-                    if (class_exists($fqcn)) {
-                        echo "Implements rule: " . ($this->implementsRule($fqcn) ? 'YES' : 'NO') . "\n";
-                    }
-                }
-                echo "---\n";
 
                 if (
                     $fqcn &&
@@ -108,7 +86,7 @@ class RuleMapper implements ComponentMapper
             'file' => $filePath,
             'namespace' => $reflection->getNamespaceName(),
             'name' => $reflection->getShortName(),
-            'methods' => $this->extractMethods($reflection),
+            'dependencies' => $this->getDependencies($reflection),
             'implements' => $reflection->getInterfaceNames(),
             'message_method' => $reflection->hasMethod('message'),
             'is_abstract' => $reflection->isAbstract(),
@@ -117,30 +95,24 @@ class RuleMapper implements ComponentMapper
     }
 
     /**
-     * @return array<int, array<string, mixed>>
+     * @return array<string>
      */
-    protected function extractMethods(ReflectionClass $reflection): array
+    protected function getDependencies(ReflectionClass $reflection): array
     {
-        $methods = [];
+        if (!$reflection->hasMethod('__construct')) {
+            return [];
+        }
 
-        foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
-            if ($method->class === $reflection->getName() && !$method->isConstructor()) {
-                $methods[] = [
-                    'name' => $method->getName(),
-                    'parameters' => array_map(
-                        fn ($param) => [
-                            'name' => $param->getName(),
-                            'type' => $param->getType()?->__toString(),
-                            'has_default' => $param->isDefaultValueAvailable(),
-                        ],
-                        $method->getParameters()
-                    ),
-                    'return_type' => $method->getReturnType()?->__toString(),
-                    'is_static' => $method->isStatic(),
-                ];
+        $constructor = $reflection->getMethod('__construct');
+        $dependencies = [];
+
+        foreach ($constructor->getParameters() as $parameter) {
+            $type = $parameter->getType();
+            if ($type && !$type->isBuiltin() && method_exists($type, 'getName')) {
+                $dependencies[] = $type->getName();
             }
         }
 
-        return $methods;
+        return $dependencies;
     }
 }
