@@ -99,15 +99,20 @@ class HtmlLayoutExporter
         $projectName = 'Laravel Project';
         $projectDescription = 'Atlas - Code Architecture';
         $createdAt = date('d/m/Y H:i');
-        
+
         $composerPath = base_path('composer.json');
         if (file_exists($composerPath)) {
-            $composer = json_decode(file_get_contents($composerPath), true);
-            if (isset($composer['name'])) {
-                $projectName = $composer['name'];
-            }
-            if (isset($composer['description'])) {
-                $projectDescription = 'Atlas - ' . $composer['description'];
+            $composerContent = file_get_contents($composerPath);
+            if ($composerContent !== false) {
+                $composer = json_decode($composerContent, true);
+                if (is_array($composer)) {
+                    if (isset($composer['name'])) {
+                        $projectName = $composer['name'];
+                    }
+                    if (isset($composer['description'])) {
+                        $projectDescription = 'Atlas - ' . $composer['description'];
+                    }
+                }
             }
         }
 
