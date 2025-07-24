@@ -44,11 +44,10 @@ class PolicyMapper implements ComponentMapper
             $files = $recursive ? File::allFiles($path) : File::files($path);
 
             foreach ($files as $file) {
-                $fqcn = ClassResolver::resolveFromPath($file->getRealPath());
+                $fqcn = $this->resolveClassFromFile($file->getRealPath());
 
                 if (
                     $fqcn &&
-                    class_exists($fqcn) &&
                     ! isset($seen[$fqcn])
                 ) {
                     $seen[$fqcn] = true;
