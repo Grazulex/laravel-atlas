@@ -2,11 +2,11 @@
     {{-- Header --}}
     @include('atlas::exports.partials.common.card-header', [
         'icon' => '🎮',
-        'title' => class_basename($item['class']),
+        'title' => is_array($item['class']) ? (class_basename($item['class'][0] ?? '') ?: 'Unknown') : class_basename($item['class']),
         'badge' => 'Controller',
         'badgeColor' => 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200',
         'namespace' => $item['namespace'] ?? null,
-        'class' => $item['class']
+        'class' => is_array($item['class']) ? ($item['class'][0] ?? '') : $item['class']
     ])
 
     {{-- Description --}}
