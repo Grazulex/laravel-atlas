@@ -1,6 +1,6 @@
 {{-- Route Card Component --}}
 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-200">
-    @include('exports.partials.common.card-header', [
+    @include('atlas::exports.partials.common.card-header', [
         'icon' => '🛣️',
         'title' => $item['uri'] ?: '/',
         'subtitle' => $item['name'] ? 'Route: ' . $item['name'] : 'Unnamed route',
@@ -40,28 +40,28 @@
     <div class="p-6 space-y-6">
         {{-- Basic Route Information --}}
         <div class="grid md:grid-cols-2 gap-4">
-            @include('exports.partials.common.property-item', [
+            @include('atlas::exports.partials.common.property-item', [
                 'label' => 'URI Pattern',
                 'value' => $item['uri'] ?: '/',
                 'type' => 'code'
             ])
 
             @if ($item['name'])
-                @include('exports.partials.common.property-item', [
+                @include('atlas::exports.partials.common.property-item', [
                     'label' => 'Route Name',
                     'value' => $item['name'],
                     'type' => 'code'
                 ])
             @endif
 
-            @include('exports.partials.common.property-item', [
+            @include('atlas::exports.partials.common.property-item', [
                 'label' => 'HTTP Methods',
                 'value' => $item['methods'],
                 'type' => 'badge-list'
             ])
 
             @if ($item['prefix'])
-                @include('exports.partials.common.property-item', [
+                @include('atlas::exports.partials.common.property-item', [
                     'label' => 'Route Prefix',
                     'value' => $item['prefix'],
                     'type' => 'code'
@@ -103,7 +103,7 @@
         {{-- Middleware --}}
         @if (!empty($item['middleware']))
             <div>
-                @include('exports.partials.common.property-item', [
+                @include('atlas::exports.partials.common.property-item', [
                     'label' => 'Applied Middleware',
                     'value' => array_map(function($middleware) {
                         return is_string($middleware) ? $middleware : class_basename($middleware);
@@ -115,7 +115,7 @@
 
         {{-- Flow Section --}}
         @if (!empty($item['flow']))
-            @include('exports.partials.common.flow-section', [
+            @include('atlas::exports.partials.common.flow-section', [
                 'flow' => $item['flow'],
                 'type' => 'route'
             ])

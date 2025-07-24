@@ -1,6 +1,6 @@
 {{-- Controller Card Component --}}
 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-200">
-    @include('exports.partials.common.card-header', [
+    @include('atlas::exports.partials.common.card-header', [
         'icon' => '🎮',
         'title' => $item['name'],
         'subtitle' => $item['namespace'],
@@ -21,13 +21,13 @@
     <div class="p-6 space-y-6">
         {{-- Basic Information --}}
         <div class="grid md:grid-cols-2 gap-4">
-            @include('exports.partials.common.property-item', [
+            @include('atlas::exports.partials.common.property-item', [
                 'label' => 'File Location',
                 'value' => str_replace(base_path() . '/', '', $item['file']),
                 'type' => 'code'
             ])
 
-            @include('exports.partials.common.property-item', [
+            @include('atlas::exports.partials.common.property-item', [
                 'label' => 'Class',
                 'value' => $item['class'],
                 'type' => 'code'
@@ -37,7 +37,7 @@
         {{-- Traits --}}
         @if (!empty($item['traits']))
             <div>
-                @include('exports.partials.common.property-item', [
+                @include('atlas::exports.partials.common.property-item', [
                     'label' => 'Used Traits',
                     'value' => $item['traits'],
                     'type' => 'badge-list'
@@ -77,7 +77,7 @@
         {{-- Middlewares --}}
         @if (!empty($item['middlewares']))
             <div>
-                @include('exports.partials.common.property-item', [
+                @include('atlas::exports.partials.common.property-item', [
                     'label' => 'Applied Middlewares',
                     'value' => $item['middlewares'],
                     'type' => 'badge-list'
@@ -130,7 +130,7 @@
         {{-- Dependencies --}}
         @if (!empty($item['dependencies']))
             <div>
-                @include('exports.partials.common.property-item', [
+                @include('atlas::exports.partials.common.property-item', [
                     'label' => 'Class Dependencies',
                     'value' => $item['dependencies'],
                     'type' => 'badge-list'
@@ -140,7 +140,7 @@
 
         {{-- Flow Section --}}
         @if (!empty($item['flow']))
-            @include('exports.partials.common.flow-section', [
+            @include('atlas::exports.partials.common.flow-section', [
                 'flow' => $item['flow'],
                 'type' => 'controller'
             ])

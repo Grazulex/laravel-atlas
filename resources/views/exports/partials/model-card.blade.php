@@ -1,6 +1,6 @@
 {{-- Model Card Component --}}
 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-200">
-    @include('exports.partials.common.card-header', [
+    @include('atlas::exports.partials.common.card-header', [
         'icon' => '🧱',
         'title' => $item['name'],
         'subtitle' => $item['namespace'],
@@ -21,25 +21,25 @@
     <div class="p-6 space-y-6">
         {{-- Basic Information --}}
         <div class="grid md:grid-cols-2 gap-4">
-            @include('exports.partials.common.property-item', [
+            @include('atlas::exports.partials.common.property-item', [
                 'label' => 'Table Name',
                 'value' => $item['table'],
                 'type' => 'code'
             ])
 
-            @include('exports.partials.common.property-item', [
+            @include('atlas::exports.partials.common.property-item', [
                 'label' => 'Primary Key',
                 'value' => $item['primary_key'],
                 'type' => 'code'
             ])
 
-            @include('exports.partials.common.property-item', [
+            @include('atlas::exports.partials.common.property-item', [
                 'label' => 'File Location',
                 'value' => str_replace(base_path() . '/', '', $item['file']),
                 'type' => 'code'
             ])
 
-            @include('exports.partials.common.property-item', [
+            @include('atlas::exports.partials.common.property-item', [
                 'label' => 'Class',
                 'value' => $item['class'],
                 'type' => 'code'
@@ -49,13 +49,13 @@
         {{-- Fillable and Guarded --}}
         @if (!empty($item['fillable']) || !empty($item['guarded']))
             <div class="grid md:grid-cols-2 gap-4">
-                @include('exports.partials.common.property-item', [
+                @include('atlas::exports.partials.common.property-item', [
                     'label' => 'Fillable Fields',
                     'value' => $item['fillable'] ?? [],
                     'type' => 'badge-list'
                 ])
 
-                @include('exports.partials.common.property-item', [
+                @include('atlas::exports.partials.common.property-item', [
                     'label' => 'Guarded Fields',
                     'value' => $item['guarded'] ?? [],
                     'type' => 'badge-list'
@@ -66,7 +66,7 @@
         {{-- Casts --}}
         @if (!empty($item['casts']))
             <div>
-                @include('exports.partials.common.property-item', [
+                @include('atlas::exports.partials.common.property-item', [
                     'label' => 'Attribute Casts',
                     'value' => collect($item['casts'])->map(function($cast, $attribute) { 
                         return $attribute . ' → ' . $cast; 
@@ -79,7 +79,7 @@
         {{-- Relations --}}
         @if (!empty($item['relations']))
             <div>
-                @include('exports.partials.common.property-item', [
+                @include('atlas::exports.partials.common.property-item', [
                     'label' => 'Relationships',
                     'value' => $item['relations'],
                     'type' => 'relation-list'
@@ -116,7 +116,7 @@
         {{-- Boot Hooks --}}
         @if (!empty($item['booted_hooks']))
             <div>
-                @include('exports.partials.common.property-item', [
+                @include('atlas::exports.partials.common.property-item', [
                     'label' => 'Model Boot Hooks',
                     'value' => $item['booted_hooks'],
                     'type' => 'badge-list'
@@ -126,7 +126,7 @@
 
         {{-- Flow Section --}}
         @if (!empty($item['flow']))
-            @include('exports.partials.common.flow-section', [
+            @include('atlas::exports.partials.common.flow-section', [
                 'flow' => $item['flow'],
                 'type' => 'model'
             ])

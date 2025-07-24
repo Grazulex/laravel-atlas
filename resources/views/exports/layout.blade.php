@@ -393,7 +393,7 @@
                         
                         <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                             @foreach ($models as $model)
-                                @include('exports.partials.model-card', ['item' => $model])
+                                @include('atlas::exports.partials.model-card', ['item' => $model])
                             @endforeach
                         </div>
                     </div>
@@ -414,7 +414,7 @@
                         
                         <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                             @foreach ($controllers as $controller)
-                                @include('exports.partials.controller-card', ['item' => $controller])
+                                @include('atlas::exports.partials.controller-card', ['item' => $controller])
                             @endforeach
                         </div>
                     </div>
@@ -435,7 +435,7 @@
                         
                         <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                             @foreach ($routes as $route)
-                                @include('exports.partials.route-card', ['item' => $route])
+                                @include('atlas::exports.partials.route-card', ['item' => $route])
                             @endforeach
                         </div>
                     </div>
@@ -456,7 +456,7 @@
                         
                         <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                             @foreach ($commands as $command)
-                                @include('exports.partials.command-card', ['item' => $command])
+                                @include('atlas::exports.partials.command-card', ['item' => $command])
                             @endforeach
                         </div>
                     </div>
@@ -477,7 +477,7 @@
                         
                         <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                             @foreach ($services as $service)
-                                @include('exports.partials.service-card', ['item' => $service])
+                                @include('atlas::exports.partials.service-card', ['item' => $service])
                             @endforeach
                         </div>
                     </div>
@@ -498,7 +498,7 @@
                         
                         <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                             @foreach ($jobs as $job)
-                                @include('exports.partials.job-card', ['item' => $job])
+                                @include('atlas::exports.partials.job-card', ['item' => $job])
                             @endforeach
                         </div>
                     </div>
@@ -519,7 +519,7 @@
                         
                         <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                             @foreach ($events as $event)
-                                @include('exports.partials.event-card', ['item' => $event])
+                                @include('atlas::exports.partials.event-card', ['item' => $event])
                             @endforeach
                         </div>
                     </div>
@@ -540,7 +540,7 @@
                         
                         <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                             @foreach ($listeners as $listener)
-                                @include('exports.partials.listener-card', ['item' => $listener])
+                                @include('atlas::exports.partials.listener-card', ['item' => $listener])
                             @endforeach
                         </div>
                     </div>
@@ -561,7 +561,7 @@
                         
                         <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                             @foreach ($notifications as $notification)
-                                @include('exports.partials.notification-card', ['item' => $notification])
+                                @include('atlas::exports.partials.notification-card', ['item' => $notification])
                             @endforeach
                         </div>
                     </div>
@@ -582,7 +582,7 @@
                         
                         <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                             @foreach ($middlewares as $middleware)
-                                @include('exports.partials.middleware-card', ['item' => $middleware])
+                                @include('atlas::exports.partials.middleware-card', ['item' => $middleware])
                             @endforeach
                         </div>
                     </div>
@@ -603,7 +603,7 @@
                         
                         <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                             @foreach ($form_requests as $form_request)
-                                @include('exports.partials.form-request-card', ['item' => $form_request])
+                                @include('atlas::exports.partials.form-request-card', ['item' => $form_request])
                             @endforeach
                         </div>
                     </div>
@@ -624,7 +624,7 @@
                         
                         <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                             @foreach ($resources as $resource)
-                                @include('exports.partials.resource-card', ['item' => $resource])
+                                @include('atlas::exports.partials.resource-card', ['item' => $resource])
                             @endforeach
                         </div>
                     </div>
@@ -645,7 +645,7 @@
                         
                         <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                             @foreach ($policies as $policy)
-                                @include('exports.partials.policy-card', ['item' => $policy])
+                                @include('atlas::exports.partials.policy-card', ['item' => $policy])
                             @endforeach
                         </div>
                     </div>
@@ -666,7 +666,7 @@
                         
                         <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                             @foreach ($rules as $rule)
-                                @include('exports.partials.rule-card', ['item' => $rule])
+                                @include('atlas::exports.partials.rule-card', ['item' => $rule])
                             @endforeach
                         </div>
                     </div>
@@ -687,7 +687,7 @@
                         
                         <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                             @foreach ($observers as $observer)
-                                @include('exports.partials.observer-card', ['item' => $observer])
+                                @include('atlas::exports.partials.observer-card', ['item' => $observer])
                             @endforeach
                         </div>
                     </div>
@@ -708,7 +708,7 @@
                         
                         <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                             @foreach ($actions as $action)
-                                @include('exports.partials.action-card', ['item' => $action])
+                                @include('atlas::exports.partials.action-card', ['item' => $action])
                             @endforeach
                         </div>
                     </div>
