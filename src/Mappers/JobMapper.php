@@ -132,7 +132,7 @@ class JobMapper implements ComponentMapper
         return in_array('Illuminate\Bus\Queueable', $traits);
     }
 
-    /**
+        /**
      * @return array<int, array<string, mixed>>
      */
     protected function extractProperties(ReflectionClass $reflection, ?string $source): array
@@ -205,10 +205,12 @@ class JobMapper implements ComponentMapper
         $methods = [];
         
         foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+            // Ne garder que les méthodes définies dans cette classe (pas héritées)
             if ($method->getDeclaringClass()->getName() !== $reflection->getName()) {
                 continue;
             }
 
+            // Ignorer les méthodes magiques
             if (str_starts_with($method->getName(), '__')) {
                 continue;
             }
