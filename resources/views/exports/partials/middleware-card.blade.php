@@ -123,8 +123,3 @@
         'file' => $middleware['file'] ?? 'N/A'
     ])
 </div>
-    @include('atlas::exports.partials.common.card-footer', [
-        'class' => $middleware['class'],
-        'file' => $middleware['file']
-    ])
-</div>
