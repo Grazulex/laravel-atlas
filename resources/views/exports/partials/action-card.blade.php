@@ -2,31 +2,31 @@
 {{-- Header --}}
     @include('atlas::exports.partials.common.card-header', [
         'icon' => '⚡',
-        'title' => $action['name'],
+        'title' => $item['name'],
         'badge' => 'Action',
         'badgeColor' => 'bg-orange-100 text-orange-600 dark:bg-orange-900 dark:text-orange-300',
-        'namespace' => $action['namespace'],
-        'class' => $action['class']
+        'namespace' => $item['namespace'],
+        'class' => $item['class']
     ])
 
     {{-- Constructor Dependencies --}}
-    @if (!empty($action['dependencies']))
+    @if (!empty($item['dependencies']))
         @include('atlas::exports.partials.common.property-item', [
             'icon' => '🔗',
             'label' => 'Dependencies',
-            'value' => implode(', ', array_map('class_basename', $action['dependencies'])),
+            'value' => implode(', ', array_map('class_basename', $item['dependencies'])),
             'type' => 'code'
         ])
     @endif
 
     {{-- Constructor Parameters --}}
-    @if (!empty($action['constructor']['parameters']))
+    @if (!empty($item['constructor']['parameters']))
         <div class="mb-3">
             <h4 class="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
                 🔧 Constructor Parameters
             </h4>
             <div class="space-y-1">
-                @foreach ($action['constructor']['parameters'] as $param)
+                @foreach ($item['constructor']['parameters'] as $param)
                     <div class="text-xs bg-gray-50 dark:bg-gray-700 rounded p-2">
                         <span class="font-mono text-blue-600 dark:text-blue-400">${{ $param['name'] }}</span>
                         @if ($param['type'])
@@ -40,8 +40,8 @@
 
     {{-- Méthodes --}}
     @include('atlas::exports.partials.common.collapsible-methods', [
-        'methods' => $action['methods'] ?? [],
-        'componentId' => 'action-' . md5($action['class']),
+        'methods' => $item['methods'] ?? [],
+        'componentId' => 'action-' . md5($item['class']),
         'title' => 'Méthodes',
         'icon' => '⚙️',
         'collapsed' => true
@@ -49,7 +49,7 @@
 
     {{-- Footer --}}
     @include('atlas::exports.partials.common.card-footer', [
-        'class' => $action['class'],
-        'file' => $action['file']
+        'class' => $item['class'],
+        'file' => $item['file']
     ])
 </div>

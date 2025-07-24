@@ -5,11 +5,11 @@
     {{-- Header --}}
     @include('atlas::exports.partials.common.card-header', [
         'icon' => '🎮',
-        'title' => class_basename($controller['class']),
+        'title' => class_basename($item['class']),
         'badge' => 'Controller',
         'badgeColor' => 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200',
-        'namespace' => $controller['namespace'],
-        'class' => $controller['class']
+        'namespace' => $item['namespace'],
+        'class' => $item['class']
     ])
 
     {{-- Key Properties Grid (Always 3 columns on large screens) --}}
@@ -18,7 +18,7 @@
         @include('atlas::exports.partials.common.property-item', [
             'icon' => '⚙️',
             'label' => 'Public Methods',
-            'value' => !empty($controller['methods']) ? count($controller['methods']) . ' methods' : '0 methods',
+            'value' => !empty($item['methods']) ? count($item['methods']) . ' methods' : '0 methods',
             'type' => 'simple'
         ])
 
@@ -26,7 +26,7 @@
         @include('atlas::exports.partials.common.property-item', [
             'icon' => '🧩',
             'label' => 'Traits',
-            'value' => !empty($controller['traits']) ? count($controller['traits']) . ' traits' : '0 traits',
+            'value' => !empty($item['traits']) ? count($item['traits']) . ' traits' : '0 traits',
             'type' => 'simple'
         ])
 
@@ -34,7 +34,7 @@
         @include('atlas::exports.partials.common.property-item', [
             'icon' => '�️',
             'label' => 'Middlewares',
-            'value' => !empty($controller['middlewares']) ? count($controller['middlewares']) . ' middlewares' : '0 middlewares',
+            'value' => !empty($item['middlewares']) ? count($item['middlewares']) . ' middlewares' : '0 middlewares',
             'type' => 'simple'
         ])
     </div>
@@ -42,17 +42,17 @@
     {{-- Detailed Tables Section --}}
     <div class="space-y-6">
         {{-- Traits --}}
-        @if (!empty($controller['traits']))
+        @if (!empty($item['traits']))
             <div>
                 <div class="flex items-center mb-3">
                     <span class="text-sm mr-2">🧩</span>
                     <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Traits ({{ count($controller['traits']) }})
+                        Traits ({{ count($item['traits']) }})
                     </h4>
                 </div>
                 <div class="bg-gray-50 dark:bg-gray-700/50 rounded p-3">
                     <div class="flex flex-wrap gap-2">
-                        @foreach ($controller['traits'] as $trait)
+                        @foreach ($item['traits'] as $trait)
                             <span class="text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200 font-medium">
                                 {{ class_basename($trait) }}
                             </span>
@@ -63,17 +63,17 @@
         @endif
 
         {{-- Constructor Dependencies --}}
-        @if (!empty($controller['constructor']['parameters']))
+        @if (!empty($item['constructor']['parameters']))
             <div>
                 <div class="flex items-center mb-3">
                     <span class="text-sm mr-2">🏗️</span>
                     <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Constructor Dependencies ({{ count($controller['constructor']['parameters']) }})
+                        Constructor Dependencies ({{ count($item['constructor']['parameters']) }})
                     </h4>
                 </div>
                 <div class="bg-gray-50 dark:bg-gray-700/50 rounded p-3">
                     <div class="space-y-2">
-                        @foreach ($controller['constructor']['parameters'] as $param)
+                        @foreach ($item['constructor']['parameters'] as $param)
                             <div class="text-xs bg-white dark:bg-gray-800 rounded p-2 border">
                                 @if (isset($param['type']))
                                     <span class="text-purple-600 dark:text-purple-400">{{ class_basename($param['type']) }}</span>
@@ -87,17 +87,17 @@
         @endif
 
         {{-- Applied Middlewares --}}
-        @if (!empty($controller['middlewares']))
+        @if (!empty($item['middlewares']))
             <div>
                 <div class="flex items-center mb-3">
                     <span class="text-sm mr-2">🛡️</span>
                     <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Applied Middlewares ({{ count($controller['middlewares']) }})
+                        Applied Middlewares ({{ count($item['middlewares']) }})
                     </h4>
                 </div>
                 <div class="bg-gray-50 dark:bg-gray-700/50 rounded p-3">
                     <div class="flex flex-wrap gap-2">
-                        @foreach ($controller['middlewares'] as $middleware)
+                        @foreach ($item['middlewares'] as $middleware)
                             <span class="text-xs px-2 py-1 rounded-full bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-200 font-medium">
                                 {{ $middleware }}
                             </span>
@@ -108,7 +108,7 @@
         @endif
 
         {{-- Dependencies Summary --}}
-        @if (!empty(array_filter($controller['dependencies'])))
+        @if (!empty(array_filter($item['dependencies'])))
             <div>
                 <div class="flex items-center mb-3">
                     <span class="text-sm mr-2">📦</span>
@@ -118,7 +118,7 @@
                 </div>
                 <div class="bg-gray-50 dark:bg-gray-700/50 rounded p-3">
                     <div class="space-y-2">
-                        @foreach ($controller['dependencies'] as $type => $deps)
+                        @foreach ($item['dependencies'] as $type => $deps)
                             @if (!empty($deps))
                                 <div class="text-xs">
                                     <span class="font-medium text-gray-700 dark:text-gray-300">{{ ucfirst($type) }}:</span>
@@ -142,8 +142,8 @@
     <div class="mt-6 space-y-4">
         {{-- Methods Section --}}
         @include('atlas::exports.partials.common.collapsible-methods', [
-            'methods' => $controller['methods'] ?? [],
-            'componentId' => 'controller-' . md5($controller['class']),
+            'methods' => $item['methods'] ?? [],
+            'componentId' => 'controller-' . md5($item['class']),
             'title' => 'Methods',
             'icon' => '⚙️',
             'collapsed' => true
@@ -151,15 +151,15 @@
 
         {{-- Flow Section --}}
         @include('atlas::exports.partials.common.flow-section', [
-            'flow' => $controller['flow'] ?? [],
+            'flow' => $item['flow'] ?? [],
             'type' => 'controller'
         ])
     </div>
 
     {{-- Footer --}}
     @include('atlas::exports.partials.common.card-footer', [
-        'class' => $controller['class'],
-        'file' => $controller['file']
+        'class' => $item['class'],
+        'file' => $item['file']
     ])
 </div>
 </div>
