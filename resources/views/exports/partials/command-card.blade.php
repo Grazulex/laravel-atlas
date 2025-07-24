@@ -2,18 +2,18 @@
 {{-- Header --}}
     @include('atlas::exports.partials.common.card-header', [
         'icon' => '💬',
-        'title' => class_basename($command['class']),
-        'badge' => !empty($command['aliases']) ? implode(', ', $command['aliases']) : 'Command',
+        'title' => class_basename($item['class']),
+        'badge' => !empty($item['aliases']) ? implode(', ', $item['aliases']) : 'Command',
         'badgeColor' => 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300',
-        'namespace' => $command['namespace'],
-        'class' => $command['class']
+        'namespace' => $item['namespace'],
+        'class' => $item['class']
     ])
 
     {{-- Description --}}
-    @if (!empty($command['description']))
+    @if (!empty($item['description']))
         <div class="mb-4">
             <p class="text-xs text-gray-600 dark:text-gray-300 italic bg-gray-50 dark:bg-gray-700/50 rounded p-3">
-                {{ $command['description'] }}
+                {{ $item['description'] }}
             </p>
         </div>
     @endif
@@ -24,7 +24,7 @@
         @include('atlas::exports.partials.common.property-item', [
             'icon' => '🔤',
             'label' => 'Signature',
-            'value' => $command['signature'] ?? 'Not Set',
+            'value' => $item['signature'] ?? 'Not Set',
             'type' => 'simple'
         ])
 
@@ -32,7 +32,7 @@
         @include('atlas::exports.partials.common.property-item', [
             'icon' => '📝',
             'label' => 'Arguments',
-            'value' => !empty($command['parsed_signature']['arguments']) ? count($command['parsed_signature']['arguments']) . ' arguments' : '0 arguments',
+            'value' => !empty($item['parsed_signature']['arguments']) ? count($item['parsed_signature']['arguments']) . ' arguments' : '0 arguments',
             'type' => 'simple'
         ])
 
@@ -40,7 +40,7 @@
         @include('atlas::exports.partials.common.property-item', [
             'icon' => '⚙️',
             'label' => 'Options',
-            'value' => !empty($command['parsed_signature']['options']) ? count($command['parsed_signature']['options']) . ' options' : '0 options',
+            'value' => !empty($item['parsed_signature']['options']) ? count($item['parsed_signature']['options']) . ' options' : '0 options',
             'type' => 'simple'
         ])
     </div>
@@ -48,12 +48,12 @@
     {{-- Detailed Tables Section --}}
     <div class="space-y-6">
         {{-- Arguments & Options Table --}}
-        @if (!empty($command['parsed_signature']))
+        @if (!empty($item['parsed_signature']))
             <div>
                 <div class="flex items-center mb-3">
                     <span class="text-sm mr-2">🧾</span>
                     <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Arguments & Options ({{ count($command['parsed_signature']) }})
+                        Arguments & Options ({{ count($item['parsed_signature']) }})
                     </h4>
                 </div>
                 <div class="overflow-x-auto">
@@ -67,7 +67,7 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y dark:divide-gray-600">
-                            @foreach ($command['parsed_signature'] as $sig)
+                            @foreach ($item['parsed_signature'] as $sig)
                                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                                     <td class="p-3">
                                         <code class="text-blue-600 dark:text-blue-400">{{ $sig['name'] }}</code>
@@ -96,8 +96,8 @@
     <div class="mt-6 space-y-4">
         {{-- Methods Section --}}
         @include('atlas::exports.partials.common.collapsible-methods', [
-            'methods' => $command['methods'] ?? [],
-            'componentId' => 'command-' . md5($command['class']),
+            'methods' => $item['methods'] ?? [],
+            'componentId' => 'command-' . md5($item['class']),
             'title' => 'Methods',
             'icon' => '⚙️',
             'collapsed' => true
@@ -105,14 +105,14 @@
 
         {{-- Flow Section --}}
         @include('atlas::exports.partials.common.flow-section', [
-            'flow' => $command['flow'] ?? [],
+            'flow' => $item['flow'] ?? [],
             'type' => 'command'
         ])
     </div>
 
     {{-- Footer --}}
     @include('atlas::exports.partials.common.card-footer', [
-        'class' => $command['class'],
-        'file' => $command['file'] ?? 'N/A'
+        'class' => $item['class'],
+        'file' => $item['file'] ?? 'N/A'
     ])
 </div>

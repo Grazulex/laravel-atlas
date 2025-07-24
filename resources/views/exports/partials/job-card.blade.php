@@ -2,18 +2,18 @@
 {{-- Header --}}
     @include('atlas::exports.partials.common.card-header', [
         'icon' => '⚡',
-        'title' => class_basename($job['class']),
+        'title' => class_basename($item['class']),
         'badge' => 'Job',
         'badgeColor' => 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-200',
-        'namespace' => $job['namespace'],
-        'class' => $job['class']
+        'namespace' => $item['namespace'],
+        'class' => $item['class']
     ])
 
     {{-- Description --}}
-    @if (!empty($job['description']))
+    @if (!empty($item['description']))
         <div class="mb-4">
             <p class="text-xs text-gray-600 dark:text-gray-300 italic bg-gray-50 dark:bg-gray-700/50 rounded p-3">
-                {{ $job['description'] }}
+                {{ $item['description'] }}
             </p>
         </div>
     @endif
@@ -24,7 +24,7 @@
         @include('atlas::exports.partials.common.property-item', [
             'icon' => '�',
             'label' => 'Queueable',
-            'value' => $job['queueable'] ? 'Yes' : 'No',
+            'value' => $item['queueable'] ? 'Yes' : 'No',
             'type' => 'simple'
         ])
 
@@ -32,7 +32,7 @@
         @include('atlas::exports.partials.common.property-item', [
             'icon' => '🔧',
             'label' => 'Traits',
-            'value' => !empty($job['traits']) ? count($job['traits']) . ' traits' : '0 traits',
+            'value' => !empty($item['traits']) ? count($item['traits']) . ' traits' : '0 traits',
             'type' => 'simple'
         ])
 
@@ -40,7 +40,7 @@
         @include('atlas::exports.partials.common.property-item', [
             'icon' => '📋',
             'label' => 'Properties',
-            'value' => !empty($job['properties']) ? count($job['properties']) . ' properties' : '0 properties',
+            'value' => !empty($item['properties']) ? count($item['properties']) . ' properties' : '0 properties',
             'type' => 'simple'
         ])
     </div>
@@ -48,17 +48,17 @@
     {{-- Detailed Tables Section --}}
     <div class="space-y-6">
         {{-- Traits --}}
-        @if (!empty($job['traits']))
+        @if (!empty($item['traits']))
             <div>
                 <div class="flex items-center mb-3">
                     <span class="text-sm mr-2">🔧</span>
                     <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Traits ({{ count($job['traits']) }})
+                        Traits ({{ count($item['traits']) }})
                     </h4>
                 </div>
                 <div class="bg-gray-50 dark:bg-gray-700/50 rounded p-3">
                     <div class="flex flex-wrap gap-2">
-                        @foreach ($job['traits'] as $trait)
+                        @foreach ($item['traits'] as $trait)
                             <span class="text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200 font-medium">
                                 {{ class_basename($trait) }}
                             </span>
@@ -69,7 +69,7 @@
         @endif
 
         {{-- Queue Configuration --}}
-        @if (!empty($job['queue_config']))
+        @if (!empty($item['queue_config']))
             <div>
                 <div class="flex items-center mb-3">
                     <span class="text-sm mr-2">⚙️</span>
@@ -79,7 +79,7 @@
                 </div>
                 <div class="bg-gray-50 dark:bg-gray-700/50 rounded p-3">
                     <div class="space-y-2">
-                        @foreach ($job['queue_config'] as $key => $value)
+                        @foreach ($item['queue_config'] as $key => $value)
                             <div class="text-xs">
                                 <span class="font-medium text-gray-700 dark:text-gray-300">{{ ucfirst($key) }}:</span>
                                 <code class="ml-2 text-blue-600 dark:text-blue-400">{{ $value }}</code>
@@ -91,17 +91,17 @@
         @endif
 
         {{-- Properties --}}
-        @if (!empty($job['properties']))
+        @if (!empty($item['properties']))
             <div>
                 <div class="flex items-center mb-3">
                     <span class="text-sm mr-2">📋</span>
                     <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Properties ({{ count($job['properties']) }})
+                        Properties ({{ count($item['properties']) }})
                     </h4>
                 </div>
                 <div class="bg-gray-50 dark:bg-gray-700/50 rounded p-3">
                     <div class="space-y-2">
-                        @foreach ($job['properties'] as $property)
+                        @foreach ($item['properties'] as $property)
                             <div class="text-xs bg-white dark:bg-gray-800 rounded p-2 border">
                                 @if (isset($property['type']))
                                     <span class="text-purple-600 dark:text-purple-400">{{ $property['type'] }}</span>
@@ -120,17 +120,17 @@
         @endif
 
         {{-- Constructor Parameters --}}
-        @if (!empty($job['constructor']['parameters']))
+        @if (!empty($item['constructor']['parameters']))
             <div>
                 <div class="flex items-center mb-3">
                     <span class="text-sm mr-2">🏗️</span>
                     <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Constructor Parameters ({{ count($job['constructor']['parameters']) }})
+                        Constructor Parameters ({{ count($item['constructor']['parameters']) }})
                     </h4>
                 </div>
                 <div class="bg-gray-50 dark:bg-gray-700/50 rounded p-3">
                     <div class="space-y-2">
-                        @foreach ($job['constructor']['parameters'] as $param)
+                        @foreach ($item['constructor']['parameters'] as $param)
                             <div class="text-xs bg-white dark:bg-gray-800 rounded p-2 border">
                                 @if (isset($param['type']))
                                     <span class="text-purple-600 dark:text-purple-400">{{ class_basename($param['type']) }}</span>
@@ -144,7 +144,7 @@
         @endif
 
         {{-- Flow Dependencies --}}
-        @if (!empty($job['flow']['dependencies']) && array_filter($job['flow']['dependencies']))
+        @if (!empty($item['flow']['dependencies']) && array_filter($item['flow']['dependencies']))
             <div>
                 <div class="flex items-center mb-3">
                     <span class="text-sm mr-2">📦</span>
@@ -155,11 +155,11 @@
                 <div class="bg-gray-50 dark:bg-gray-700/50 rounded p-3">
                     <div class="space-y-3">
                         @foreach(['models' => '🗃️', 'services' => '🔧', 'facades' => '🏛️', 'classes' => '📦'] as $depType => $icon)
-                            @if (!empty($job['flow']['dependencies'][$depType]))
+                            @if (!empty($item['flow']['dependencies'][$depType]))
                                 <div>
                                     <span class="text-xs font-medium text-gray-700 dark:text-gray-300">{{ $icon }} {{ ucfirst($depType) }}:</span>
                                     <div class="flex flex-wrap gap-1 mt-1">
-                                        @foreach ($job['flow']['dependencies'][$depType] as $dep)
+                                        @foreach ($item['flow']['dependencies'][$depType] as $dep)
                                             <span class="text-xs px-2 py-1 rounded bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200">
                                                 {{ class_basename($dep) }}
                                             </span>
@@ -178,8 +178,8 @@
     <div class="mt-6 space-y-4">
         {{-- Methods Section --}}
         @include('atlas::exports.partials.common.collapsible-methods', [
-            'methods' => $job['methods'] ?? [],
-            'componentId' => 'job-' . md5($job['class']),
+            'methods' => $item['methods'] ?? [],
+            'componentId' => 'job-' . md5($item['class']),
             'title' => 'Methods',
             'icon' => '⚙️',
             'collapsed' => true
@@ -187,14 +187,14 @@
 
         {{-- Flow Section --}}
         @include('atlas::exports.partials.common.flow-section', [
-            'flow' => $job['flow'] ?? [],
+            'flow' => $item['flow'] ?? [],
             'type' => 'job'
         ])
     </div>
 
     {{-- Footer --}}
     @include('atlas::exports.partials.common.card-footer', [
-        'class' => $job['class'],
-        'file' => $job['file']
+        'class' => $item['class'],
+        'file' => $item['file']
     ])
 </div>

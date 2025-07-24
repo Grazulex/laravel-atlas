@@ -2,18 +2,18 @@
 {{-- Header --}}
     @include('atlas::exports.partials.common.card-header', [
         'icon' => '📬',
-        'title' => class_basename($notification['class']),
+        'title' => class_basename($item['class']),
         'badge' => 'Notification',
         'badgeColor' => 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-200',
-        'namespace' => $notification['namespace'] ?? null,
-        'class' => $notification['class']
+        'namespace' => $item['namespace'] ?? null,
+        'class' => $item['class']
     ])
 
     {{-- Description --}}
-    @if (!empty($notification['description']))
+    @if (!empty($item['description']))
         <div class="mb-4">
             <p class="text-xs text-gray-600 dark:text-gray-300 italic bg-gray-50 dark:bg-gray-700/50 rounded p-3">
-                {{ $notification['description'] }}
+                {{ $item['description'] }}
             </p>
         </div>
     @endif
@@ -24,7 +24,7 @@
         @include('atlas::exports.partials.common.property-item', [
             'icon' => '📡',
             'label' => 'Channels',
-            'value' => !empty($notification['channels']) ? count($notification['channels']) . ' channels' : '0 channels',
+            'value' => !empty($item['channels']) ? count($item['channels']) . ' channels' : '0 channels',
             'type' => 'simple'
         ])
 
@@ -32,7 +32,7 @@
         @include('atlas::exports.partials.common.property-item', [
             'icon' => '⚙️',
             'label' => 'Methods',
-            'value' => !empty($notification['methods']) ? count($notification['methods']) . ' methods' : '0 methods',
+            'value' => !empty($item['methods']) ? count($item['methods']) . ' methods' : '0 methods',
             'type' => 'simple'
         ])
 
@@ -40,7 +40,7 @@
         @include('atlas::exports.partials.common.property-item', [
             'icon' => '🚀',
             'label' => 'Delivery Via',
-            'value' => !empty($notification['via']) ? count($notification['via']) . ' methods' : '0 methods',
+            'value' => !empty($item['via']) ? count($item['via']) . ' methods' : '0 methods',
             'type' => 'simple'
         ])
     </div>
@@ -48,17 +48,17 @@
     {{-- Detailed Tables Section --}}
     <div class="space-y-6">
         {{-- Channels --}}
-        @if (!empty($notification['channels']))
+        @if (!empty($item['channels']))
             <div>
                 <div class="flex items-center mb-3">
                     <span class="text-sm mr-2">📡</span>
                     <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Notification Channels ({{ count($notification['channels']) }})
+                        Notification Channels ({{ count($item['channels']) }})
                     </h4>
                 </div>
                 <div class="bg-gray-50 dark:bg-gray-700/50 rounded p-3">
                     <div class="flex flex-wrap gap-2">
-                        @foreach ($notification['channels'] as $channel)
+                        @foreach ($item['channels'] as $channel)
                             <span class="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200 font-medium">
                                 {{ $channel }}
                             </span>
@@ -69,17 +69,17 @@
         @endif
 
         {{-- Via Methods --}}
-        @if (!empty($notification['via']))
+        @if (!empty($item['via']))
             <div>
                 <div class="flex items-center mb-3">
                     <span class="text-sm mr-2">🚀</span>
                     <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Delivery Via ({{ count($notification['via']) }})
+                        Delivery Via ({{ count($item['via']) }})
                     </h4>
                 </div>
                 <div class="bg-gray-50 dark:bg-gray-700/50 rounded p-3">
                     <div class="flex flex-wrap gap-2">
-                        @foreach ($notification['via'] as $via)
+                        @foreach ($item['via'] as $via)
                             <span class="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200 font-medium">
                                 {{ $via }}
                             </span>
@@ -94,8 +94,8 @@
     <div class="mt-6 space-y-4">
         {{-- Methods Section --}}
         @include('atlas::exports.partials.common.collapsible-methods', [
-            'methods' => $notification['methods'] ?? [],
-            'componentId' => 'notification-' . md5($notification['class']),
+            'methods' => $item['methods'] ?? [],
+            'componentId' => 'notification-' . md5($item['class']),
             'title' => 'Methods',
             'icon' => '⚙️',
             'collapsed' => true
@@ -103,17 +103,17 @@
 
         {{-- Flow Section --}}
         @include('atlas::exports.partials.common.flow-section', [
-            'flow' => $notification['flow'] ?? [],
+            'flow' => $item['flow'] ?? [],
             'type' => 'notification'
         ])
     </div>
 
     {{-- Footer --}}
     @include('atlas::exports.partials.common.card-footer', [
-        'class' => $notification['class'],
-        'file' => $notification['file'] ?? 'N/A'
+        'class' => $item['class'],
+        'file' => $item['file'] ?? 'N/A'
     ])
 </div>
-        'file' => $notification['file']
+        'file' => $item['file']
     ])
 </div>

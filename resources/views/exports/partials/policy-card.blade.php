@@ -2,11 +2,11 @@
 {{-- Header --}}
     @include('atlas::exports.partials.common.card-header', [
         'icon' => '🛡️',
-        'title' => $policy['name'],
+        'title' => $item['name'],
         'badge' => 'Policy',
         'badgeColor' => 'bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-300',
-        'namespace' => $policy['namespace'],
-        'class' => $policy['class']
+        'namespace' => $item['namespace'],
+        'class' => $item['class']
     ])
 
     {{-- Key Properties Grid (Always 3 columns on large screens) --}}
@@ -15,7 +15,7 @@
         @include('atlas::exports.partials.common.property-item', [
             'icon' => '🧱',
             'label' => 'Related Model',
-            'value' => !empty($policy['model']) ? class_basename($policy['model']) : 'Not Set',
+            'value' => !empty($item['model']) ? class_basename($item['model']) : 'Not Set',
             'type' => 'simple'
         ])
 
@@ -23,7 +23,7 @@
         @include('atlas::exports.partials.common.property-item', [
             'icon' => '🔑',
             'label' => 'Abilities',
-            'value' => !empty($policy['abilities']) ? count($policy['abilities']) . ' abilities' : '0 abilities',
+            'value' => !empty($item['abilities']) ? count($item['abilities']) . ' abilities' : '0 abilities',
             'type' => 'simple'
         ])
 
@@ -31,7 +31,7 @@
         @include('atlas::exports.partials.common.property-item', [
             'icon' => '⚙️',
             'label' => 'Methods',
-            'value' => !empty($policy['methods']) ? count($policy['methods']) . ' methods' : '0 methods',
+            'value' => !empty($item['methods']) ? count($item['methods']) . ' methods' : '0 methods',
             'type' => 'simple'
         ])
     </div>
@@ -39,16 +39,16 @@
     {{-- Detailed Tables Section --}}
     <div class="space-y-6">
         {{-- Abilities --}}
-        @if (!empty($policy['abilities']))
+        @if (!empty($item['abilities']))
             <div>
                 <div class="flex items-center mb-3">
                     <span class="text-sm mr-2">🔑</span>
                     <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Abilities ({{ count($policy['abilities']) }})
+                        Abilities ({{ count($item['abilities']) }})
                     </h4>
                 </div>
                 <div class="space-y-2">
-                    @foreach ($policy['abilities'] as $ability)
+                    @foreach ($item['abilities'] as $ability)
                         <div class="text-xs bg-red-50 dark:bg-red-900/20 rounded p-3 border border-red-200 dark:border-red-800">
                             <div class="font-mono">
                                 <span class="text-purple-600 dark:text-purple-400 font-semibold">{{ $ability['name'] }}</span>
@@ -74,8 +74,8 @@
     <div class="mt-6 space-y-4">
         {{-- Methods Section --}}
         @include('atlas::exports.partials.common.collapsible-methods', [
-            'methods' => $policy['methods'] ?? [],
-            'componentId' => 'policy-' . md5($policy['class']),
+            'methods' => $item['methods'] ?? [],
+            'componentId' => 'policy-' . md5($item['class']),
             'title' => 'Methods',
             'icon' => '⚙️',
             'collapsed' => true
@@ -84,7 +84,7 @@
 
     {{-- Footer --}}
     @include('atlas::exports.partials.common.card-footer', [
-        'class' => $policy['class'],
-        'file' => $policy['file']
+        'class' => $item['class'],
+        'file' => $item['file']
     ])
 </div>

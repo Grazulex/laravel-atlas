@@ -2,16 +2,16 @@
 {{-- Header --}}
     @include('atlas::exports.partials.common.card-header', [
         'icon' => '🔧',
-        'title' => class_basename($service['class']),
+        'title' => class_basename($item['class']),
         'badge' => 'Service',
         'badgeColor' => 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200',
-        'namespace' => $service['namespace'],
-        'class' => $service['class']
+        'namespace' => $item['namespace'],
+        'class' => $item['class']
     ])
 
     {{-- Description --}}
-    @if (!empty($service['description']))
-        <p class="text-xs text-gray-600 dark:text-gray-300 italic mb-3">{{ $service['description'] }}</p>
+    @if (!empty($item['description']))
+        <p class="text-xs text-gray-600 dark:text-gray-300 italic mb-3">{{ $item['description'] }}</p>
     @endif
 
     {{-- Properties Grid --}}
@@ -21,7 +21,7 @@
             'icon' => '⚙️',
             'label' => 'Public Methods',
             'type' => 'list',
-            'items' => !empty($service['methods']) ? collect($service['methods'])->map(function($method) {
+            'items' => !empty($item['methods']) ? collect($item['methods'])->map(function($method) {
                 return $method['name'] . '(' . implode(', ', $method['parameters']) . ')';
             })->toArray() : []
         ])
@@ -31,14 +31,14 @@
             'icon' => '🧩',
             'label' => 'Constructor Dependencies',
             'type' => 'list',
-            'items' => !empty($service['dependencies']) ? collect($service['dependencies'])->filter()->map('class_basename')->toArray() : []
+            'items' => !empty($item['dependencies']) ? collect($item['dependencies'])->filter()->map('class_basename')->toArray() : []
         ])
     </div>
 
     {{-- Méthodes --}}
     @include('atlas::exports.partials.common.collapsible-methods', [
-        'methods' => $service['methods'] ?? [],
-        'componentId' => 'service-' . md5($service['class']),
+        'methods' => $item['methods'] ?? [],
+        'componentId' => 'service-' . md5($item['class']),
         'title' => 'Méthodes',
         'icon' => '⚙️',
         'collapsed' => true
@@ -46,13 +46,13 @@
 
     {{-- Flow Section --}}
     @include('atlas::exports.partials.common.flow-section', [
-        'flow' => $service['flow'] ?? [],
+        'flow' => $item['flow'] ?? [],
         'type' => 'service'
     ])
 
     {{-- Footer --}}
     @include('atlas::exports.partials.common.card-footer', [
-        'class' => $service['class'],
-        'file' => $service['file']
+        'class' => $item['class'],
+        'file' => $item['file']
     ])
 </div>
