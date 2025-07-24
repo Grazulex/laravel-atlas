@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sample Laravel Project – Atlas – 3 Models, 2 Commands, 15 Routes, 4 Services, 2 Notifications, 3 Middlewares, 1 Form Requests</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        mono: ['JetBrains Mono', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', 'monospace'],
+                    }
+                }
+            }
+        };
+
+        // Dark mode management
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('atlas-dark-mode', isDark ? '1' : '0');
+            updateDarkModeButton(isDark);
+        }
+
+        function updateDarkModeButton(isDark) {
+            const button = document.getElementById('dark-mode-toggle');
+            const icon = document.getElementById('dark-mode-icon');
+            if (button && icon) {
+                icon.textContent = isDark ? '☀️' : '🌙';
+                button.title = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+            }
+        }
+
+        // Initialize dark mode
+        document.addEventListener('DOMContentLoaded', function() {
+            const isDark = localStorage.getItem('atlas-dark-mode') === '1';
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+            }
+            updateDarkModeButton(isDark);
+        });
+
+        // Navigation functionality
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.component-section');
+            sections.forEach(section => section.classList.add('hidden'));
+            
+            // Show selected section
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+            }
+            
+            // Update navigation active state
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('bg-blue-100', 'dark:bg-blue-900', 'text-blue-700', 'dark:text-blue-300'));
+            
+            const activeNavItem = document.querySelector(`[data-section="${sectionId}"]`);
+            if (activeNavItem) {
+                activeNavItem.classList.add('bg-blue-100', 'dark:bg-blue-900', 'text-blue-700', 'dark:text-blue-300');
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+    <!-- Navigation Header -->
+    <nav class="bg-white dark:bg-gray-800 shadow-lg border-b border-gray-200 dark:border-gray-700">
+        <div class="max-w-full mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-4">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-xl font-bold text-gray-900 dark:text-white">Sample Laravel Project</h1>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">Atlas - Sample Laravel Application Architecture</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-600 dark:text-gray-300">Generated on: 24/07/2024 14:45</span>
+                    <button 
+                        id="dark-mode-toggle" 
+                        onclick="toggleDarkMode()" 
+                        class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                        title="Toggle dark mode"
+                    >
+                        <span id="dark-mode-icon">🌙</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="flex min-h-screen">
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-white dark:bg-gray-800 shadow-lg border-r border-gray-200 dark:border-gray-700">
+            <div class="p-4">
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Components</h2>
+                <nav class="space-y-2">
+                    <button onclick="showSection('overview')" data-section="overview" class="nav-item w-full text-left p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">
+                        <div class="flex items-center justify-between">
+                            <span class="flex items-center">
+                                <span class="mr-2">📊</span>
+                                Overview
+                            </span>
+                        </div>
+                    </button>
+                    <button onclick="showSection('models')" data-section="models" class="nav-item w-full text-left p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <div class="flex items-center justify-between">
+                            <span class="flex items-center">
+                                <span class="mr-2">🧱</span>
+                                Models
+                            </span>
+                            <span class="bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 px-2 py-1 rounded-full text-xs">3</span>
+                        </div>
+                    </button>
+                    <button onclick="showSection('routes')" data-section="routes" class="nav-item w-full text-left p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <div class="flex items-center justify-between">
+                            <span class="flex items-center">
+                                <span class="mr-2">🛣️</span>
+                                Routes
+                            </span>
+                            <span class="bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 px-2 py-1 rounded-full text-xs">15</span>
+                        </div>
+                    </button>
+                    <button onclick="showSection('commands')" data-section="commands" class="nav-item w-full text-left p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <div class="flex items-center justify-between">
+                            <span class="flex items-center">
+                                <span class="mr-2">💬</span>
+                                Commands
+                            </span>
+                            <span class="bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 px-2 py-1 rounded-full text-xs">2</span>
+                        </div>
+                    </button>
+                    <button onclick="showSection('services')" data-section="services" class="nav-item w-full text-left p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <div class="flex items-center justify-between">
+                            <span class="flex items-center">
+                                <span class="mr-2">🔧</span>
+                                Services
+                            </span>
+                            <span class="bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 px-2 py-1 rounded-full text-xs">4</span>
+                        </div>
+                    </button>
+                    <button onclick="showSection('notifications')" data-section="notifications" class="nav-item w-full text-left p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <div class="flex items-center justify-between">
+                            <span class="flex items-center">
+                                <span class="mr-2">📢</span>
+                                Notifications
+                            </span>
+                            <span class="bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 px-2 py-1 rounded-full text-xs">2</span>
+                        </div>
+                    </button>
+                    <button onclick="showSection('middlewares')" data-section="middlewares" class="nav-item w-full text-left p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <div class="flex items-center justify-between">
+                            <span class="flex items-center">
+                                <span class="mr-2">🛡️</span>
+                                Middlewares
+                            </span>
+                            <span class="bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 px-2 py-1 rounded-full text-xs">3</span>
+                        </div>
+                    </button>
+                    <button onclick="showSection('form-requests')" data-section="form-requests" class="nav-item w-full text-left p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <div class="flex items-center justify-between">
+                            <span class="flex items-center">
+                                <span class="mr-2">📋</span>
+                                Form Requests
+                            </span>
+                            <span class="bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 px-2 py-1 rounded-full text-xs">1</span>
+                        </div>
+                    </button>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6">
+            <!-- Overview Section -->
+            <div id="overview" class="component-section">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">📊 Architecture Overview</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg">
+                            <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">30</div>
+                            <div class="text-blue-700 dark:text-blue-300 text-sm">Total Components</div>
+                        </div>
+                        <div class="bg-green-50 dark:bg-green-900/30 p-4 rounded-lg">
+                            <div class="text-2xl font-bold text-green-600 dark:text-green-400">3</div>
+                            <div class="text-green-700 dark:text-green-300 text-sm">Models</div>
+                        </div>
+                        <div class="bg-purple-50 dark:bg-purple-900/30 p-4 rounded-lg">
+                            <div class="text-2xl font-bold text-purple-600 dark:text-purple-400">15</div>
+                            <div class="text-purple-700 dark:text-purple-300 text-sm">Routes</div>
+                        </div>
+                        <div class="bg-orange-50 dark:bg-orange-900/30 p-4 rounded-lg">
+                            <div class="text-2xl font-bold text-orange-600 dark:text-orange-400">4</div>
+                            <div class="text-orange-700 dark:text-orange-300 text-sm">Services</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Models Section -->
+            <div id="models" class="component-section hidden">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">🧱 Models (3)</h2>
+                    
+                    <!-- User Model -->
+                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">App\\Models\\User</h3>
+                            <span class="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded text-sm">Eloquent Model</span>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm mb-3">User authentication and profile management model</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <h4 class="font-medium text-gray-900 dark:text-white mb-2">Attributes</h4>
+                                <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                    <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">name</code> - string</li>
+                                    <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">email</code> - string</li>
+                                    <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">password</code> - string</li>
+                                    <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">email_verified_at</code> - timestamp</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-900 dark:text-white mb-2">Relationships</h4>
+                                <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                    <li><span class="text-blue-600 dark:text-blue-400">hasMany</span> → posts</li>
+                                    <li><span class="text-blue-600 dark:text-blue-400">hasMany</span> → comments</li>
+                                    <li><span class="text-blue-600 dark:text-blue-400">belongsToMany</span> → roles</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Post Model -->
+                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">App\\Models\\Post</h3>
+                            <span class="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded text-sm">Eloquent Model</span>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm mb-3">Blog post content management model</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <h4 class="font-medium text-gray-900 dark:text-white mb-2">Attributes</h4>
+                                <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                    <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">title</code> - string</li>
+                                    <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">content</code> - text</li>
+                                    <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">published_at</code> - timestamp</li>
+                                    <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">user_id</code> - foreign key</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-900 dark:text-white mb-2">Relationships</h4>
+                                <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                    <li><span class="text-blue-600 dark:text-blue-400">belongsTo</span> → user</li>
+                                    <li><span class="text-blue-600 dark:text-blue-400">hasMany</span> → comments</li>
+                                    <li><span class="text-blue-600 dark:text-blue-400">belongsToMany</span> → tags</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Comment Model -->
+                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">App\\Models\\Comment</h3>
+                            <span class="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded text-sm">Eloquent Model</span>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm mb-3">User comments on blog posts</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <h4 class="font-medium text-gray-900 dark:text-white mb-2">Attributes</h4>
+                                <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                    <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">content</code> - text</li>
+                                    <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">user_id</code> - foreign key</li>
+                                    <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">post_id</code> - foreign key</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-900 dark:text-white mb-2">Relationships</h4>
+                                <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                    <li><span class="text-blue-600 dark:text-blue-400">belongsTo</span> → user</li>
+                                    <li><span class="text-blue-600 dark:text-blue-400">belongsTo</span> → post</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Routes Section -->
+            <div id="routes" class="component-section hidden">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">🛣️ Routes (15)</h2>
+                    
+                    <div class="space-y-4">
+                        <!-- Web Routes -->
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Web Routes</h3>
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between bg-white dark:bg-gray-600 p-3 rounded">
+                                    <div class="flex items-center space-x-4">
+                                        <span class="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded text-sm font-mono">GET</span>
+                                        <code class="text-gray-900 dark:text-white">/</code>
+                                    </div>
+                                    <div class="text-sm text-gray-600 dark:text-gray-300">HomeController@index</div>
+                                </div>
+                                <div class="flex items-center justify-between bg-white dark:bg-gray-600 p-3 rounded">
+                                    <div class="flex items-center space-x-4">
+                                        <span class="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded text-sm font-mono">GET</span>
+                                        <code class="text-gray-900 dark:text-white">/posts</code>
+                                    </div>
+                                    <div class="text-sm text-gray-600 dark:text-gray-300">PostController@index</div>
+                                </div>
+                                <div class="flex items-center justify-between bg-white dark:bg-gray-600 p-3 rounded">
+                                    <div class="flex items-center space-x-4">
+                                        <span class="bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 px-2 py-1 rounded text-sm font-mono">POST</span>
+                                        <code class="text-gray-900 dark:text-white">/posts</code>
+                                    </div>
+                                    <div class="text-sm text-gray-600 dark:text-gray-300">PostController@store</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- API Routes -->
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">API Routes</h3>
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between bg-white dark:bg-gray-600 p-3 rounded">
+                                    <div class="flex items-center space-x-4">
+                                        <span class="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded text-sm font-mono">GET</span>
+                                        <code class="text-gray-900 dark:text-white">/api/posts</code>
+                                    </div>
+                                    <div class="text-sm text-gray-600 dark:text-gray-300">ApiPostController@index</div>
+                                </div>
+                                <div class="flex items-center justify-between bg-white dark:bg-gray-600 p-3 rounded">
+                                    <div class="flex items-center space-x-4">
+                                        <span class="bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 px-2 py-1 rounded text-sm font-mono">POST</span>
+                                        <code class="text-gray-900 dark:text-white">/api/posts</code>
+                                    </div>
+                                    <div class="text-sm text-gray-600 dark:text-gray-300">ApiPostController@store</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Commands Section -->
+            <div id="commands" class="component-section hidden">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">💬 Commands (2)</h2>
+                    
+                    <div class="space-y-4">
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">generate:posts</h3>
+                                <span class="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 px-2 py-1 rounded text-sm">Artisan Command</span>
+                            </div>
+                            <p class="text-gray-600 dark:text-gray-300 text-sm mb-3">Generate sample blog posts for testing</p>
+                            <div class="bg-gray-800 dark:bg-gray-900 text-green-400 p-3 rounded font-mono text-sm">
+                                php artisan generate:posts {count=10} {--user=1}
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">cleanup:old-posts</h3>
+                                <span class="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 px-2 py-1 rounded text-sm">Artisan Command</span>
+                            </div>
+                            <p class="text-gray-600 dark:text-gray-300 text-sm mb-3">Clean up posts older than specified days</p>
+                            <div class="bg-gray-800 dark:bg-gray-900 text-green-400 p-3 rounded font-mono text-sm">
+                                php artisan cleanup:old-posts {--days=30} {--dry-run}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Services Section -->
+            <div id="services" class="component-section hidden">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">🔧 Services (4)</h2>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">PostService</h3>
+                            <p class="text-gray-600 dark:text-gray-300 text-sm mb-3">Business logic for post management</p>
+                            <div>
+                                <h4 class="font-medium text-gray-900 dark:text-white mb-2">Methods</h4>
+                                <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                    <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">create($data)</code></li>
+                                    <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">update($post, $data)</code></li>
+                                    <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">delete($post)</code></li>
+                                    <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">publish($post)</code></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">NotificationService</h3>
+                            <p class="text-gray-600 dark:text-gray-300 text-sm mb-3">Handle application notifications</p>
+                            <div>
+                                <h4 class="font-medium text-gray-900 dark:text-white mb-2">Methods</h4>
+                                <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                    <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">send($user, $notification)</code></li>
+                                    <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">sendBulk($users, $notification)</code></li>
+                                    <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">markAsRead($notification)</code></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">UserService</h3>
+                            <p class="text-gray-600 dark:text-gray-300 text-sm mb-3">User management and authentication</p>
+                            <div>
+                                <h4 class="font-medium text-gray-900 dark:text-white mb-2">Methods</h4>
+                                <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                    <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">register($data)</code></li>
+                                    <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">login($credentials)</code></li>
+                                    <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">updateProfile($user, $data)</code></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">EmailService</h3>
+                            <p class="text-gray-600 dark:text-gray-300 text-sm mb-3">Email sending and template management</p>
+                            <div>
+                                <h4 class="font-medium text-gray-900 dark:text-white mb-2">Methods</h4>
+                                <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                    <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">sendWelcome($user)</code></li>
+                                    <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">sendPasswordReset($user)</code></li>
+                                    <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">sendNewsletter($users)</code></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notifications Section -->
+            <div id="notifications" class="component-section hidden">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">📢 Notifications (2)</h2>
+                    
+                    <div class="space-y-4">
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">PostPublished</h3>
+                                <span class="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded text-sm">Notification</span>
+                            </div>
+                            <p class="text-gray-600 dark:text-gray-300 text-sm mb-3">Notify users when a new post is published</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <h4 class="font-medium text-gray-900 dark:text-white mb-2">Channels</h4>
+                                    <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                        <li><span class="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded text-xs">mail</span></li>
+                                        <li><span class="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded text-xs">database</span></li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900 dark:text-white mb-2">Properties</h4>
+                                    <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                        <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">post</code> - Post model</li>
+                                        <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">author</code> - User model</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">WelcomeUser</h3>
+                                <span class="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded text-sm">Notification</span>
+                            </div>
+                            <p class="text-gray-600 dark:text-gray-300 text-sm mb-3">Welcome notification for new users</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <h4 class="font-medium text-gray-900 dark:text-white mb-2">Channels</h4>
+                                    <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                        <li><span class="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded text-xs">mail</span></li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900 dark:text-white mb-2">Properties</h4>
+                                    <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                        <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">user</code> - User model</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Middlewares Section -->
+            <div id="middlewares" class="component-section hidden">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">🛡️ Middlewares (3)</h2>
+                    
+                    <div class="space-y-4">
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">AuthenticateUser</h3>
+                                <span class="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 px-2 py-1 rounded text-sm">Middleware</span>
+                            </div>
+                            <p class="text-gray-600 dark:text-gray-300 text-sm mb-3">Verify user authentication status</p>
+                            <div class="bg-gray-200 dark:bg-gray-600 p-2 rounded">
+                                <code class="text-sm text-gray-800 dark:text-gray-200">Route::middleware('auth')</code>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">RateLimiter</h3>
+                                <span class="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 px-2 py-1 rounded text-sm">Middleware</span>
+                            </div>
+                            <p class="text-gray-600 dark:text-gray-300 text-sm mb-3">Limit request rate per user/IP</p>
+                            <div class="bg-gray-200 dark:bg-gray-600 p-2 rounded">
+                                <code class="text-sm text-gray-800 dark:text-gray-200">Route::middleware('throttle:60,1')</code>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">ValidateApiKey</h3>
+                                <span class="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 px-2 py-1 rounded text-sm">Middleware</span>
+                            </div>
+                            <p class="text-gray-600 dark:text-gray-300 text-sm mb-3">Validate API key for external requests</p>
+                            <div class="bg-gray-200 dark:bg-gray-600 p-2 rounded">
+                                <code class="text-sm text-gray-800 dark:text-gray-200">Route::middleware('api.key')</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Requests Section -->
+            <div id="form-requests" class="component-section hidden">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">📋 Form Requests (1)</h2>
+                    
+                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">StorePostRequest</h3>
+                            <span class="bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 px-2 py-1 rounded text-sm">Form Request</span>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm mb-3">Validation rules for creating new posts</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <h4 class="font-medium text-gray-900 dark:text-white mb-2">Validation Rules</h4>
+                                <div class="bg-gray-800 dark:bg-gray-900 text-green-400 p-3 rounded font-mono text-sm">
+                                    <div>'title' => 'required|string|max:255',</div>
+                                    <div>'content' => 'required|string',</div>
+                                    <div>'published_at' => 'nullable|date',</div>
+                                    <div>'tags' => 'array',</div>
+                                    <div>'tags.*' => 'string|max:50'</div>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-900 dark:text-white mb-2">Authorization</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">Checks if user can create posts</p>
+                                <div class="bg-gray-800 dark:bg-gray-900 text-green-400 p-3 rounded font-mono text-sm">
+                                    return $this->user()->can('create', Post::class);
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-8">
+        <div class="max-w-full mx-auto px-4 py-4">
+            <div class="text-center text-sm text-gray-600 dark:text-gray-300">
+                Generated by <strong>Laravel Atlas</strong> on 24/07/2024 14:45 • 
+                <span class="text-blue-600 dark:text-blue-400">30 total components analyzed</span>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

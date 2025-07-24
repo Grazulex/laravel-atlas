@@ -234,12 +234,13 @@ php artisan atlas:generate --format=php --output=storage/atlas/map.php
 
 The HTML export format provides an **interactive, responsive dashboard** with advanced features:
 
-- **🌓 Dark Mode Support** - Toggle between light and dark themes
-- **📱 Responsive Design** - Works on desktop, tablet, and mobile devices
-- **🔍 Component Navigation** - Easy sidebar navigation between component types
-- **📊 Visual Component Cards** - Rich cards showing detailed component information
-- **📈 Real-time Counts** - Live component counts in navigation sidebar
-- **🎨 Modern UI** - Built with Tailwind CSS for a professional appearance
+- **🌓 Dark Mode Support** - Toggle between light and dark themes with persistent preference
+- **📱 Responsive Design** - Seamlessly works on desktop, tablet, and mobile devices
+- **🔍 Component Navigation** - Easy sidebar navigation between component types with live counts
+- **📊 Visual Component Cards** - Rich cards showing detailed component information with syntax highlighting
+- **📈 Real-time Counts** - Live component counts displayed in the navigation sidebar
+- **🎨 Modern UI** - Built with Tailwind CSS for a professional, enterprise-ready appearance
+- **💻 Self-contained** - Complete HTML files with no external dependencies required
 
 **Component Sections Available:**
 - 🧱 **Models** - with relationships, attributes, and metadata
@@ -249,6 +250,26 @@ The HTML export format provides an **interactive, responsive dashboard** with ad
 - 📢 **Notifications** - with channels, methods, and dependencies
 - 🛡️ **Middlewares** - with parameters, dependencies, and flow patterns
 - 📋 **Form Requests** - with validation rules, authorization, and attributes
+
+**Example HTML Generation:**
+```bash
+# Generate interactive HTML dashboard
+php artisan atlas:generate --format=html --output=public/docs/architecture.html
+
+# Generate component-specific HTML reports
+php artisan atlas:generate --type=models --format=html --output=public/docs/models.html
+php artisan atlas:generate --type=routes --format=html --output=public/docs/routes.html
+```
+
+**Sample HTML Dashboard Features:**
+- Professional header with project information and dark mode toggle
+- Sidebar navigation with component counts (e.g., "🧱 Models [3]", "🛣️ Routes [15]")
+- Interactive component cards with collapsible sections
+- Syntax-highlighted code examples and relationship mappings
+- Responsive grid layouts that adapt to screen size
+- Enterprise-ready styling suitable for documentation and presentations
+
+See [HTML Export Examples](docs/html-exports/) for complete sample reports and detailed documentation.
 
 ### Programmatic Export
 
@@ -358,12 +379,15 @@ return [
 
 - **[Getting Started](#-quick-start)** - Basic usage and installation
 - **[Available Components](#available-component-types)** - Currently supported component types
+- **[Export Formats](docs/export-formats.md)** - **NEW** Detailed export format documentation with HTML examples
+- **[HTML Export Examples](docs/html-exports/)** - **NEW** Interactive HTML dashboard examples and features
 - **[Examples Directory](examples/)** - Working examples for all features
 - **[Configuration](#️-configuration)** - Detailed configuration options
 
 ### Quick Links
 
 - **[Examples README](examples/README.md)** - Overview of all working examples
+- **[HTML Export Example](examples/html-export-example.php)** - **NEW** Interactive HTML dashboard generation
 - **[Basic Usage Example](examples/basic-usage.php)** - Simple scanning and exporting
 - **[Models Analysis](examples/models-example.php)** - Detailed model mapping
 - **[Routes Analysis](examples/routes-example.php)** - Route mapping with middleware
@@ -374,12 +398,18 @@ return [
 - **[Form Requests Analysis](examples/form-requests-example.php)** - Form request validation mapping
 - **[Complete Analysis](examples/complete-analysis.php)** - Full application documentation
 
+### HTML Export Documentation
+
+- **[HTML Export README](docs/html-exports/README.md)** - Complete guide to HTML export features
+- **[Sample HTML Report](docs/html-exports/sample-full-report.html)** - Live example of interactive dashboard
+- **[Export Formats Guide](docs/export-formats.md)** - Comprehensive format comparison and usage
+
 ## 💡 Examples
 
 ### Generate Complete Application Map
 
 ```bash
-# Generate comprehensive application architecture
+# Generate comprehensive application architecture with interactive HTML dashboard
 php artisan atlas:generate --type=all --format=html --output=docs/architecture.html
 
 # Generate specific component maps
@@ -390,6 +420,18 @@ php artisan atlas:generate --type=services --format=markdown --output=docs/servi
 php artisan atlas:generate --type=notifications --format=html --output=docs/notifications.html
 php artisan atlas:generate --type=middlewares --format=json --output=docs/middlewares.json
 php artisan atlas:generate --type=form_requests --format=markdown --output=docs/form-requests.md
+```
+
+### Interactive HTML Dashboard Generation
+
+```bash
+# Generate complete interactive HTML architecture dashboard
+php artisan atlas:generate --format=html --output=public/atlas/dashboard.html
+
+# Generate component-specific interactive reports
+php artisan atlas:generate --type=models --format=html --output=public/atlas/models.html
+php artisan atlas:generate --type=routes --format=html --output=public/atlas/routes.html
+php artisan atlas:generate --type=services --format=html --output=public/atlas/services.html
 ```
 
 ### Custom Architecture Analysis
@@ -417,9 +459,17 @@ file_put_contents('docs/architecture-analysis.md', $markdownReport);
 ### Interactive Architecture Explorer
 
 ```php
-// Generate comprehensive HTML documentation
+// Generate comprehensive HTML documentation with all interactive features
 $htmlOutput = Atlas::export('all', 'html');
 file_put_contents('public/atlas/explorer.html', $htmlOutput);
+
+// This creates a self-contained HTML file with:
+// - Dark mode toggle
+// - Responsive navigation sidebar
+// - Component cards with syntax highlighting
+// - Professional Tailwind CSS styling
+// - Live component counts
+// - Collapsible detailed sections
 ```
 
 ### CI/CD Integration
@@ -463,9 +513,21 @@ file_put_contents('public/docs/services.html', $servicesHtml);
 
 $notificationsHtml = Atlas::export('notifications', 'html');
 file_put_contents('public/docs/notifications.html', $notificationsHtml);
+
+// Create complete documentation suite
+$components = ['models', 'routes', 'commands', 'services', 'notifications', 'middlewares', 'form_requests'];
+foreach ($components as $component) {
+    // Interactive HTML reports
+    $html = Atlas::export($component, 'html');
+    file_put_contents("public/atlas/{$component}.html", $html);
+    
+    // API-friendly JSON exports
+    $json = Atlas::export($component, 'json');
+    file_put_contents("api/atlas/{$component}.json", $json);
+}
 ```
 
-Check out the [examples directory](examples/) for working examples of all current features.
+Check out the [examples directory](examples/) for working examples of all current features, including the new [HTML Export Example](examples/html-export-example.php) that demonstrates interactive dashboard generation.
 
 ## 🧪 Testing
 
@@ -605,7 +667,8 @@ Laravel Atlas is open-sourced software licensed under the [MIT license](LICENSE.
 
 ### Resources
 
-- [📖 Documentation](docs/README.md)
+- [📖 Documentation](docs/README.md) - **NEW** Complete documentation directory
+- [🎨 HTML Export Examples](docs/html-exports/) - **NEW** Interactive dashboard examples
 - [💬 Discussions](https://github.com/Grazulex/laravel-atlas/discussions)
 - [🐛 Issue Tracker](https://github.com/Grazulex/laravel-atlas/issues)
 - [📦 Packagist](https://packagist.org/packages/grazulex/laravel-atlas)

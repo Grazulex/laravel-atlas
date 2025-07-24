@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Models Architecture Report – Laravel Atlas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        };
+        
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('atlas-dark-mode', isDark ? '1' : '0');
+            const icon = document.getElementById('dark-mode-icon');
+            if (icon) icon.textContent = isDark ? '☀️' : '🌙';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const isDark = localStorage.getItem('atlas-dark-mode') === '1';
+            if (isDark) document.documentElement.classList.add('dark');
+            const icon = document.getElementById('dark-mode-icon');
+            if (icon) icon.textContent = isDark ? '☀️' : '🌙';
+        });
+    </script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+    <!-- Header -->
+    <nav class="bg-white dark:bg-gray-800 shadow-lg border-b border-gray-200 dark:border-gray-700">
+        <div class="max-w-full mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-4">
+                    <h1 class="text-xl font-bold text-gray-900 dark:text-white">🧱 Models Architecture Report</h1>
+                    <span class="text-sm text-gray-600 dark:text-gray-300">Laravel Atlas</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-600 dark:text-gray-300">Generated: 24/07/2024 14:45</span>
+                    <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                        <span id="dark-mode-icon">🌙</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8">
+        <!-- Summary -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">📊 Models Summary</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg">
+                    <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">3</div>
+                    <div class="text-blue-700 dark:text-blue-300 text-sm">Total Models</div>
+                </div>
+                <div class="bg-green-50 dark:bg-green-900/30 p-4 rounded-lg">
+                    <div class="text-2xl font-bold text-green-600 dark:text-green-400">8</div>
+                    <div class="text-green-700 dark:text-green-300 text-sm">Relationships</div>
+                </div>
+                <div class="bg-purple-50 dark:bg-purple-900/30 p-4 rounded-lg">
+                    <div class="text-2xl font-bold text-purple-600 dark:text-purple-400">2</div>
+                    <div class="text-purple-700 dark:text-purple-300 text-sm">Observers</div>
+                </div>
+                <div class="bg-orange-50 dark:bg-orange-900/30 p-4 rounded-lg">
+                    <div class="text-2xl font-bold text-orange-600 dark:text-orange-400">3</div>
+                    <div class="text-orange-700 dark:text-orange-300 text-sm">Factories</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Models -->
+        <div class="space-y-6">
+            <!-- User Model -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white">App\\Models\\User</h3>
+                    <div class="flex space-x-2">
+                        <span class="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-3 py-1 rounded-full text-sm">Eloquent Model</span>
+                        <span class="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-full text-sm">Authenticatable</span>
+                    </div>
+                </div>
+                
+                <p class="text-gray-600 dark:text-gray-300 mb-6">User authentication and profile management model with role-based permissions</p>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Attributes -->
+                    <div>
+                        <h4 class="font-semibold text-gray-900 dark:text-white mb-3">📝 Attributes</h4>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <code class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">name</code>
+                                <span class="text-gray-600 dark:text-gray-400">string</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <code class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">email</code>
+                                <span class="text-gray-600 dark:text-gray-400">string</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <code class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">password</code>
+                                <span class="text-gray-600 dark:text-gray-400">string</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <code class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">email_verified_at</code>
+                                <span class="text-gray-600 dark:text-gray-400">timestamp</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <code class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">remember_token</code>
+                                <span class="text-gray-600 dark:text-gray-400">string</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Relationships -->
+                    <div>
+                        <h4 class="font-semibold text-gray-900 dark:text-white mb-3">🔗 Relationships</h4>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-blue-600 dark:text-blue-400 font-mono text-xs">hasMany</span>
+                                <span class="text-gray-700 dark:text-gray-300">→ posts</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-blue-600 dark:text-blue-400 font-mono text-xs">hasMany</span>
+                                <span class="text-gray-700 dark:text-gray-300">→ comments</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-green-600 dark:text-green-400 font-mono text-xs">belongsToMany</span>
+                                <span class="text-gray-700 dark:text-gray-300">→ roles</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-purple-600 dark:text-purple-400 font-mono text-xs">hasOne</span>
+                                <span class="text-gray-700 dark:text-gray-300">→ profile</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Metadata -->
+                    <div>
+                        <h4 class="font-semibold text-gray-900 dark:text-white mb-3">⚙️ Configuration</h4>
+                        <div class="space-y-2 text-sm">
+                            <div><strong>Table:</strong> <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">users</code></div>
+                            <div><strong>Primary Key:</strong> <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">id</code></div>
+                            <div><strong>Timestamps:</strong> ✅ Enabled</div>
+                            <div><strong>Soft Deletes:</strong> ❌ Disabled</div>
+                            <div><strong>Factory:</strong> ✅ Available</div>
+                            <div><strong>Observer:</strong> ✅ UserObserver</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Details -->
+                <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">🔒 Hidden Attributes</h5>
+                            <div class="flex flex-wrap gap-2">
+                                <code class="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 px-2 py-1 rounded text-xs">password</code>
+                                <code class="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 px-2 py-1 rounded text-xs">remember_token</code>
+                            </div>
+                        </div>
+                        <div>
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">📝 Fillable Attributes</h5>
+                            <div class="flex flex-wrap gap-2">
+                                <code class="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded text-xs">name</code>
+                                <code class="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded text-xs">email</code>
+                                <code class="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded text-xs">password</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Post Model -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white">App\\Models\\Post</h3>
+                    <span class="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-3 py-1 rounded-full text-sm">Eloquent Model</span>
+                </div>
+                
+                <p class="text-gray-600 dark:text-gray-300 mb-6">Blog post content management with publishing workflow and tagging system</p>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Attributes -->
+                    <div>
+                        <h4 class="font-semibold text-gray-900 dark:text-white mb-3">📝 Attributes</h4>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <code class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">title</code>
+                                <span class="text-gray-600 dark:text-gray-400">string</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <code class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">slug</code>
+                                <span class="text-gray-600 dark:text-gray-400">string</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <code class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">content</code>
+                                <span class="text-gray-600 dark:text-gray-400">text</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <code class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">published_at</code>
+                                <span class="text-gray-600 dark:text-gray-400">timestamp</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <code class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">user_id</code>
+                                <span class="text-gray-600 dark:text-gray-400">foreign key</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Relationships -->
+                    <div>
+                        <h4 class="font-semibold text-gray-900 dark:text-white mb-3">🔗 Relationships</h4>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-purple-600 dark:text-purple-400 font-mono text-xs">belongsTo</span>
+                                <span class="text-gray-700 dark:text-gray-300">→ user</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-blue-600 dark:text-blue-400 font-mono text-xs">hasMany</span>
+                                <span class="text-gray-700 dark:text-gray-300">→ comments</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-green-600 dark:text-green-400 font-mono text-xs">belongsToMany</span>
+                                <span class="text-gray-700 dark:text-gray-300">→ tags</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Metadata -->
+                    <div>
+                        <h4 class="font-semibold text-gray-900 dark:text-white mb-3">⚙️ Configuration</h4>
+                        <div class="space-y-2 text-sm">
+                            <div><strong>Table:</strong> <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">posts</code></div>
+                            <div><strong>Primary Key:</strong> <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">id</code></div>
+                            <div><strong>Timestamps:</strong> ✅ Enabled</div>
+                            <div><strong>Soft Deletes:</strong> ✅ Enabled</div>
+                            <div><strong>Factory:</strong> ✅ Available</div>
+                            <div><strong>Observer:</strong> ✅ PostObserver</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comment Model -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white">App\\Models\\Comment</h3>
+                    <span class="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-3 py-1 rounded-full text-sm">Eloquent Model</span>
+                </div>
+                
+                <p class="text-gray-600 dark:text-gray-300 mb-6">User comments on blog posts with moderation and threading support</p>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Attributes -->
+                    <div>
+                        <h4 class="font-semibold text-gray-900 dark:text-white mb-3">📝 Attributes</h4>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <code class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">content</code>
+                                <span class="text-gray-600 dark:text-gray-400">text</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <code class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">user_id</code>
+                                <span class="text-gray-600 dark:text-gray-400">foreign key</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <code class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">post_id</code>
+                                <span class="text-gray-600 dark:text-gray-400">foreign key</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <code class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">approved_at</code>
+                                <span class="text-gray-600 dark:text-gray-400">timestamp</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Relationships -->
+                    <div>
+                        <h4 class="font-semibold text-gray-900 dark:text-white mb-3">🔗 Relationships</h4>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-purple-600 dark:text-purple-400 font-mono text-xs">belongsTo</span>
+                                <span class="text-gray-700 dark:text-gray-300">→ user</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-purple-600 dark:text-purple-400 font-mono text-xs">belongsTo</span>
+                                <span class="text-gray-700 dark:text-gray-300">→ post</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Metadata -->
+                    <div>
+                        <h4 class="font-semibold text-gray-900 dark:text-white mb-3">⚙️ Configuration</h4>
+                        <div class="space-y-2 text-sm">
+                            <div><strong>Table:</strong> <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">comments</code></div>
+                            <div><strong>Primary Key:</strong> <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">id</code></div>
+                            <div><strong>Timestamps:</strong> ✅ Enabled</div>
+                            <div><strong>Soft Deletes:</strong> ❌ Disabled</div>
+                            <div><strong>Factory:</strong> ✅ Available</div>
+                            <div><strong>Observer:</strong> ❌ None</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-12">
+        <div class="container mx-auto px-4 py-6">
+            <div class="text-center text-sm text-gray-600 dark:text-gray-300">
+                Generated by <strong>Laravel Atlas</strong> • Models Architecture Report • 3 models analyzed
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
