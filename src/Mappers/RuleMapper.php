@@ -44,23 +44,12 @@ class RuleMapper implements ComponentMapper
             $files = $recursive ? File::allFiles($path) : File::files($path);
 
             foreach ($files as $file) {
-                $fqcn = $this->resolveClassFromFile($file->getRealPath());
-                
-                // Debug temporaire
-                if ($fqcn) {
-                    error_log("RuleMapper found class: $fqcn");
-                    error_log("Implements rule: " . ($this->implementsRule($fqcn) ? 'YES' : 'NO'));
-                } else {
-                    error_log("RuleMapper could not resolve class for: " . $file->getRealPath());
-                }
-
-                if (
-                    $fqcn &&
-                    $this->implementsRule($fqcn) &&
-                    ! isset($seen[$fqcn])
-                ) {
-                    $seen[$fqcn] = true;
-                    $rules[] = $this->analyzeRule($fqcn, $file->getRealPath());
+                if ($this->isRuleFile($file->getRealPath())) {
+                    $ruleData = $this->analyzeRuleFile($file->getRealPath());
+                    if ($ruleData && !isset($seen[$ruleData['class']])) {
+                        $seen[$ruleData['class']] = true;
+                        $rules[] = $ruleData;
+                    }
                 }
             }
         }
@@ -70,6 +59,102 @@ class RuleMapper implements ComponentMapper
             'count' => count($rules),
             'data' => $rules,
         ];
+    }
+
+    /**
+     * Vérifier si un fichier est une rule en analysant son contenu
+     */
+    protected function isRuleFile(string $filePath): bool
+    {
+        if (!file_exists($filePath) || !str_ends_with($filePath, '.php')) {
+            return false;
+        }
+
+        $content = file_get_contents($filePath);
+        if ($content === false) {
+            return false;
+        }
+
+        // Vérifier si la classe implémente l'une des interfaces de validation
+        return str_contains($content, 'ValidationRule') || 
+               str_contains($content, 'Illuminate\Contracts\Validation\Rule');
+    }
+
+    /**
+     * Analyser un fichier de rule sans charger la classe
+     */
+    protected function analyzeRuleFile(string $filePath): ?array
+    {
+        $content = file_get_contents($filePath);
+        if ($content === false) {
+            return null;
+        }
+
+        // Extraire le namespace
+        $namespace = '';
+        if (preg_match('/namespace\s+([^;]+);/', $content, $namespaceMatches)) {
+            $namespace = trim($namespaceMatches[1]);
+        }
+
+        // Extraire le nom de classe
+        $className = '';
+        if (preg_match('/class\s+(\w+)/', $content, $classMatches)) {
+            $className = $classMatches[1];
+        }
+
+        if (!$className) {
+            return null;
+        }
+
+        $fqcn = $namespace ? $namespace . '\\' . $className : $className;
+
+        // Extraire les méthodes publiques
+        $methods = $this->extractMethodsFromContent($content);
+
+        // Déterminer le type de rule
+        $implements = [];
+        if (str_contains($content, 'ValidationRule')) {
+            $implements[] = 'Illuminate\Contracts\Validation\ValidationRule';
+        }
+        if (str_contains($content, 'Illuminate\Contracts\Validation\Rule')) {
+            $implements[] = 'Illuminate\Contracts\Validation\Rule';
+        }
+
+        return [
+            'class' => $fqcn,
+            'file' => $filePath,
+            'namespace' => $namespace,
+            'name' => $className,
+            'methods' => $methods,
+            'implements' => $implements,
+            'message_method' => str_contains($content, 'function message'),
+            'is_abstract' => str_contains($content, 'abstract class'),
+            'is_final' => str_contains($content, 'final class'),
+        ];
+    }
+
+    /**
+     * Extraire les méthodes d'un contenu de fichier
+     */
+    protected function extractMethodsFromContent(string $content): array
+    {
+        $methods = [];
+        
+        // Pattern pour trouver les méthodes publiques
+        if (preg_match_all('/public\s+function\s+(\w+)\s*\([^)]*\)/', $content, $matches)) {
+            foreach ($matches[1] as $methodName) {
+                if ($methodName !== '__construct') {
+                    $methods[] = [
+                        'name' => $methodName,
+                        'parameters' => [], // Simplifié pour éviter la complexité
+                        'return_type' => null,
+                        'is_static' => false,
+                    ];
+                }
+            }
+        }
+
+        return $methods;
     }
 
     /**
