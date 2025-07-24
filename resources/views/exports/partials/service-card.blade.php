@@ -35,6 +35,15 @@
         ])
     </div>
 
+    {{-- Méthodes --}}
+    @include('atlas::exports.partials.common.collapsible-methods', [
+        'methods' => $service['methods'] ?? [],
+        'componentId' => 'service-' . md5($service['class']),
+        'title' => 'Méthodes',
+        'icon' => '⚙️',
+        'collapsed' => true
+    ])
+
     {{-- Flow Section --}}
     @include('atlas::exports.partials.common.flow-section', [
         'flow' => $service['flow'] ?? [],

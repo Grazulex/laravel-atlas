@@ -46,6 +46,15 @@
         'type' => 'notification'
     ])
 
+    {{-- Méthodes --}}
+    @include('atlas::exports.partials.common.collapsible-methods', [
+        'methods' => $notification['methods'] ?? [],
+        'componentId' => 'notification-' . md5($notification['class']),
+        'title' => 'Méthodes',
+        'icon' => '⚙️',
+        'collapsed' => true
+    ])
+
     {{-- Footer --}}
     @include('atlas::exports.partials.common.card-footer', [
         'class' => $notification['class'],

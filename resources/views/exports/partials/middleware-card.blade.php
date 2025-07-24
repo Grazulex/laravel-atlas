@@ -113,6 +113,15 @@
         'type' => 'middleware'
     ])
 
+    {{-- Méthodes --}}
+    @include('atlas::exports.partials.common.collapsible-methods', [
+        'methods' => $middleware['methods'] ?? [],
+        'componentId' => 'middleware-' . md5($middleware['class']),
+        'title' => 'Méthodes',
+        'icon' => '⚙️',
+        'collapsed' => true
+    ])
+
     {{-- Footer --}}
     @include('atlas::exports.partials.common.card-footer', [
         'class' => $middleware['class'],

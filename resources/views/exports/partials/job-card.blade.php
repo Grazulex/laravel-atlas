@@ -58,14 +58,13 @@
         @endif
 
         <!-- Méthodes -->
-        @if(count($job['methods']) > 0)
-            @include('atlas::exports.partials.common.property-item', [
-                'icon' => '⚙️',
-                'label' => 'Méthodes',
-                'items' => $job['methods'],
-                'type' => 'methods'
-            ])
-        @endif
+        @include('atlas::exports.partials.common.collapsible-methods', [
+            'methods' => $job['methods'] ?? [],
+            'componentId' => 'job-' . md5($job['class']),
+            'title' => 'Méthodes',
+            'icon' => '⚙️',
+            'collapsed' => true
+        ])
 
         <!-- Flow - Jobs Dispatchés -->
         @if(count($job['flow']['jobs']) > 0)

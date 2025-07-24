@@ -62,6 +62,15 @@
         'type' => 'simple'
     ])
 
+    {{-- Méthodes --}}
+    @include('atlas::exports.partials.common.collapsible-methods', [
+        'methods' => $rule['methods'] ?? [],
+        'componentId' => 'rule-' . md5($rule['class']),
+        'title' => 'Méthodes',
+        'icon' => '⚙️',
+        'collapsed' => true
+    ])
+
     {{-- Footer --}}
     @include('atlas::exports.partials.common.card-footer', [
         'class' => $rule['class'],

@@ -70,6 +70,15 @@
         ])
     </div>
 
+    {{-- Méthodes --}}
+    @include('atlas::exports.partials.common.collapsible-methods', [
+        'methods' => $controller['methods'] ?? [],
+        'componentId' => 'controller-' . md5($controller['class']),
+        'title' => 'Méthodes',
+        'icon' => '⚙️',
+        'collapsed' => true
+    ])
+
     {{-- Flow Section --}}
     @include('atlas::exports.partials.common.flow-section', [
         'flow' => $controller['flow'] ?? [],

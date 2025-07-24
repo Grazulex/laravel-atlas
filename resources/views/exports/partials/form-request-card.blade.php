@@ -187,6 +187,15 @@
         </div>
     @endif
 
+    {{-- Méthodes --}}
+    @include('atlas::exports.partials.common.collapsible-methods', [
+        'methods' => $form_request['methods'] ?? [],
+        'componentId' => 'form-request-' . md5($form_request['class']),
+        'title' => 'Méthodes',
+        'icon' => '⚙️',
+        'collapsed' => true
+    ])
+
     {{-- Flow Section --}}
     @include('atlas::exports.partials.common.flow-section', [
         'flow' => $form_request['flow'] ?? [],

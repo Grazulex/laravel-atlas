@@ -47,6 +47,15 @@
         </div>
     @endif
 
+    {{-- Méthodes --}}
+    @include('atlas::exports.partials.common.collapsible-methods', [
+        'methods' => $policy['methods'] ?? [],
+        'componentId' => 'policy-' . md5($policy['class']),
+        'title' => 'Méthodes',
+        'icon' => '⚙️',
+        'collapsed' => true
+    ])
+
     {{-- Footer --}}
     @include('atlas::exports.partials.common.card-footer', [
         'class' => $policy['class'],

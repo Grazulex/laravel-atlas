@@ -75,6 +75,15 @@
         </div>
     @endif
 
+    {{-- Méthodes --}}
+    @include('atlas::exports.partials.common.collapsible-methods', [
+        'methods' => $observer['methods'] ?? [],
+        'componentId' => 'observer-' . md5($observer['class']),
+        'title' => 'Méthodes',
+        'icon' => '⚙️',
+        'collapsed' => true
+    ])
+
     {{-- Footer --}}
     @include('atlas::exports.partials.common.card-footer', [
         'class' => $observer['class'],

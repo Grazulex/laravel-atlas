@@ -70,6 +70,15 @@
         'type' => 'command'
     ])
 
+    {{-- Méthodes --}}
+    @include('atlas::exports.partials.common.collapsible-methods', [
+        'methods' => $command['methods'] ?? [],
+        'componentId' => 'command-' . md5($command['class']),
+        'title' => 'Méthodes',
+        'icon' => '⚙️',
+        'collapsed' => true
+    ])
+
     {{-- Footer --}}
     @include('atlas::exports.partials.common.card-footer', [
         'class' => $command['class'],

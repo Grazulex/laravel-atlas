@@ -83,6 +83,15 @@
         'type' => 'simple'
     ])
 
+    {{-- Méthodes --}}
+    @include('atlas::exports.partials.common.collapsible-methods', [
+        'methods' => $listener['methods'] ?? [],
+        'componentId' => 'listener-' . md5($listener['class']),
+        'title' => 'Méthodes',
+        'icon' => '⚙️',
+        'collapsed' => true
+    ])
+
     {{-- Footer --}}
     @include('atlas::exports.partials.common.card-footer', [
         'class' => $listener['class'],

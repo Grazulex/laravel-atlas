@@ -119,6 +119,15 @@
         </div>
     @endif
 
+    {{-- Méthodes --}}
+    @include('atlas::exports.partials.common.collapsible-methods', [
+        'methods' => $model['methods'] ?? [],
+        'componentId' => 'model-' . md5($model['class']),
+        'title' => 'Méthodes',
+        'icon' => '⚙️',
+        'collapsed' => true
+    ])
+
     {{-- Flow Section --}}
     @include('atlas::exports.partials.common.flow-section', [
         'flow' => $model['flow'] ?? [],
