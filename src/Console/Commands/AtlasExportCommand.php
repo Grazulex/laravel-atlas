@@ -10,9 +10,9 @@ use Throwable;
 
 class AtlasExportCommand extends Command
 {
-    protected $signature = 'atlas:export {--type= : Filter to a specific component type (models, routes, etc.)} {--format=html : Export format (html, json, markdown, etc.)} {--output= : Output file path}';
+    protected $signature = 'atlas:export {--type= : Filter to a specific component type (models, routes, etc.) or "all" for all components} {--format=html : Export format (html, json, pdf, etc.)} {--output= : Output file path}';
 
-    protected $description = 'Export all components or filter to a specific type to a chosen format (HTML, JSON, Markdown, etc.)';
+    protected $description = 'Export all components or filter to a specific type to a chosen format (HTML, JSON, PDF, etc.)';
 
     public function handle(): int
     {
@@ -21,7 +21,7 @@ class AtlasExportCommand extends Command
 
         $output = $this->option('output') ?? public_path("atlas/export.{$format}");
 
-        if ($type) {
+        if ($type && $type !== 'all') {
             $this->info("🔍 Exporting {$type} as {$format}...");
             $output = $this->option('output') ?? public_path("atlas/{$type}.{$format}");
         } else {
@@ -29,11 +29,11 @@ class AtlasExportCommand extends Command
         }
 
         try {
-            if ($type) {
+            if ($type && $type !== 'all') {
                 // Export d'un type spécifique
                 $content = AtlasExportManager::export($type, $format);
             } else {
-                // Export de tous les composants
+                // Export de tous les composants (type=null ou type=all)
                 $content = AtlasExportManager::exportAll($format);
             }
         } catch (Throwable $e) {
