@@ -78,7 +78,8 @@
     "issues": "https://github.com/Grazulex/laravel-atlas/issues",
     "source": "https://github.com/Grazulex/laravel-atlas",
     "forum": "https://github.com/Grazulex/laravel-atlas/discussions",
-    "docs": "https://github.com/Grazulex/laravel-atlas#readme"
+    "docs": "https://github.com/Grazulex/laravel-atlas/wiki",
+    "wiki": "https://github.com/Grazulex/laravel-atlas/wiki"
   },
   "scripts": {
     "test": [
