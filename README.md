@@ -22,7 +22,7 @@ Advanced Laravel application mapping and visualization toolkit. Analyze, documen
 - [📊 Export Formats](#-export-formats)
 - [🔍 Analysis Tools](#-analysis-tools)
 - [⚙️ Configuration](#️-configuration)
-- [📚 Documentation](#-documentation)
+- [📚 Documentation & Wiki](#-documentation)
 - [💡 Examples](#-examples)
 - [🧪 Testing](#-testing)
 - [🔧 Requirements](#-requirements)
@@ -328,7 +328,7 @@ php artisan atlas:export --type=controllers --format=html --output=public/docs/c
 - Responsive grid layouts that adapt to screen size
 - Enterprise-ready styling suitable for documentation and presentations
 
-See [HTML Export Examples](docs/html-exports/) for complete sample reports and detailed documentation.
+📖 **[See HTML Export Examples in Wiki](https://github.com/Grazulex/laravel-atlas/wiki/HTML-Dashboard)** for complete sample reports and detailed documentation.
 
 ### PDF Export Features
 
@@ -433,7 +433,7 @@ php artisan atlas:export --format=html --output=reports/architecture.html
 php artisan atlas:export --format=json --output=reports/architecture.json
 ```
 
-**📖 Learn More**: See our comprehensive [Testing Architecture Guide](docs/testing-architecture.md) for advanced testing strategies and examples.
+📖 **[Learn More: Testing Architecture Guide](https://github.com/Grazulex/laravel-atlas/wiki/Architecture-Testing)** for advanced testing strategies and examples.
 
 ## 🔍 Analysis Tools
 
@@ -526,128 +526,61 @@ return [
 ];
 ```
 
-## 📚 Documentation
+## 📚 Documentation & Wiki
 
-### Core Documentation
+📖 **[Complete Documentation & Examples - Laravel Atlas Wiki](https://github.com/Grazulex/laravel-atlas/wiki)**
 
-- **[Getting Started](#-quick-start)** - Basic usage and installation
-- **[Available Components](#available-component-types)** - Currently supported component types
-- **[Export Formats](docs/export-formats.md)** - Detailed export format documentation with HTML examples
-- **[Testing Architecture](docs/testing-architecture.md)** - **NEW** Complete guide to architecture testing and validation
-- **[HTML Export Examples](docs/html-exports/)** - Interactive HTML dashboard examples and features
-- **[Examples Directory](examples/)** - Working examples for all features
-- **[Configuration](#️-configuration)** - Detailed configuration options
+All documentation, examples, and advanced usage guides have been moved to our comprehensive Wiki:
 
-### Quick Links
+### 🚀 Quick Links
 
-- **[Examples README](examples/README.md)** - Overview of all working examples
-- **[Testing Example](examples/testing-example.php)** - **NEW** Architecture testing and validation examples
-- **[HTML Export Example](examples/html-export-example.php)** - Interactive HTML dashboard generation
-- **[Basic Usage Example](examples/basic-usage.php)** - Simple scanning and exporting
-- **[Models Analysis](examples/models-example.php)** - Detailed model mapping
-- **[Routes Analysis](examples/routes-example.php)** - Route mapping with middleware
-- **[Commands Analysis](examples/commands-example.php)** - Artisan command analysis
-- **[Services Analysis](examples/services-example.php)** - Service class mapping with dependencies
-- **[Notifications Analysis](examples/notifications-example.php)** - Notification mapping with channels
-- **[Middlewares Analysis](examples/middlewares-example.php)** - Middleware analysis with parameters
-- **[Form Requests Analysis](examples/form-requests-example.php)** - Form request validation mapping
-- **[Complete Analysis](examples/complete-analysis.php)** - Full application documentation
+- **[📖 Home](https://github.com/Grazulex/laravel-atlas/wiki)** - Wiki homepage with navigation
+- **[🎯 Getting Started](https://github.com/Grazulex/laravel-atlas/wiki/Getting-Started)** - Installation and basic usage
+- **[🗺️ Component Types](https://github.com/Grazulex/laravel-atlas/wiki/Component-Types)** - All 16 supported component types
+- **[📊 Export Formats](https://github.com/Grazulex/laravel-atlas/wiki/Export-Formats)** - HTML, JSON, and PDF export details
+- **[🧪 Architecture Testing](https://github.com/Grazulex/laravel-atlas/wiki/Architecture-Testing)** - Testing and validation guide
+- **[⚙️ Configuration](https://github.com/Grazulex/laravel-atlas/wiki/Configuration)** - Complete configuration options
+- **[🔧 Advanced Usage](https://github.com/Grazulex/laravel-atlas/wiki/Advanced-Usage)** - Power user features
+- **[🎨 HTML Dashboard](https://github.com/Grazulex/laravel-atlas/wiki/HTML-Dashboard)** - Interactive HTML export features
 
-### HTML Export Documentation
+### 💡 Working Examples
 
-- **[HTML Export README](docs/html-exports/README.md)** - Complete guide to HTML export features
-- **[Sample HTML Report](docs/html-exports/sample-full-report.html)** - Live example of interactive dashboard
-- **[Export Formats Guide](docs/export-formats.md)** - Comprehensive format comparison and usage
+- **[💻 Code Examples](https://github.com/Grazulex/laravel-atlas/wiki/Code-Examples)** - PHP code samples
+- **[📋 Command Examples](https://github.com/Grazulex/laravel-atlas/wiki/Command-Examples)** - Artisan command usage
+- **[🏗️ CI/CD Integration](https://github.com/Grazulex/laravel-atlas/wiki/CI-CD-Integration)** - Pipeline integration examples
+- **[📱 Live Demos](https://github.com/Grazulex/laravel-atlas/wiki/Live-Demos)** - Interactive demo reports
 
 ## 💡 Examples
 
-### Generate Complete Application Map
+📚 **[All Examples Available in Wiki](https://github.com/Grazulex/laravel-atlas/wiki/Examples)**
+
+### Quick Start Examples
 
 ```bash
-# Generate comprehensive application architecture with interactive HTML dashboard
-php artisan atlas:export --type=all --format=html --output=docs/architecture.html
+# Generate complete application map
+php artisan atlas:export --type=all --format=html
 
 # Generate specific component maps
-php artisan atlas:export --type=models --format=json --output=docs/models.json
-php artisan atlas:export --type=routes --format=html --output=docs/routes.html
-php artisan atlas:export --type=commands --format=pdf --output=docs/commands.pdf
-php artisan atlas:export --type=services --format=html --output=docs/services.html
-php artisan atlas:export --type=notifications --format=json --output=docs/notifications.json
-php artisan atlas:export --type=middlewares --format=pdf --output=docs/middlewares.pdf
-php artisan atlas:export --type=form_requests --format=html --output=docs/form-requests.html
-php artisan atlas:export --type=events --format=json --output=docs/events.json
-php artisan atlas:export --type=controllers --format=html --output=docs/controllers.html
-php artisan atlas:export --type=jobs --format=pdf --output=docs/jobs.pdf
+php artisan atlas:export --type=models --format=json
+php artisan atlas:export --type=routes --format=html
+php artisan atlas:export --type=services --format=pdf
 ```
 
-### Interactive HTML Dashboard Generation
-
-```bash
-# Generate complete interactive HTML architecture dashboard
-php artisan atlas:export --format=html --output=public/atlas/dashboard.html
-
-# Generate component-specific interactive reports
-php artisan atlas:export --type=models --format=html --output=public/atlas/models.html
-php artisan atlas:export --type=routes --format=html --output=public/atlas/routes.html
-php artisan atlas:export --type=services --format=html --output=public/atlas/services.html
-php artisan atlas:export --type=events --format=html --output=public/atlas/events.html
-```
-
-### Custom Architecture Analysis
+### Basic PHP Usage
 
 ```php
 use LaravelAtlas\Facades\Atlas;
 
-// Custom analysis workflow
-$modelData = Atlas::scan('models', ['include_relationships' => true]);
-$routeData = Atlas::scan('routes', ['include_middleware' => true]);
-$commandData = Atlas::scan('commands', ['include_signatures' => true]);
-$serviceData = Atlas::scan('services', ['include_dependencies' => true]);
-$notificationData = Atlas::scan('notifications', ['include_channels' => true]);
-$middlewareData = Atlas::scan('middlewares', ['include_parameters' => true]);
-$formRequestData = Atlas::scan('form_requests', ['include_rules' => true]);
+// Scan specific components
+$models = Atlas::scan('models');
+$routes = Atlas::scan('routes');
 
-$htmlReport = Atlas::export('models', 'html', [
-    'include_stats' => true,
-    'detailed_sections' => true,
-]);
-
-file_put_contents('docs/architecture-analysis.html', $htmlReport);
+// Export to different formats
+$html = Atlas::export('all', 'html');
+$json = Atlas::export('models', 'json');
 ```
 
-### Interactive Architecture Explorer
-
-```php
-// Generate comprehensive HTML documentation with all interactive features
-$htmlOutput = Atlas::export('all', 'html');
-file_put_contents('public/atlas/explorer.html', $htmlOutput);
-
-// This creates a self-contained HTML file with:
-// - Dark mode toggle
-// - Responsive navigation sidebar
-// - Component cards with syntax highlighting
-// - Professional Tailwind CSS styling
-// - Live component counts
-// - Collapsible detailed sections
-```
-
-### CI/CD Integration
-
-```bash
-# In your CI/CD pipeline
-php artisan atlas:export --type=all --format=json --output=docs/architecture.json
-php artisan atlas:export --type=all --format=html --output=public/docs/architecture.html
-php artisan atlas:export --type=all --format=pdf --output=docs/architecture.pdf
-
-# Generate specific component documentation
-php artisan atlas:export --type=models --format=html --output=docs/models.html
-php artisan atlas:export --type=routes --format=json --output=api/routes.json
-php artisan atlas:export --type=commands --format=pdf --output=docs/commands.pdf
-php artisan atlas:export --type=services --format=html --output=docs/services.html
-php artisan atlas:export --type=notifications --format=json --output=docs/notifications.json
-php artisan atlas:export --type=middlewares --format=pdf --output=docs/middlewares.pdf
-php artisan atlas:export --type=form_requests --format=html --output=docs/form-requests.html
-php artisan atlas:export --type=events --format=json --output=docs/events.json
+📖 **[Complete Examples, Tutorials & Advanced Usage →](https://github.com/Grazulex/laravel-atlas/wiki)**
 php artisan atlas:export --type=controllers --format=html --output=docs/controllers.html
 ```
 
@@ -694,7 +627,7 @@ foreach ($components as $component) {
 }
 ```
 
-Check out the [examples directory](examples/) for working examples of all current features, including the new [HTML Export Example](examples/html-export-example.php) that demonstrates interactive dashboard generation.
+📖 **[More Examples Available in Wiki](https://github.com/Grazulex/laravel-atlas/wiki/Examples)** - Complete working examples, tutorials, and advanced usage patterns.
 
 ## 🧪 Testing
 
@@ -889,11 +822,10 @@ Laravel Atlas is open-sourced software licensed under the [MIT license](LICENSE.
 
 ### Resources
 
-- [📖 Documentation](docs/README.md) - **NEW** Complete documentation directory
-- [🎨 HTML Export Examples](docs/html-exports/) - **NEW** Interactive dashboard examples
-- [💬 Discussions](https://github.com/Grazulex/laravel-atlas/discussions)
-- [🐛 Issue Tracker](https://github.com/Grazulex/laravel-atlas/issues)
-- [📦 Packagist](https://packagist.org/packages/grazulex/laravel-atlas)
+- **[📖 Wiki - Complete Documentation](https://github.com/Grazulex/laravel-atlas/wiki)** - All documentation and examples
+- **[💬 Discussions](https://github.com/Grazulex/laravel-atlas/discussions)** - Community discussions
+- **[🐛 Issue Tracker](https://github.com/Grazulex/laravel-atlas/issues)** - Bug reports and feature requests
+- **[📦 Packagist](https://packagist.org/packages/grazulex/laravel-atlas)** - Package repository
 
 ### Community Links
 
