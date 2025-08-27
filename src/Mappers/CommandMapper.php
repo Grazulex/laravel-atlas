@@ -168,7 +168,6 @@ class CommandMapper implements ComponentMapper
         $reflection = new ReflectionClass($command);
         if ($reflection->hasProperty('signature')) {
             $property = $reflection->getProperty('signature');
-            $property->setAccessible(true);
 
             return (string) $property->getValue($command);
         }
@@ -181,7 +180,6 @@ class CommandMapper implements ComponentMapper
         $reflection = new ReflectionClass($command);
         if ($reflection->hasProperty('description')) {
             $property = $reflection->getProperty('description');
-            $property->setAccessible(true);
 
             return (string) $property->getValue($command);
         }

@@ -252,6 +252,6 @@ class MiddlewareMapper implements ComponentMapper
             $flow['notifications'] = array_unique($matches[1]);
         }
 
-        return array_filter($flow, fn ($items): bool => $items !== []);
+        return array_filter($flow, fn (array $items): bool => $items !== []);
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Mappers;
 
+use Closure;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Route as RouteFacade;
 use LaravelAtlas\Contracts\ComponentMapper;
@@ -26,7 +27,7 @@ class RouteMapper implements ComponentMapper
             $routes[] = $this->analyzeRoute($route);
         }
 
-        usort($routes, fn ($a, $b): int => strcmp((string) $a['uri'], (string) $b['uri']));
+        usort($routes, fn (array $a, array $b): int => strcmp((string) $a['uri'], (string) $b['uri']));
 
         return [
             'type' => $this->type(),
@@ -41,22 +42,39 @@ class RouteMapper implements ComponentMapper
     protected function analyzeRoute(Route $route): array
     {
         $action = $route->getActionName();
+
+        // Handle case where action might be a Closure object
+        if ($action instanceof Closure) {
+            $action = 'Closure';
+        } elseif (! is_string($action)) {
+            $action = 'Unknown';
+        }
+
         $usesController = is_string($action) && str_contains($action, '@');
 
         $flow = $usesController
             ? $this->analyzeControllerFlow($route)
             : ['jobs' => [], 'events' => [], 'dependencies' => []];
 
+        // Extract controller information safely
+        $controller = null;
+        $uses = null;
+        if ($usesController) {
+            $parts = explode('@', $action);
+            $controller = $parts[0];
+            $uses = $parts[1] ?? null;
+        }
+
         return [
-            'uri' => $route->uri(),
-            'name' => $route->getName(),
+            'uri' => (string) $route->uri(),
+            'name' => $route->getName() ? (string) $route->getName() : null,
             'methods' => array_values(array_diff($route->methods(), ['HEAD'])),
             'middleware' => $route->gatherMiddleware(),
             'action' => $action,
-            'controller' => $usesController ? explode('@', $action)[0] : null,
-            'uses' => $usesController ? explode('@', $action)[1] ?? null : null,
-            'prefix' => $route->getPrefix(),
-            'domain' => $route->getDomain(),
+            'controller' => $controller,
+            'uses' => $uses,
+            'prefix' => $route->getPrefix() ? (string) $route->getPrefix() : null,
+            'domain' => $route->getDomain() ? (string) $route->getDomain() : null,
             'is_closure' => $action === 'Closure',
             'type' => $this->guessRouteType($route),
             'file' => $this->guessRouteFile($route),

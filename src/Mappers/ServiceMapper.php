@@ -9,6 +9,7 @@ use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
 use ReflectionClass;
 use ReflectionMethod;
+use ReflectionParameter;
 
 class ServiceMapper implements ComponentMapper
 {
@@ -102,7 +103,7 @@ class ServiceMapper implements ComponentMapper
             $methods[] = [
                 'name' => $method->getName(),
                 'parameters' => array_map(
-                    fn ($param): string => '$' . $param->getName(),
+                    fn (ReflectionParameter $param): string => '$' . $param->getName(),
                     $method->getParameters()
                 ),
             ];
@@ -122,7 +123,7 @@ class ServiceMapper implements ComponentMapper
 
         $method = $reflection->getMethod('__construct');
 
-        return array_map(function ($param) {
+        return array_map(function (ReflectionParameter $param) {
             $type = $param->getType();
 
             if ($type === null) {

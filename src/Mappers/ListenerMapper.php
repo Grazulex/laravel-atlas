@@ -11,6 +11,7 @@ use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
 use ReflectionClass;
 use ReflectionMethod;
+use ReflectionParameter;
 
 class ListenerMapper implements ComponentMapper
 {
@@ -103,7 +104,7 @@ class ListenerMapper implements ComponentMapper
                 $methods[] = [
                     'name' => $method->getName(),
                     'parameters' => array_map(
-                        fn ($param): array => [
+                        fn (ReflectionParameter $param): array => [
                             'name' => $param->getName(),
                             'type' => $param->getType()?->__toString(),
                             'has_default' => $param->isDefaultValueAvailable(),

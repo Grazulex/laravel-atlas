@@ -10,6 +10,7 @@ use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
 use ReflectionClass;
 use ReflectionMethod;
+use ReflectionParameter;
 
 class ObserverMapper implements ComponentMapper
 {
@@ -102,7 +103,7 @@ class ObserverMapper implements ComponentMapper
                 $methods[] = [
                     'name' => $method->getName(),
                     'parameters' => array_map(
-                        fn ($param): array => [
+                        fn (ReflectionParameter $param): array => [
                             'name' => $param->getName(),
                             'type' => $param->getType()?->__toString(),
                             'has_default' => $param->isDefaultValueAvailable(),

@@ -11,6 +11,7 @@ use LaravelAtlas\Support\ClassResolver;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionNamedType;
+use ReflectionParameter;
 use ReflectionType;
 use Throwable;
 
@@ -103,7 +104,7 @@ class ActionMapper implements ComponentMapper
                 $methods[] = [
                     'name' => $method->getName(),
                     'parameters' => array_map(
-                        fn ($p): array => [
+                        fn (ReflectionParameter $p): array => [
                             'name' => $p->getName(),
                             'type' => $p->getType() instanceof ReflectionType ? $p->getType()->__toString() : null,
                             'default' => $p->isDefaultValueAvailable() ? $p->getDefaultValue() : null,
@@ -131,7 +132,7 @@ class ActionMapper implements ComponentMapper
 
         return [
             'parameters' => array_map(
-                fn ($p): array => [
+                fn (ReflectionParameter $p): array => [
                     'name' => $p->getName(),
                     'type' => $p->getType() instanceof ReflectionType ? $p->getType()->__toString() : null,
                 ],

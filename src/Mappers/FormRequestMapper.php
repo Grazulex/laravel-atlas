@@ -10,6 +10,7 @@ use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
 use ReflectionClass;
 use ReflectionMethod;
+use ReflectionParameter;
 use ReflectionType;
 
 class FormRequestMapper implements ComponentMapper
@@ -260,7 +261,7 @@ class FormRequestMapper implements ComponentMapper
                 'is_important' => $isImportant,
                 'return_type' => $method->getReturnType() instanceof ReflectionType ? (string) $method->getReturnType() : null,
                 'parameters' => array_map(
-                    fn ($param): array => [
+                    fn (ReflectionParameter $param): array => [
                         'name' => '$' . $param->getName(),
                         'type' => $param->getType() instanceof ReflectionType ? (string) $param->getType() : null,
                     ],
@@ -337,6 +338,6 @@ class FormRequestMapper implements ComponentMapper
         }
         $flow['validations'] = array_unique($validationTypes);
 
-        return array_filter($flow, fn ($items): bool => $items !== []);
+        return array_filter($flow, fn (array $items): bool => $items !== []);
     }
 }
