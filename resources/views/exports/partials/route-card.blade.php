@@ -68,7 +68,7 @@
                                 <code class="ml-2 text-blue-600 dark:text-blue-400">{{ class_basename($item['controller']) }}</code>
                             </div>
                         @endif
-                        @if (!empty($item['uses']))
+                        @if (!empty($item['uses']) && is_string($item['uses']))
                             <div class="text-xs">
                                 <span class="font-medium text-gray-700 dark:text-gray-300">Method:</span>
                                 <code class="ml-2 text-purple-600 dark:text-purple-400">{{ $item['uses'] }}</code>

@@ -11,6 +11,7 @@ use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
 use ReflectionClass;
 use ReflectionMethod;
+use ReflectionParameter;
 use Throwable;
 
 class ModelMapper implements ComponentMapper
@@ -161,7 +162,7 @@ class ModelMapper implements ComponentMapper
                 $scopeName = lcfirst(substr($method->getName(), 5));
                 $scopes[] = [
                     'name' => $scopeName,
-                    'parameters' => array_map(fn ($p): string => '$' . $p->getName(), $method->getParameters()),
+                    'parameters' => array_map(fn (ReflectionParameter $p): string => '$' . $p->getName(), $method->getParameters()),
                 ];
             }
         }

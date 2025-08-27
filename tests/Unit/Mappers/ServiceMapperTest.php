@@ -61,7 +61,6 @@ describe('ServiceMapper', function (): void {
 
         $reflection = new ReflectionClass($this->mapper);
         $method = $reflection->getMethod('analyzeService');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->mapper, 'Tests\Fixtures\TestService', $tempFile);
 
@@ -79,7 +78,6 @@ describe('ServiceMapper', function (): void {
     test('it handles non-existent service class', function (): void {
         $reflection = new ReflectionClass($this->mapper);
         $method = $reflection->getMethod('analyzeService');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->mapper, 'NonExistentService', '/fake/path');
 
@@ -112,7 +110,6 @@ describe('ServiceMapper', function (): void {
 
         $reflection = new ReflectionClass($this->mapper);
         $method = $reflection->getMethod('extractPublicMethods');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->mapper, $class);
 
@@ -157,7 +154,6 @@ describe('ServiceMapper', function (): void {
 
         $reflection = new ReflectionClass($this->mapper);
         $method = $reflection->getMethod('extractConstructorDependencies');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->mapper, $class);
 
@@ -190,7 +186,6 @@ describe('ServiceMapper', function (): void {
 
         $reflection = new ReflectionClass($this->mapper);
         $method = $reflection->getMethod('extractConstructorDependencies');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->mapper, $class);
 
@@ -214,7 +209,6 @@ describe('ServiceMapper', function (): void {
 
         $reflection = new ReflectionClass($this->mapper);
         $method = $reflection->getMethod('analyzeFlow');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->mapper, $source);
 

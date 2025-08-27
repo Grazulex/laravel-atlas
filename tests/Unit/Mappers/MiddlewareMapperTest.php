@@ -60,7 +60,6 @@ describe('MiddlewareMapper', function (): void {
 
         $reflection = new ReflectionClass($this->mapper);
         $method = $reflection->getMethod('analyzeMiddleware');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->mapper, 'Tests\Fixtures\TestMiddleware', $tempFile);
 
@@ -80,7 +79,6 @@ describe('MiddlewareMapper', function (): void {
     test('it handles non-existent middleware class', function (): void {
         $reflection = new ReflectionClass($this->mapper);
         $method = $reflection->getMethod('analyzeMiddleware');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->mapper, 'NonExistentMiddleware', '/fake/path');
 
@@ -100,7 +98,6 @@ describe('MiddlewareMapper', function (): void {
 
         $reflection = new ReflectionClass($this->mapper);
         $method = $reflection->getMethod('extractMethods');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->mapper, $class);
 
@@ -130,7 +127,6 @@ describe('MiddlewareMapper', function (): void {
 
         $reflection = new ReflectionClass($this->mapper);
         $method = $reflection->getMethod('analyzeFlow');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->mapper, $source);
 
@@ -163,7 +159,6 @@ describe('MiddlewareMapper', function (): void {
 
         $reflection = new ReflectionClass($this->mapper);
         $method = $reflection->getMethod('extractHandleParameters');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->mapper, $class);
 

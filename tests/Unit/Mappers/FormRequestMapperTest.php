@@ -77,7 +77,6 @@ describe('FormRequestMapper', function (): void {
 
         $reflection = new ReflectionClass($this->mapper);
         $method = $reflection->getMethod('analyzeFormRequest');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->mapper, 'Tests\Fixtures\TestFormRequest', $tempFile);
 
@@ -97,7 +96,6 @@ describe('FormRequestMapper', function (): void {
     test('it handles non-existent form request class', function (): void {
         $reflection = new ReflectionClass($this->mapper);
         $method = $reflection->getMethod('analyzeFormRequest');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->mapper, 'NonExistentFormRequest', '/fake/path');
 
@@ -128,7 +126,6 @@ describe('FormRequestMapper', function (): void {
 
         $reflection = new ReflectionClass($this->mapper);
         $method = $reflection->getMethod('extractRules');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->mapper, $source);
 
@@ -154,7 +151,6 @@ describe('FormRequestMapper', function (): void {
 
         $reflection = new ReflectionClass($this->mapper);
         $method = $reflection->getMethod('extractAuthorization');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->mapper, $source);
 
@@ -182,7 +178,6 @@ describe('FormRequestMapper', function (): void {
 
         $reflection = new ReflectionClass($this->mapper);
         $method = $reflection->getMethod('extractAttributes');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->mapper, $source);
 
@@ -206,7 +201,6 @@ describe('FormRequestMapper', function (): void {
 
         $reflection = new ReflectionClass($this->mapper);
         $method = $reflection->getMethod('extractMessages');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->mapper, $source);
 
@@ -235,7 +229,6 @@ describe('FormRequestMapper', function (): void {
 
         $reflection = new ReflectionClass($this->mapper);
         $method = $reflection->getMethod('analyzeFlow');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->mapper, $source);
 
@@ -268,7 +261,6 @@ describe('FormRequestMapper', function (): void {
 
         $reflection = new ReflectionClass($this->mapper);
         $method = $reflection->getMethod('extractMethods');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->mapper, $class);
 

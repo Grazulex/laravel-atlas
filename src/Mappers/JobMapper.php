@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\File;
 use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
 use ReflectionClass;
+use ReflectionIntersectionType;
 use ReflectionMethod;
 use ReflectionNamedType;
 use ReflectionParameter;
@@ -202,7 +203,7 @@ class JobMapper implements ComponentMapper
         }
 
         if ($type instanceof ReflectionUnionType) {
-            return implode('|', array_map(fn ($t) => $t instanceof ReflectionNamedType ? $t->getName() : (string) $t, $type->getTypes()));
+            return implode('|', array_map(fn (ReflectionIntersectionType|ReflectionNamedType $t) => $t instanceof ReflectionNamedType ? $t->getName() : (string) $t, $type->getTypes()));
         }
 
         return 'mixed';
@@ -277,7 +278,7 @@ class JobMapper implements ComponentMapper
         }
 
         if ($type instanceof ReflectionUnionType) {
-            return implode('|', array_map(fn ($t) => $t instanceof ReflectionNamedType ? $t->getName() : (string) $t, $type->getTypes()));
+            return implode('|', array_map(fn (ReflectionIntersectionType|ReflectionNamedType $t) => $t instanceof ReflectionNamedType ? $t->getName() : (string) $t, $type->getTypes()));
         }
 
         return 'mixed';

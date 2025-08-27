@@ -73,7 +73,6 @@ describe('NotificationMapper', function (): void {
 
         $reflection = new ReflectionClass($this->mapper);
         $method = $reflection->getMethod('analyzeNotification');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->mapper, 'Tests\Fixtures\TestNotification', $tempFile);
 
@@ -91,7 +90,6 @@ describe('NotificationMapper', function (): void {
     test('it handles non-existent notification class', function (): void {
         $reflection = new ReflectionClass($this->mapper);
         $method = $reflection->getMethod('analyzeNotification');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->mapper, 'NonExistentNotification', '/fake/path');
 
@@ -114,7 +112,6 @@ describe('NotificationMapper', function (): void {
 
         $reflection = new ReflectionClass($this->mapper);
         $method = $reflection->getMethod('detectChannels');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->mapper, $source);
 
@@ -139,7 +136,6 @@ describe('NotificationMapper', function (): void {
 
         $reflection = new ReflectionClass($this->mapper);
         $method = $reflection->getMethod('detectChannels');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->mapper, $source);
 
@@ -165,7 +161,6 @@ describe('NotificationMapper', function (): void {
 
         $reflection = new ReflectionClass($this->mapper);
         $method = $reflection->getMethod('detectDefinedMethods');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->mapper, $source);
 
@@ -202,7 +197,6 @@ describe('NotificationMapper', function (): void {
 
         $reflection = new ReflectionClass($this->mapper);
         $method = $reflection->getMethod('analyzeFlow');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->mapper, $source);
 
