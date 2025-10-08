@@ -125,22 +125,41 @@
         @endif
 
         {{-- Dependencies --}}
-        @if (!empty($item['dependencies']))
+        @php
+            $totalDeps = 0;
+            if (!empty($item['dependencies']) && is_array($item['dependencies'])) {
+                foreach ($item['dependencies'] as $depType => $deps) {
+                    if (is_array($deps)) {
+                        $totalDeps += count($deps);
+                    }
+                }
+            }
+        @endphp
+        @if ($totalDeps > 0)
             <div>
                 <div class="flex items-center mb-3">
                     <span class="text-sm mr-2">🔗</span>
                     <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Dependencies ({{ count($item['dependencies']) }})
+                        Dependencies ({{ $totalDeps }})
                     </h4>
                 </div>
-                <div class="bg-gray-50 dark:bg-gray-700/50 rounded p-3">
-                    <div class="flex flex-wrap gap-2">
-                        @foreach ($item['dependencies'] as $dependency)
-                            <span class="text-xs px-2 py-1 rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200 font-medium">
-                                {{ is_array($dependency) ? (class_basename($dependency[0] ?? '') ?: 'Unknown') : class_basename($dependency) }}
-                            </span>
-                        @endforeach
-                    </div>
+                <div class="bg-gray-50 dark:bg-gray-700/50 rounded p-3 space-y-3">
+                    @foreach ($item['dependencies'] as $depType => $deps)
+                        @if (!empty($deps) && is_array($deps))
+                            <div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400 mb-2 font-medium uppercase">
+                                    {{ ucfirst($depType) }}:
+                                </div>
+                                <div class="flex flex-wrap gap-2">
+                                    @foreach ($deps as $dependency)
+                                        <span class="text-xs px-2 py-1 rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200 font-medium">
+                                            {{ is_array($dependency) ? (class_basename($dependency[0] ?? '') ?: 'Unknown') : class_basename($dependency) }}
+                                        </span>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+                    @endforeach
                 </div>
             </div>
         @endif
