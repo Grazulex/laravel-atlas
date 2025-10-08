@@ -43,6 +43,11 @@ class HtmlLayoutExporter
             $routesData = $data['routes']['data'];
         }
 
+        $routesGrouping = [];
+        if (isset($data['routes']) && is_array($data['routes']) && isset($data['routes']['grouping'])) {
+            $routesGrouping = $data['routes']['grouping'];
+        }
+
         if (isset($data['services']) && is_array($data['services']) && isset($data['services']['data'])) {
             $servicesData = $data['services']['data'];
         }
@@ -120,6 +125,7 @@ class HtmlLayoutExporter
             'models' => $modelsData,
             'commands' => $commandsData,
             'routes' => $routesData,
+            'routes_grouping' => $routesGrouping,
             'services' => $servicesData,
             'notifications' => $notificationsData,
             'middlewares' => $middlewaresData,
