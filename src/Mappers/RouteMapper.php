@@ -33,6 +33,7 @@ class RouteMapper implements ComponentMapper
             'type' => $this->type(),
             'count' => count($routes),
             'data' => $routes,
+            'grouping' => $this->buildGroupingMetadata($routes),
         ];
     }
 
@@ -203,5 +204,88 @@ class RouteMapper implements ComponentMapper
         $found = array_filter(array_merge($matches[1], $matches[2]));
 
         return array_values(array_unique(array_filter($found)));
+    }
+
+    /**
+     * Build grouping metadata for routes
+     *
+     * @param  array<int, array<string, mixed>>  $routes
+     *
+     * @return array<string, mixed>
+     */
+    protected function buildGroupingMetadata(array $routes): array
+    {
+        $byPrefix = [];
+        $byType = [];
+        $byMiddleware = [];
+        $byMethod = [];
+        $allPrefixes = [];
+        $allMiddlewares = [];
+
+        foreach ($routes as $route) {
+            // Group by prefix
+            $prefix = $route['prefix'] ?? '_no_prefix';
+            if (! isset($byPrefix[$prefix])) {
+                $byPrefix[$prefix] = [];
+            }
+            $byPrefix[$prefix][] = $route;
+
+            if ($route['prefix'] !== null && ! in_array($route['prefix'], $allPrefixes)) {
+                $allPrefixes[] = $route['prefix'];
+            }
+
+            // Group by type
+            $type = $route['type'];
+            if (! isset($byType[$type])) {
+                $byType[$type] = [];
+            }
+            $byType[$type][] = $route;
+
+            // Group by middleware
+            foreach ($route['middleware'] as $middleware) {
+                if (! isset($byMiddleware[$middleware])) {
+                    $byMiddleware[$middleware] = [];
+                }
+                $byMiddleware[$middleware][] = $route;
+
+                if (! in_array($middleware, $allMiddlewares)) {
+                    $allMiddlewares[] = $middleware;
+                }
+            }
+
+            // Count by HTTP method
+            foreach ($route['methods'] as $method) {
+                if (! isset($byMethod[$method])) {
+                    $byMethod[$method] = 0;
+                }
+                $byMethod[$method]++;
+            }
+        }
+
+        // Sort groupings
+        ksort($byPrefix);
+        ksort($byType);
+        ksort($byMiddleware);
+        ksort($byMethod);
+        sort($allPrefixes);
+        sort($allMiddlewares);
+
+        return [
+            'by_prefix' => $byPrefix,
+            'by_type' => $byType,
+            'by_middleware' => $byMiddleware,
+            'filters' => [
+                'prefixes' => $allPrefixes,
+                'types' => array_keys($byType),
+                'middlewares' => $allMiddlewares,
+                'methods' => array_keys($byMethod),
+            ],
+            'stats' => [
+                'total' => count($routes),
+                'by_method' => $byMethod,
+                'by_type' => array_map('count', $byType),
+                'by_prefix' => array_map('count', $byPrefix),
+            ],
+        ];
     }
 }

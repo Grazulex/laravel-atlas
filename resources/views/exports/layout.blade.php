@@ -453,15 +453,116 @@
                                 <span class="text-3xl">🛣️</span>
                                 <div>
                                     <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Routes</h1>
-                                    <p class="text-gray-600 dark:text-gray-400">{{ count($routes) }} routes found in your application</p>
+                                    <p class="text-gray-600 dark:text-gray-400">
+                                        <span id="routes-visible-count">{{ count($routes) }}</span> / {{ count($routes) }} routes
+                                    </p>
                                 </div>
                             </div>
+
+                            {{-- Filters Section --}}
+                            @if (!empty($routes_grouping['filters']))
+                                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-6 border border-gray-200 dark:border-gray-700">
+                                    <div class="flex items-center mb-3">
+                                        <span class="text-lg mr-2">🔍</span>
+                                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Filters</h3>
+                                        <button id="routes-clear-filters" class="ml-auto text-xs px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 hidden">
+                                            Clear All
+                                        </button>
+                                    </div>
+
+                                    <div class="space-y-4">
+                                        {{-- Search Bar --}}
+                                        <div>
+                                            <input type="text" id="routes-search"
+                                                   placeholder="Search by URI or name..."
+                                                   class="w-full px-3 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                        </div>
+
+                                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                            {{-- Type Filter --}}
+                                            @if (!empty($routes_grouping['filters']['types']))
+                                                <div>
+                                                    <label class="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2 block">Type</label>
+                                                    <div class="flex flex-wrap gap-2">
+                                                        @foreach ($routes_grouping['filters']['types'] as $type)
+                                                            <button class="route-filter-type text-xs px-2 py-1 rounded border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20"
+                                                                    data-filter-type="{{ $type }}">
+                                                                {{ strtoupper($type) }}
+                                                            </button>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            @endif
+
+                                            {{-- Method Filter --}}
+                                            @if (!empty($routes_grouping['filters']['methods']))
+                                                <div>
+                                                    <label class="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2 block">HTTP Method</label>
+                                                    <div class="flex flex-wrap gap-2">
+                                                        @foreach ($routes_grouping['filters']['methods'] as $method)
+                                                            <button class="route-filter-method text-xs px-2 py-1 rounded border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-green-900/20"
+                                                                    data-filter-method="{{ $method }}">
+                                                                {{ $method }}
+                                                            </button>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            @endif
+
+                                            {{-- Prefix Filter --}}
+                                            @if (!empty($routes_grouping['filters']['prefixes']))
+                                                <div>
+                                                    <label class="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2 block">Prefix</label>
+                                                    <div class="flex flex-wrap gap-2">
+                                                        @foreach ($routes_grouping['filters']['prefixes'] as $prefix)
+                                                            <button class="route-filter-prefix text-xs px-2 py-1 rounded border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                                                                    data-filter-prefix="{{ $prefix }}">
+                                                                {{ $prefix }}
+                                                            </button>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            @endif
+
+                                            {{-- Middleware Filter --}}
+                                            @if (!empty($routes_grouping['filters']['middlewares']))
+                                                <div>
+                                                    <label class="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2 block">Middleware</label>
+                                                    <div class="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
+                                                        @foreach ($routes_grouping['filters']['middlewares'] as $middleware)
+                                                            <button class="route-filter-middleware text-xs px-2 py-1 rounded border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-yellow-50 dark:hover:bg-yellow-900/20"
+                                                                    data-filter-middleware="{{ $middleware }}">
+                                                                {{ $middleware }}
+                                                            </button>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
                         </div>
-                        
-                        <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3 auto-rows-fr">
+
+                        {{-- Routes Grid --}}
+                        <div id="routes-grid" class="grid gap-6 md:grid-cols-2 xl:grid-cols-3 auto-rows-fr">
                             @foreach ($routes as $route)
-                                @include('atlas::exports.partials.route-card', ['item' => $route])
+                                <div class="route-card"
+                                     data-route-uri="{{ strtolower($route['uri']) }}"
+                                     data-route-name="{{ strtolower($route['name'] ?? '') }}"
+                                     data-route-type="{{ $route['type'] }}"
+                                     data-route-methods="{{ implode(',', $route['methods']) }}"
+                                     data-route-prefix="{{ $route['prefix'] ?? '' }}"
+                                     data-route-middleware="{{ implode(',', $route['middleware']) }}">
+                                    @include('atlas::exports.partials.route-card', ['item' => $route])
+                                </div>
                             @endforeach
+                        </div>
+
+                        {{-- No Results Message --}}
+                        <div id="routes-no-results" class="hidden text-center py-12">
+                            <span class="text-4xl">🔍</span>
+                            <p class="text-gray-600 dark:text-gray-400 mt-4">No routes match your filters</p>
                         </div>
                     </div>
                 @endif
@@ -763,6 +864,185 @@
                     $('#sidebar').addClass('-translate-x-full');
                     $('#sidebar-overlay').addClass('hidden');
                 }
+            });
+        });
+
+        // Routes filtering
+        $(function() {
+            const activeFilters = {
+                search: '',
+                types: [],
+                methods: [],
+                prefixes: [],
+                middlewares: []
+            };
+
+            function updateRouteVisibility() {
+                let visibleCount = 0;
+
+                $('.route-card').each(function() {
+                    const $card = $(this);
+                    const uri = $card.data('route-uri') || '';
+                    const name = $card.data('route-name') || '';
+                    const type = $card.data('route-type') || '';
+                    const methods = ($card.data('route-methods') || '').toString().split(',');
+                    const prefix = $card.data('route-prefix') || '';
+                    const middlewares = ($card.data('route-middleware') || '').toString().split(',');
+
+                    let visible = true;
+
+                    // Search filter
+                    if (activeFilters.search) {
+                        const searchLower = activeFilters.search.toLowerCase();
+                        visible = visible && (uri.includes(searchLower) || name.includes(searchLower));
+                    }
+
+                    // Type filter
+                    if (activeFilters.types.length > 0) {
+                        visible = visible && activeFilters.types.includes(type);
+                    }
+
+                    // Method filter
+                    if (activeFilters.methods.length > 0) {
+                        visible = visible && methods.some(m => activeFilters.methods.includes(m));
+                    }
+
+                    // Prefix filter
+                    if (activeFilters.prefixes.length > 0) {
+                        visible = visible && activeFilters.prefixes.includes(prefix);
+                    }
+
+                    // Middleware filter
+                    if (activeFilters.middlewares.length > 0) {
+                        visible = visible && middlewares.some(m => activeFilters.middlewares.includes(m));
+                    }
+
+                    if (visible) {
+                        $card.show();
+                        visibleCount++;
+                    } else {
+                        $card.hide();
+                    }
+                });
+
+                // Update count
+                $('#routes-visible-count').text(visibleCount);
+
+                // Show/hide no results message
+                if (visibleCount === 0) {
+                    $('#routes-no-results').removeClass('hidden');
+                    $('#routes-grid').hide();
+                } else {
+                    $('#routes-no-results').addClass('hidden');
+                    $('#routes-grid').show();
+                }
+
+                // Show/hide clear button
+                const hasActiveFilters = activeFilters.search ||
+                    activeFilters.types.length > 0 ||
+                    activeFilters.methods.length > 0 ||
+                    activeFilters.prefixes.length > 0 ||
+                    activeFilters.middlewares.length > 0;
+
+                if (hasActiveFilters) {
+                    $('#routes-clear-filters').removeClass('hidden');
+                } else {
+                    $('#routes-clear-filters').addClass('hidden');
+                }
+            }
+
+            // Search input
+            $('#routes-search').on('input', function() {
+                activeFilters.search = $(this).val();
+                updateRouteVisibility();
+            });
+
+            // Type filters
+            $('.route-filter-type').on('click', function() {
+                const type = $(this).data('filter-type');
+                const index = activeFilters.types.indexOf(type);
+
+                if (index > -1) {
+                    activeFilters.types.splice(index, 1);
+                    $(this).removeClass('bg-indigo-500 text-white border-indigo-500')
+                           .addClass('border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300');
+                } else {
+                    activeFilters.types.push(type);
+                    $(this).addClass('bg-indigo-500 text-white border-indigo-500')
+                           .removeClass('border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300');
+                }
+
+                updateRouteVisibility();
+            });
+
+            // Method filters
+            $('.route-filter-method').on('click', function() {
+                const method = $(this).data('filter-method');
+                const index = activeFilters.methods.indexOf(method);
+
+                if (index > -1) {
+                    activeFilters.methods.splice(index, 1);
+                    $(this).removeClass('bg-green-500 text-white border-green-500')
+                           .addClass('border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300');
+                } else {
+                    activeFilters.methods.push(method);
+                    $(this).addClass('bg-green-500 text-white border-green-500')
+                           .removeClass('border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300');
+                }
+
+                updateRouteVisibility();
+            });
+
+            // Prefix filters
+            $('.route-filter-prefix').on('click', function() {
+                const prefix = $(this).data('filter-prefix');
+                const index = activeFilters.prefixes.indexOf(prefix);
+
+                if (index > -1) {
+                    activeFilters.prefixes.splice(index, 1);
+                    $(this).removeClass('bg-purple-500 text-white border-purple-500')
+                           .addClass('border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300');
+                } else {
+                    activeFilters.prefixes.push(prefix);
+                    $(this).addClass('bg-purple-500 text-white border-purple-500')
+                           .removeClass('border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300');
+                }
+
+                updateRouteVisibility();
+            });
+
+            // Middleware filters
+            $('.route-filter-middleware').on('click', function() {
+                const middleware = $(this).data('filter-middleware');
+                const index = activeFilters.middlewares.indexOf(middleware);
+
+                if (index > -1) {
+                    activeFilters.middlewares.splice(index, 1);
+                    $(this).removeClass('bg-yellow-500 text-white border-yellow-500')
+                           .addClass('border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300');
+                } else {
+                    activeFilters.middlewares.push(middleware);
+                    $(this).addClass('bg-yellow-500 text-white border-yellow-500')
+                           .removeClass('border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300');
+                }
+
+                updateRouteVisibility();
+            });
+
+            // Clear all filters
+            $('#routes-clear-filters').on('click', function() {
+                activeFilters.search = '';
+                activeFilters.types = [];
+                activeFilters.methods = [];
+                activeFilters.prefixes = [];
+                activeFilters.middlewares = [];
+
+                $('#routes-search').val('');
+                $('.route-filter-type, .route-filter-method, .route-filter-prefix, .route-filter-middleware')
+                    .removeClass('bg-indigo-500 bg-green-500 bg-purple-500 bg-yellow-500 text-white border-indigo-500 border-green-500 border-purple-500 border-yellow-500')
+                    .addClass('border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300');
+
+                updateRouteVisibility();
             });
         });
     </script>

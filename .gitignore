@@ -40,3 +40,4 @@ examples/*test*.php
 examples/atlas-*
 examples/workflow-*
 examples/realistic-app-data.php
+CLAUDE.md
