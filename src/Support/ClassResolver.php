@@ -27,7 +27,7 @@ class ClassResolver
         $autoload = $composer['autoload']['psr-4'] ?? [];
 
         foreach ($autoload as $namespace => $baseDir) {
-            $absoluteBase = base_path($baseDir);
+            $absoluteBase = rtrim(base_path($baseDir), '/');
 
             if (Str::startsWith($filePath, $absoluteBase)) {
                 $relativePath = Str::replaceFirst($absoluteBase, '', $filePath);
