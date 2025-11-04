@@ -870,7 +870,7 @@ I offer specialized consulting services for Laravel projects:
 
 ### 📬 Contact:
 - 📧 [jms@grazulex.be](mailto:jms@grazulex.be)
-- 💼 [LinkedIn](https://www.linkedin.com/in/jean-marcstrauven)
+- 💼 [LinkedIn](https://www.linkedin.com/in/jean-marc-strauven)
 - 🌐 [jnkconsult.be](https://grazulex.be)
 
 ---
