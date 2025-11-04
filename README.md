@@ -833,3 +833,55 @@ Laravel Atlas is open-sourced software licensed under the [MIT license](LICENSE.
 - [CONTRIBUTING.md](CONTRIBUTING.md) - How to contribute
 - [SECURITY.md](SECURITY.md) - Security policy
 - [RELEASES.md](RELEASES.md) - Release notes and changelog
+
+---
+
+## 💼 Need Documentation or Architecture Help?
+
+Laravel Atlas is created by **Jean-Marc Strauven**, a Laravel expert with 15+ years of experience.
+
+### 🎯 Perfect for:
+- **Large codebases** that need clear documentation
+- **Team onboarding** — help new developers understand your architecture quickly
+- **Legacy projects** — map and understand complex Laravel applications
+- **Code audits** — get a complete overview before refactoring
+
+### 📊 Professional Services:
+
+I offer specialized consulting services for Laravel projects:
+
+**🔍 Architecture Audit & Documentation**
+- Complete codebase analysis using Laravel Atlas
+- Detailed architecture documentation
+- Recommendations for improvements
+- **Duration:** 2-3 days | **Price:** €2,500
+
+**🏗️ Legacy Application Modernization**
+- Map your existing Laravel application
+- Migration strategy planning
+- Step-by-step refactoring roadmap
+- **Custom pricing** based on project scope
+
+**👨‍🏫 Team Training**
+- Clean architecture principles
+- Laravel best practices
+- Documentation strategies
+- **€1,500/day** for team workshops
+
+### 📬 Contact:
+- 📧 [jms@grazulex.be](mailto:jms@grazulex.be)
+- 💼 [LinkedIn](https://www.linkedin.com/in/jean-marcstrauven)
+- 🌐 [jnkconsult.be](https://grazulex.be)
+
+---
+
+## ⭐ Support Laravel Atlas
+
+If this package helped you understand and document your Laravel project:
+- ⭐ **Star this repository**
+- 🐦 **Share it** with your network
+- 💖 [**Sponsor me**](https://github.com/sponsors/Grazulex) to support continued development
+
+---
+
+**Created with ❤️ in Belgium 🇧🇪**
