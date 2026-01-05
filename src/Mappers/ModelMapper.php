@@ -5,14 +5,12 @@ declare(strict_types=1);
 namespace LaravelAtlas\Mappers;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\File;
 use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionParameter;
-use Throwable;
 
 class ModelMapper implements ComponentMapper
 {
@@ -103,46 +101,91 @@ class ModelMapper implements ComponentMapper
     protected function guessRelations(Model $model): array
     {
         $relations = [];
-        $class = $model::class;
-        $reflection = new ReflectionClass($class);
+        $reflection = new ReflectionClass($model);
+        $fileName = $reflection->getFileName();
 
-        foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
-            // Exclure les scopes, hérités, statiques, magiques, etc.
-            if ($method->class !== $class) {
-                continue;
-            }
-            if ($method->isStatic()) {
-                continue;
-            }
-            if ($method->isConstructor()) {
-                continue;
-            }
-            if ($method->getNumberOfParameters() > 0) {
-                continue;
-            }
-            if (str_starts_with($method->name, '__')) {
-                continue;
-            }
-            if (str_starts_with($method->name, 'scope')) {
-                continue;
-            }
-            try {
-                $result = $method->invoke($model);
-                if ($result instanceof Relation) {
-                    $relations[$method->getName()] = [
-                        'type' => class_basename($result),
-                        'related' => $result->getRelated()::class,
-                        'foreignKey' => method_exists($result, 'getForeignKeyName')
-                            ? $result->getForeignKeyName()
-                            : null,
-                    ];
-                }
-            } catch (Throwable) {
-                // ne rien faire
+        if ($fileName === false) {
+            return $relations;
+        }
+
+        $source = file_get_contents($fileName);
+
+        if ($source === false) {
+            return $relations;
+        }
+
+        // List of Laravel relation types to detect
+        $relationTypes = [
+            'hasOne',
+            'hasMany',
+            'belongsTo',
+            'belongsToMany',
+            'hasOneThrough',
+            'hasManyThrough',
+            'morphOne',
+            'morphMany',
+            'morphTo',
+            'morphToMany',
+            'morphedByMany',
+        ];
+
+        $relationPattern = implode('|', $relationTypes);
+
+        // Pattern to match relation methods:
+        // public function methodName() { return $this->relationType(RelatedModel::class, ...); }
+        // Also handles: return $this->relationType(RelatedModel::class);
+        $pattern = '/public\s+function\s+(\w+)\s*\([^)]*\)\s*(?::\s*[\w\\\\]+)?\s*\{[^}]*return\s+\$this->(' . $relationPattern . ')\s*\(\s*([A-Z][\w\\\\]+)::class/s';
+
+        if (preg_match_all($pattern, $source, $matches, PREG_SET_ORDER)) {
+            foreach ($matches as $match) {
+                $methodName = $match[1];
+                $relationType = $match[2];
+                $relatedClass = $match[3];
+
+                // Resolve full class name if it's a short name
+                $relatedFqcn = $this->resolveRelatedClass($relatedClass, $source);
+
+                $relations[$methodName] = [
+                    'type' => ucfirst($relationType),
+                    'related' => $relatedFqcn,
+                    'foreignKey' => null, // Cannot determine without execution
+                ];
             }
         }
 
         return $relations;
+    }
+
+    /**
+     * Resolve the fully qualified class name for a related model.
+     */
+    protected function resolveRelatedClass(string $className, string $source): string
+    {
+        // If already fully qualified
+        if (str_starts_with($className, '\\')) {
+            return ltrim($className, '\\');
+        }
+
+        // Check for use statement
+        if (preg_match('/use\s+([\w\\\\]+\\\\' . preg_quote($className, '/') . ')\s*;/', $source, $match)) {
+            return $match[1];
+        }
+
+        // Check for use statement with alias
+        if (preg_match('/use\s+([\w\\\\]+)\s+as\s+' . preg_quote($className, '/') . '\s*;/', $source, $match)) {
+            return $match[1];
+        }
+
+        // Extract namespace from source
+        if (preg_match('/namespace\s+([\w\\\\]+)\s*;/', $source, $match)) {
+            $namespace = $match[1];
+
+            // Assume same namespace
+            return $namespace . '\\' . $className;
+        }
+
+        // Default to App\Models namespace (common Laravel convention)
+        return 'App\\Models\\' . $className;
     }
 
     /**
