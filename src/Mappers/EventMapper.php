@@ -18,6 +18,13 @@ use ReflectionUnionType;
 
 class EventMapper implements ComponentMapper
 {
+    /**
+     * Cached event-listener mappings from EventServiceProvider
+     *
+     * @var array<string, array<int, string>>|null
+     */
+    protected ?array $eventListenerMap = null;
+
     public function type(): string
     {
         return 'events';
@@ -25,6 +32,9 @@ class EventMapper implements ComponentMapper
 
     public function scan(array $options = []): array
     {
+        // Build the event-listener map before scanning events
+        $this->buildEventListenerMap();
+
         $events = [];
         $paths = $options['paths'] ?? [app_path('Events')];
         $recursive = $options['recursive'] ?? true;
@@ -206,13 +216,241 @@ class EventMapper implements ComponentMapper
     }
 
     /**
-     * @return array<int, string>
+     * Find listeners for a specific event class
+     *
+     * @return array<int, array<string, mixed>>
      */
     protected function findListeners(string $eventClass): array
     {
-        // Ceci est une implémentation basique - en pratique, on pourrait scanner les EventServiceProvider
-        // ou utiliser les listeners enregistrés dans l'application
-        return [];
+        $listeners = [];
+
+        // Get listeners from EventServiceProvider mappings
+        if ($this->eventListenerMap !== null) {
+            // Check exact match
+            if (isset($this->eventListenerMap[$eventClass])) {
+                foreach ($this->eventListenerMap[$eventClass] as $listenerClass) {
+                    $listeners[] = [
+                        'class' => $listenerClass,
+                        'name' => class_basename($listenerClass),
+                        'source' => 'EventServiceProvider',
+                    ];
+                }
+            }
+
+            // Check by short class name (for cases where namespace might differ)
+            $shortName = class_basename($eventClass);
+            foreach ($this->eventListenerMap as $event => $eventListeners) {
+                if (class_basename($event) === $shortName && $event !== $eventClass) {
+                    foreach ($eventListeners as $listenerClass) {
+                        $listeners[] = [
+                            'class' => $listenerClass,
+                            'name' => class_basename($listenerClass),
+                            'source' => 'EventServiceProvider',
+                        ];
+                    }
+                }
+            }
+        }
+
+        // Also scan listener files for handle() method type hints
+        $listenersFromHandleMethod = $this->findListenersFromHandleMethod($eventClass);
+        foreach ($listenersFromHandleMethod as $listenerClass) {
+            // Avoid duplicates
+            $exists = false;
+            foreach ($listeners as $listener) {
+                if ($listener['class'] === $listenerClass) {
+                    $exists = true;
+                    break;
+                }
+            }
+            if (! $exists) {
+                $listeners[] = [
+                    'class' => $listenerClass,
+                    'name' => class_basename($listenerClass),
+                    'source' => 'handle() type-hint',
+                ];
+            }
+        }
+
+        return $listeners;
+    }
+
+    /**
+     * Build event-listener mappings from EventServiceProvider
+     */
+    protected function buildEventListenerMap(): void
+    {
+        if ($this->eventListenerMap !== null) {
+            return;
+        }
+
+        $this->eventListenerMap = [];
+
+        // Scan for EventServiceProvider files
+        $providerPaths = [
+            app_path('Providers/EventServiceProvider.php'),
+            app_path('Providers'),
+        ];
+
+        foreach ($providerPaths as $path) {
+            if (is_file($path)) {
+                $this->parseEventServiceProvider($path);
+            } elseif (is_dir($path)) {
+                $files = File::files($path);
+                foreach ($files as $file) {
+                    if (str_contains($file->getFilename(), 'EventServiceProvider')) {
+                        $this->parseEventServiceProvider($file->getRealPath());
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Parse an EventServiceProvider file to extract event-listener mappings
+     */
+    protected function parseEventServiceProvider(string $filePath): void
+    {
+        if (! file_exists($filePath)) {
+            return;
+        }
+
+        $content = file_get_contents($filePath);
+        if ($content === false) {
+            return;
+        }
+
+        // Try to get the FQCN and use reflection if the class exists
+        $fqcn = ClassResolver::resolveFromPath($filePath);
+        if ($fqcn && class_exists($fqcn)) {
+            try {
+                $reflection = new ReflectionClass($fqcn);
+                if ($reflection->hasProperty('listen')) {
+                    $property = $reflection->getProperty('listen');
+                    $instance = $reflection->newInstanceWithoutConstructor();
+                    $listen = $property->getValue($instance);
+
+                    if (is_array($listen)) {
+                        foreach ($listen as $event => $listeners) {
+                            if (! isset($this->eventListenerMap[$event])) {
+                                $this->eventListenerMap[$event] = [];
+                            }
+                            foreach ((array) $listeners as $listener) {
+                                $this->eventListenerMap[$event][] = $listener;
+                            }
+                        }
+
+                        return;
+                    }
+                }
+            } catch (\Throwable) {
+                // Fall through to regex parsing
+            }
+        }
+
+        // Fallback: Parse using regex for cases where reflection fails
+        // Match the $listen property array
+        if (preg_match('/protected\s+\$listen\s*=\s*\[([\s\S]*?)\];/m', $content, $matches)) {
+            $listenContent = $matches[1];
+
+            // Match event => listener(s) pairs
+            // Pattern: EventClass::class => [ListenerClass::class, ...] or EventClass::class => ListenerClass::class
+            if (preg_match_all('/([A-Z][\w\\\\]+)::class\s*=>\s*(?:\[([\s\S]*?)\]|([A-Z][\w\\\\]+)::class)/m', $listenContent, $eventMatches, PREG_SET_ORDER)) {
+                foreach ($eventMatches as $match) {
+                    $eventClass = $match[1];
+
+                    // Single listener
+                    if (! empty($match[3])) {
+                        if (! isset($this->eventListenerMap[$eventClass])) {
+                            $this->eventListenerMap[$eventClass] = [];
+                        }
+                        $this->eventListenerMap[$eventClass][] = $match[3];
+                    }
+                    // Array of listeners
+                    elseif (! empty($match[2])) {
+                        if (preg_match_all('/([A-Z][\w\\\\]+)::class/', $match[2], $listenerMatches)) {
+                            if (! isset($this->eventListenerMap[$eventClass])) {
+                                $this->eventListenerMap[$eventClass] = [];
+                            }
+                            foreach ($listenerMatches[1] as $listener) {
+                                $this->eventListenerMap[$eventClass][] = $listener;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Find listeners by scanning Listener files for handle() method type hints
+     *
+     * @return array<int, string>
+     */
+    protected function findListenersFromHandleMethod(string $eventClass): array
+    {
+        $listeners = [];
+        $listenerPaths = [app_path('Listeners')];
+
+        foreach ($listenerPaths as $path) {
+            if (! is_dir($path)) {
+                continue;
+            }
+
+            $files = File::allFiles($path);
+            foreach ($files as $file) {
+                $fqcn = ClassResolver::resolveFromPath($file->getRealPath());
+                if (! $fqcn || ! class_exists($fqcn)) {
+                    continue;
+                }
+
+                try {
+                    $reflection = new ReflectionClass($fqcn);
+
+                    // Skip abstract classes
+                    if ($reflection->isAbstract()) {
+                        continue;
+                    }
+
+                    if ($reflection->hasMethod('handle')) {
+                        $handleMethod = $reflection->getMethod('handle');
+                        $parameters = $handleMethod->getParameters();
+
+                        if (count($parameters) > 0) {
+                            $firstParam = $parameters[0];
+                            $paramType = $firstParam->getType();
+
+                            if ($paramType instanceof ReflectionNamedType) {
+                                $typeName = $paramType->getName();
+
+                                // Check if this listener handles our event
+                                if ($typeName === $eventClass || class_basename($typeName) === class_basename($eventClass)) {
+                                    $listeners[] = $fqcn;
+                                }
+                            }
+                        }
+                    }
+                } catch (\Throwable) {
+                    // Skip problematic classes
+                }
+            }
+        }
+
+        return $listeners;
+    }
+
+    /**
+     * Get the complete event-listener map
+     *
+     * @return array<string, array<int, string>>
+     */
+    public function getEventListenerMap(): array
+    {
+        if ($this->eventListenerMap === null) {
+            $this->buildEventListenerMap();
+        }
+
+        return $this->eventListenerMap ?? [];
     }
 
     /**
