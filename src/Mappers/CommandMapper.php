@@ -38,6 +38,13 @@ class CommandMapper implements ComponentMapper
                     class_exists($fqcn) &&
                     is_subclass_of($fqcn, Command::class)
                 ) {
+                    $reflection = new ReflectionClass($fqcn);
+
+                    // Skip abstract classes - they cannot be instantiated
+                    if ($reflection->isAbstract()) {
+                        continue;
+                    }
+
                     $instance = app($fqcn);
                     $commands[] = $this->analyzeCommand($instance);
                 }
