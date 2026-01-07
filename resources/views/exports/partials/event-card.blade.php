@@ -131,7 +131,7 @@
                     <div class="flex flex-wrap gap-2">
                         @foreach ($item['listeners'] as $listener)
                             <span class="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200 font-medium">
-                                {{ class_basename($listener) }}
+                                {{ $listener['name'] ?? class_basename($listener['class'] ?? 'Unknown') }}
                             </span>
                         @endforeach
                     </div>
