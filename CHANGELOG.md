@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.3](https://github.com/Grazulex/laravel-atlas/releases/tag/v1.4.3) (2026-01-08)
+
+### Bug Fixes
+
+- UI improvements - hide empty sections and fix card heights (#43) (#47) ([6be52ad](https://github.com/Grazulex/laravel-atlas/commit/6be52ad93580d58a7d465df6e96a53b243b46d88))
 ## [1.4.2](https://github.com/Grazulex/laravel-atlas/releases/tag/v1.4.2) (2026-01-08)
 
 ### Bug Fixes
