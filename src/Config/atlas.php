@@ -83,6 +83,35 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Component Paths Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configure custom paths for component scanning. By default, Atlas scans
+    | the standard Laravel directories. Add custom paths here if your
+    | components are in non-standard locations (e.g., domain-driven design).
+    |
+    | Example:
+    | 'listeners' => [
+    |     app_path('Listeners'),
+    |     app_path('Domain/Orders/Listeners'),
+    |     app_path('Domain/Users/Listeners'),
+    | ],
+    |
+    */
+
+    'paths' => [
+        'listeners' => [
+            // Default: app_path('Listeners')
+            // Add custom listener paths here
+        ],
+        'events' => [
+            // Default: app_path('Events')
+            // Add custom event paths here
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Component Detection Configuration
     |--------------------------------------------------------------------------
     |
