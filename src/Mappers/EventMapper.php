@@ -55,6 +55,11 @@ class EventMapper implements ComponentMapper
                 if ($fqcn && class_exists($fqcn)) {
                     $reflection = new ReflectionClass($fqcn);
 
+                    // Skip abstract classes - they should not appear in exports
+                    if ($reflection->isAbstract()) {
+                        continue;
+                    }
+
                     // Vérifier si c'est un événement (utilise le trait Dispatchable ou a une méthode handle/fire)
                     if ($this->isEvent($reflection)) {
                         $events[] = $this->analyzeEvent($reflection);

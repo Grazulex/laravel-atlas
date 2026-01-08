@@ -75,6 +75,7 @@ class ListenerMapper implements ComponentMapper
         }
 
         $reflection = new ReflectionClass($fqcn);
+        $source = file_exists($filePath) ? (file_get_contents($filePath) ?: null) : null;
 
         return [
             'class' => $fqcn,
@@ -86,6 +87,7 @@ class ListenerMapper implements ComponentMapper
             'queued' => $this->isQueued($reflection),
             'is_abstract' => $reflection->isAbstract(),
             'is_final' => $reflection->isFinal(),
+            'flow' => $this->analyzeFlow($source),
         ];
     }
 
@@ -154,5 +156,77 @@ class ListenerMapper implements ComponentMapper
         }
 
         return $paths;
+    }
+
+    /**
+     * Analyze the flow of a listener to detect dispatched events, jobs, and notifications
+     *
+     * @return array<string, array<int, array<string, mixed>>>
+     */
+    protected function analyzeFlow(?string $source): array
+    {
+        $flow = [
+            'events' => [],
+            'jobs' => [],
+            'notifications' => [],
+        ];
+
+        if (! $source) {
+            return $flow;
+        }
+
+        // Events dispatched via event() helper
+        if (preg_match_all('/event\(\s*new\s+([A-Z][\w\\\\]+)/', $source, $matches)) {
+            foreach ($matches[1] as $class) {
+                $flow['events'][] = ['class' => $class];
+            }
+        }
+
+        // Events dispatched via Event::dispatch()
+        if (preg_match_all('/Event::dispatch\(\s*new\s+([A-Z][\w\\\\]+)/', $source, $matches)) {
+            foreach ($matches[1] as $class) {
+                $flow['events'][] = ['class' => $class];
+            }
+        }
+
+        // Events dispatched via broadcast()
+        if (preg_match_all('/broadcast\(\s*new\s+([A-Z][\w\\\\]+)/', $source, $matches)) {
+            foreach ($matches[1] as $class) {
+                $flow['events'][] = ['class' => $class, 'broadcast' => true];
+            }
+        }
+
+        // Jobs dispatched
+        if (preg_match_all('/dispatch(?:Now|Sync)?\(\s*new\s+([A-Z][\w\\\\]+)/', $source, $matches)) {
+            foreach ($matches[1] as $class) {
+                $flow['jobs'][] = [
+                    'class' => $class,
+                    'async' => ! str_contains($source, "dispatchNow(new {$class}") && ! str_contains($source, "dispatchSync(new {$class}"),
+                ];
+            }
+        }
+
+        // Notifications sent
+        if (preg_match_all('/->notify\(\s*new\s+([A-Z][\w\\\\]+)/', $source, $matches)) {
+            foreach ($matches[1] as $class) {
+                $flow['notifications'][] = ['class' => $class];
+            }
+        }
+
+        // Remove duplicates
+        foreach ($flow as $key => $items) {
+            $seen = [];
+            $flow[$key] = array_values(array_filter($items, function ($item) use (&$seen) {
+                $class = $item['class'];
+                if (isset($seen[$class])) {
+                    return false;
+                }
+                $seen[$class] = true;
+
+                return true;
+            }));
+        }
+
+        return $flow;
     }
 }

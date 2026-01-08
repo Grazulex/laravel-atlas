@@ -34,6 +34,12 @@
         'collapsed' => true
     ])
 
+    {{-- Flow Section - Events, Jobs, Notifications dispatched by this listener --}}
+    @include('atlas::exports.partials.common.flow-section', [
+        'flow' => $item['flow'] ?? [],
+        'type' => 'listener'
+    ])
+
     {{-- Footer --}}
     @include('atlas::exports.partials.common.card-footer', [
         'class' => $item['class'],
