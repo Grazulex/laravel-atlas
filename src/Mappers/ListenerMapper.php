@@ -28,15 +28,12 @@ class ListenerMapper implements ComponentMapper
     public function scan(array $options = []): array
     {
         $listeners = [];
-        $defaultPaths = [app_path('Listeners')];
+        $defaultPaths = $this->getDefaultPaths();
 
-        // Ajouter le beta_app s'il existe
-        $betaAppPath = base_path('beta_app/app/Listeners');
-        if (is_dir($betaAppPath)) {
-            $defaultPaths[] = $betaAppPath;
-        }
-
-        $paths = $options['paths'] ?? $defaultPaths;
+        /** @var array<int, string> $paths */
+        $paths = isset($options['paths']) && is_array($options['paths'])
+            ? array_values(array_filter($options['paths'], 'is_string'))
+            : $defaultPaths;
         $recursive = $options['recursive'] ?? true;
         $seen = [];
 
@@ -128,5 +125,34 @@ class ListenerMapper implements ComponentMapper
     protected function isQueued(ReflectionClass $reflection): bool
     {
         return in_array(ShouldQueue::class, class_implements($reflection->getName()) ?: []);
+    }
+
+    /**
+     * Get default listener paths from config with fallback
+     *
+     * @return array<int, string>
+     */
+    /**
+     * @return array<int, string>
+     */
+    protected function getDefaultPaths(): array
+    {
+        /** @var array<int, string> $configPaths */
+        $configPaths = config('atlas.paths.listeners', []);
+
+        if (is_array($configPaths) && $configPaths !== []) {
+            return array_values(array_filter($configPaths, 'is_string'));
+        }
+
+        // Default paths
+        $paths = [app_path('Listeners')];
+
+        // Add beta_app if it exists (for backward compatibility)
+        $betaAppPath = base_path('beta_app/app/Listeners');
+        if (is_dir($betaAppPath)) {
+            $paths[] = $betaAppPath;
+        }
+
+        return $paths;
     }
 }

@@ -36,7 +36,10 @@ class EventMapper implements ComponentMapper
         $this->buildEventListenerMap();
 
         $events = [];
-        $paths = $options['paths'] ?? [app_path('Events')];
+        /** @var array<int, string> $paths */
+        $paths = isset($options['paths']) && is_array($options['paths'])
+            ? array_values(array_filter($options['paths'], 'is_string'))
+            : $this->getEventPaths();
         $recursive = $options['recursive'] ?? true;
 
         foreach ($paths as $path) {
@@ -390,7 +393,7 @@ class EventMapper implements ComponentMapper
     protected function findListenersFromHandleMethod(string $eventClass): array
     {
         $listeners = [];
-        $listenerPaths = [app_path('Listeners')];
+        $listenerPaths = $this->getListenerPaths();
 
         foreach ($listenerPaths as $path) {
             if (! is_dir($path)) {
@@ -420,13 +423,9 @@ class EventMapper implements ComponentMapper
                             $firstParam = $parameters[0];
                             $paramType = $firstParam->getType();
 
-                            if ($paramType instanceof ReflectionNamedType) {
-                                $typeName = $paramType->getName();
-
-                                // Check if this listener handles our event
-                                if ($typeName === $eventClass || class_basename($typeName) === class_basename($eventClass)) {
-                                    $listeners[] = $fqcn;
-                                }
+                            // Check if this listener handles our event (supports union types)
+                            if ($this->typeMatchesEvent($paramType, $eventClass)) {
+                                $listeners[] = $fqcn;
                             }
                         }
                     }
@@ -437,6 +436,86 @@ class EventMapper implements ComponentMapper
         }
 
         return $listeners;
+    }
+
+    /**
+     * Check if a reflection type matches the given event class
+     * Supports named types, union types, and nullable types
+     */
+    protected function typeMatchesEvent(?\ReflectionType $type, string $eventClass): bool
+    {
+        if ($type === null) {
+            return false;
+        }
+
+        // Handle union types (e.g., EventA|EventB)
+        if ($type instanceof ReflectionUnionType) {
+            foreach ($type->getTypes() as $unionType) {
+                if ($this->typeMatchesEvent($unionType, $eventClass)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        // Handle named types (including nullable)
+        if ($type instanceof ReflectionNamedType) {
+            $typeName = $type->getName();
+
+            // Skip built-in types
+            if ($type->isBuiltin()) {
+                return false;
+            }
+
+            return $typeName === $eventClass || class_basename($typeName) === class_basename($eventClass);
+        }
+
+        return false;
+    }
+
+    /**
+     * Get listener paths from config with fallback to default
+     *
+     * @return array<int, string>
+     */
+    protected function getListenerPaths(): array
+    {
+        /** @var array<int, string> $configPaths */
+        $configPaths = config('atlas.paths.listeners', []);
+
+        if (is_array($configPaths) && $configPaths !== []) {
+            return array_values(array_filter($configPaths, 'is_string'));
+        }
+
+        // Default paths
+        $paths = [app_path('Listeners')];
+
+        // Add beta_app if it exists (for backward compatibility)
+        $betaAppPath = base_path('beta_app/app/Listeners');
+        if (is_dir($betaAppPath)) {
+            $paths[] = $betaAppPath;
+        }
+
+        return $paths;
+    }
+
+    /**
+     * Get event paths from config with fallback to default
+     *
+     * @return array<int, string>
+     */
+    protected function getEventPaths(): array
+    {
+        /** @var array<int, string> $configPaths */
+        $configPaths = config('atlas.paths.events', []);
+
+        if (is_array($configPaths) && $configPaths !== []) {
+            return array_values(array_filter($configPaths, 'is_string'));
+        }
+
+        // Default path
+        return [app_path('Events')];
     }
 
     /**
