@@ -3,7 +3,45 @@
     @param array $flow - Flow data
     @param string $type - Component type for conditional rendering
 --}}
-@if (!empty($flow['jobs']) || !empty($flow['events']) || !empty($flow['notifications']) || !empty($flow['mails']) || !empty($flow['logs']) || !empty($flow['dependencies']) || !empty($flow['calls']) || !empty($flow['observers']) || !empty($flow['facades']) || !empty($flow['cache']) || !empty($flow['auth']) || !empty($flow['exceptions']) || !empty($flow['services']) || !empty($flow['uses']) || !empty($flow['models']) || !empty($flow['rules']) || !empty($flow['policies']) || !empty($flow['validations']))
+@php
+    // Helper function to check if dependencies has any actual content
+    $hasRealDependencies = function($deps) {
+        if (!is_array($deps) || empty($deps)) {
+            return false;
+        }
+        // Check if it's a simple array of strings
+        if (isset($deps[0]) && is_string($deps[0])) {
+            return true;
+        }
+        // Check if any nested array has content
+        foreach ($deps as $group) {
+            if (is_array($group) && !empty($group)) {
+                return true;
+            }
+        }
+        return false;
+    };
+    
+    $showFlowSection = !empty($flow['jobs']) 
+        || !empty($flow['events']) 
+        || !empty($flow['notifications']) 
+        || !empty($flow['mails']) 
+        || !empty($flow['logs']) 
+        || !empty($flow['calls']) 
+        || !empty($flow['observers']) 
+        || !empty($flow['facades']) 
+        || !empty($flow['cache']) 
+        || !empty($flow['auth']) 
+        || !empty($flow['exceptions']) 
+        || !empty($flow['services']) 
+        || !empty($flow['uses']) 
+        || !empty($flow['models']) 
+        || !empty($flow['rules']) 
+        || !empty($flow['policies']) 
+        || !empty($flow['validations'])
+        || (isset($flow['dependencies']) && $hasRealDependencies($flow['dependencies']));
+@endphp
+@if ($showFlowSection)
     <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
         <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
             <span class="mr-2">🔄</span>
@@ -302,7 +340,7 @@
         </div>
 
         {{-- Dependencies (Full width) --}}
-        @if (!empty($flow['dependencies']))
+        @if (isset($flow['dependencies']) && $hasRealDependencies($flow['dependencies']))
             <div class="mt-4">
                 <div class="flex items-center mb-2">
                     <span class="text-sm mr-2">🧩</span>

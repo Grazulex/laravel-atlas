@@ -59,9 +59,9 @@
                         Validation Rules ({{ count($form_request['rules']) }})
                     </h4>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-xs border rounded-lg overflow-hidden">
-                        <thead class="bg-gray-100 dark:bg-gray-700">
+                <div class="overflow-auto max-h-80 border rounded-lg">
+                    <table class="w-full text-xs">
+                        <thead class="bg-gray-100 dark:bg-gray-700 sticky top-0">
                             <tr>
                                 <th class="p-3 text-left font-medium">Field</th>
                                 <th class="p-3 text-left font-medium">Rules</th>
@@ -125,9 +125,9 @@
                         Custom Messages ({{ count($form_request['messages']) }})
                     </h4>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-xs border rounded-lg overflow-hidden">
-                        <thead class="bg-gray-100 dark:bg-gray-700">
+                <div class="overflow-auto max-h-60 border rounded-lg">
+                    <table class="w-full text-xs">
+                        <thead class="bg-gray-100 dark:bg-gray-700 sticky top-0">
                             <tr>
                                 <th class="p-3 text-left font-medium">Rule</th>
                                 <th class="p-3 text-left font-medium">Custom Message</th>
