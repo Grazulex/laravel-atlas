@@ -75,7 +75,7 @@ class ListenerMapper implements ComponentMapper
         }
 
         $reflection = new ReflectionClass($fqcn);
-        $source = file_exists($filePath) ? file_get_contents($filePath) : null;
+        $source = file_exists($filePath) ? (file_get_contents($filePath) ?: null) : null;
 
         return [
             'class' => $fqcn,
