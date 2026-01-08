@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.5.0](https://github.com/Grazulex/laravel-atlas/releases/tag/v1.5.0) (2026-01-08)
+
+### Features
+
+- **events:** add listener flow tracking and skip abstract events ([f5cbcf0](https://github.com/Grazulex/laravel-atlas/commit/f5cbcf0904a0f7b9a17ff97b5c81824535890b65))
+
+### Bug Fixes
+
+- **listeners:** handle file_get_contents returning false for PHPStan ([5916f3e](https://github.com/Grazulex/laravel-atlas/commit/5916f3e8729dbccd8524002dad1a9fb08492120f))
 ## [1.4.3](https://github.com/Grazulex/laravel-atlas/releases/tag/v1.4.3) (2026-01-08)
 
 ### Bug Fixes
