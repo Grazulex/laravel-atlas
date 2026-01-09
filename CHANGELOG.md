@@ -2,6 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.6.0](https://github.com/Grazulex/laravel-atlas/releases/tag/v1.6.0) (2026-01-09)
 ## [1.5.0](https://github.com/Grazulex/laravel-atlas/releases/tag/v1.5.0) (2026-01-08)
 
 ### Features
