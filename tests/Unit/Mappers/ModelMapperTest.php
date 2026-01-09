@@ -26,6 +26,8 @@ describe('ModelMapper', function (): void {
     test('model data has required keys when models exist', function (): void {
         $result = $this->mapper->scan();
 
+        expect($result['data'])->toBeArray();
+
         foreach ($result['data'] as $model) {
             expect($model)
                 ->toHaveKeys([
@@ -49,6 +51,8 @@ describe('ModelMapper', function (): void {
     test('fillable and guarded are arrays', function (): void {
         $result = $this->mapper->scan();
 
+        expect($result['data'])->toBeArray();
+
         foreach ($result['data'] as $model) {
             expect($model['fillable'])->toBeArray();
             expect($model['guarded'])->toBeArray();
@@ -58,6 +62,8 @@ describe('ModelMapper', function (): void {
     test('casts is array', function (): void {
         $result = $this->mapper->scan();
 
+        expect($result['data'])->toBeArray();
+
         foreach ($result['data'] as $model) {
             expect($model['casts'])->toBeArray();
         }
@@ -65,6 +71,8 @@ describe('ModelMapper', function (): void {
 
     test('relations have correct structure', function (): void {
         $result = $this->mapper->scan();
+
+        expect($result['data'])->toBeArray();
 
         foreach ($result['data'] as $model) {
             expect($model['relations'])->toBeArray();
@@ -80,6 +88,8 @@ describe('ModelMapper', function (): void {
     test('scopes have correct structure', function (): void {
         $result = $this->mapper->scan();
 
+        expect($result['data'])->toBeArray();
+
         foreach ($result['data'] as $model) {
             expect($model['scopes'])->toBeArray();
 
@@ -93,6 +103,8 @@ describe('ModelMapper', function (): void {
 
     test('flow has correct structure', function (): void {
         $result = $this->mapper->scan();
+
+        expect($result['data'])->toBeArray();
 
         foreach ($result['data'] as $model) {
             expect($model['flow'])
