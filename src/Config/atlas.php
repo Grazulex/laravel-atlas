@@ -45,6 +45,7 @@ return [
     'generation' => [
         'formats' => [
             'html' => env('ATLAS_GENERATE_HTML', true),
+            'blade' => env('ATLAS_GENERATE_BLADE', true),
             'image' => env('ATLAS_GENERATE_IMAGE', true),
             'json' => env('ATLAS_GENERATE_JSON', true),
             'markdown' => env('ATLAS_GENERATE_MARKDOWN', true),
@@ -154,6 +155,9 @@ return [
             'include_css' => true,
             'include_js' => true,
             'bootstrap_cdn' => true,
+        ],
+        'blade' => [
+            'template' => 'atlas::exports.layout',
         ],
         'pdf' => [
             'paper_size' => 'A4',

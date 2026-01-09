@@ -35,11 +35,13 @@ class AtlasConfigurationTest extends TestCase
             'atlas.generation.formats.image' => false,
             'atlas.generation.formats.json' => true,
             'atlas.generation.formats.markdown' => true,
+            'atlas.generation.formats.blade' => true,
         ]);
 
         $this->assertFalse(config('atlas.generation.formats.image'));
         $this->assertTrue(config('atlas.generation.formats.json'));
         $this->assertTrue(config('atlas.generation.formats.markdown'));
+        $this->assertTrue(config('atlas.generation.formats.blade'));
     }
 
     public function test_atlas_analysis_settings_are_configurable(): void
@@ -64,6 +66,7 @@ class AtlasConfigurationTest extends TestCase
         $this->assertTrue(config('atlas.generation.formats.image'));
         $this->assertTrue(config('atlas.generation.formats.json'));
         $this->assertTrue(config('atlas.generation.formats.markdown'));
+        $this->assertTrue(config('atlas.generation.formats.blade'));
 
         $this->assertFalse(config('atlas.analysis.include_vendors'));
         $this->assertSame(10, config('atlas.analysis.max_depth'));

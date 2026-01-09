@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Exporters\Json;
 
+use LaravelAtlas\Contracts\AtlasExporter;
 use RuntimeException;
 
-class JsonExporter
+class JsonExporter implements AtlasExporter
 {
     /**
      * @param  array<string, mixed>  $data

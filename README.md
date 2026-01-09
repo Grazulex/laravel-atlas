@@ -53,7 +53,7 @@ Laravel Atlas is perfect for:
 
 - 🚀 **Comprehensive Scanning** - Analyze 16 Laravel component types
 - 🗺️ **Architecture Mapping** - Generate detailed application structure maps
-- 📊 **Multiple Export Formats** - Export to JSON, HTML, and PDF
+- 📊 **Multiple Export Formats** - Export to JSON, HTML, Blade and PDF
 - 🔍 **Dependency Analysis** - Track relationships and dependencies between components
 - 📋 **Extensible Architecture** - Support for custom mappers and exporters
 - 🎯 **Smart Detection** - Intelligent component discovery and classification
@@ -112,7 +112,7 @@ php artisan atlas:export --type=notifications --format=json
 php artisan atlas:export --type=middlewares --format=pdf
 
 # Generate form requests map
-php artisan atlas:export --type=form_requests --format=html
+php artisan atlas:export --type=form_requests --format=blade
 
 # Generate events map
 php artisan atlas:export --type=events --format=json
@@ -138,6 +138,9 @@ php artisan atlas:export --format=html
 
 # Generate PDF documentation
 php artisan atlas:export --format=pdf
+
+# Generate Blade documentation
+php artisan atlas:export --format=blade
 ```
 
 ### 4. Access Generated Maps Programmatically
@@ -166,6 +169,7 @@ $observerData = Atlas::scan('observers');
 // Export to different formats
 $jsonOutput = Atlas::export('models', 'json');
 $htmlReport = Atlas::export('routes', 'html');
+$htmlReport = Atlas::export('events', 'blade');
 $pdfDocument = Atlas::export('commands', 'pdf');
 ```
 
@@ -276,11 +280,14 @@ php artisan atlas:export --format=html --output=public/atlas/map.html
 
 # PDF reports for documentation and presentations  
 php artisan atlas:export --format=pdf --output=storage/atlas/architecture.pdf
+
+# Blade for adding it to the project, and protect it with your own controller
+php artisan atlas:export --format=blade --output=resources/views/atlas/export.blade.php
 ```
 
-### HTML Export Features
+### HTML and Blade Export Features
 
-The HTML export format provides an **interactive, responsive dashboard** with advanced features:
+The HTML/Blade export format provides an **interactive, responsive dashboard** with advanced features:
 
 - **🌓 Dark Mode Support** - Toggle between light and dark themes with persistent preference
 - **📱 Responsive Design** - Seamlessly works on desktop, tablet, and mobile devices
@@ -320,7 +327,19 @@ php artisan atlas:export --type=events --format=html --output=public/docs/events
 php artisan atlas:export --type=controllers --format=html --output=public/docs/controllers.html
 ```
 
-**Sample HTML Dashboard Features:**
+**Example Blade Generation:**
+```bash
+# Generate interactive HTML dashboard
+php artisan atlas:export --format=blade --output=resources/views/docs/architecture.html
+
+# Generate component-specific HTML reports
+php artisan atlas:export --type=models --format=blade --output=resources/views/docs/models.html
+php artisan atlas:export --type=routes --format=blade --output=resources/views/docs/routes.html
+php artisan atlas:export --type=events --format=blade --output=resources/views/docs/events.html
+php artisan atlas:export --type=controllers --format=blade --output=resources/views/docs/controllers.html
+```
+
+**Sample HTML/Blade Dashboard Features:**
 - Professional header with project information and dark mode toggle
 - Sidebar navigation with component counts (e.g., "🧱 Models [3]", "🛣️ Routes [15]")
 - Interactive component cards with collapsible sections
@@ -370,6 +389,7 @@ use LaravelAtlas\Facades\Atlas;
 // Export specific types to different formats
 $jsonOutput = Atlas::export('models', 'json');
 $htmlReport = Atlas::export('routes', 'html');
+$htmlReport = Atlas::export('events', 'blade');
 $pdfDocument = Atlas::export('commands', 'pdf');
 ```
 
@@ -511,6 +531,7 @@ return [
             'json' => env('ATLAS_FORMAT_JSON', true),
             'markdown' => env('ATLAS_FORMAT_MARKDOWN', true),
             'html' => env('ATLAS_FORMAT_HTML', true),
+            'blade' => env('ATLAS_FORMAT_BLADE', true),
         ],
     ],
     
@@ -537,11 +558,11 @@ All documentation, examples, and advanced usage guides have been moved to our co
 - **[📖 Home](https://github.com/Grazulex/laravel-atlas/wiki)** - Wiki homepage with navigation
 - **[🎯 Getting Started](https://github.com/Grazulex/laravel-atlas/wiki/Getting-Started)** - Installation and basic usage
 - **[🗺️ Component Types](https://github.com/Grazulex/laravel-atlas/wiki/Component-Types)** - All 16 supported component types
-- **[📊 Export Formats](https://github.com/Grazulex/laravel-atlas/wiki/Export-Formats)** - HTML, JSON, and PDF export details
+- **[📊 Export Formats](https://github.com/Grazulex/laravel-atlas/wiki/Export-Formats)** - HTML, JSON, Blade and PDF export details
 - **[🧪 Architecture Testing](https://github.com/Grazulex/laravel-atlas/wiki/Architecture-Testing)** - Testing and validation guide
 - **[⚙️ Configuration](https://github.com/Grazulex/laravel-atlas/wiki/Configuration)** - Complete configuration options
 - **[🔧 Advanced Usage](https://github.com/Grazulex/laravel-atlas/wiki/Advanced-Usage)** - Power user features
-- **[🎨 HTML Dashboard](https://github.com/Grazulex/laravel-atlas/wiki/HTML-Dashboard)** - Interactive HTML export features
+- **[🎨 HTML/Blade Dashboard](https://github.com/Grazulex/laravel-atlas/wiki/HTML-Dashboard)** - Interactive HTML/Blade export features
 
 ### 💡 Working Examples
 
@@ -563,6 +584,7 @@ php artisan atlas:export --type=all --format=html
 # Generate specific component maps
 php artisan atlas:export --type=models --format=json
 php artisan atlas:export --type=routes --format=html
+php artisan atlas:export --type=events --format=blade
 php artisan atlas:export --type=services --format=pdf
 ```
 
@@ -577,6 +599,7 @@ $routes = Atlas::scan('routes');
 
 // Export to different formats
 $html = Atlas::export('all', 'html');
+$html = Atlas::export('events', 'blade');
 $json = Atlas::export('models', 'json');
 ```
 

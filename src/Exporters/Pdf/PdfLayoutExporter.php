@@ -7,8 +7,9 @@ namespace LaravelAtlas\Exporters\Pdf;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Support\Facades\View;
+use LaravelAtlas\Contracts\AtlasExporter;
 
-class PdfLayoutExporter
+class PdfLayoutExporter implements AtlasExporter
 {
     /**
      * @param  array<string, mixed>  $data
