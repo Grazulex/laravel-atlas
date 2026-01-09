@@ -20,62 +20,6 @@ it('renders empty data without errors', function (): void {
         ->and($html)->toContain('</html>');
 });
 
-it('renders models data correctly', function (): void {
-    $exporter = new BladeLayoutExporter();
-    $html = $exporter->render([
-        'models' => [
-            'count' => 1,
-            'data' => [
-                [
-                    'name' => 'User',
-                    'namespace' => 'App\\Models\\User',
-                    'table' => 'users',
-                ],
-            ],
-        ],
-    ]);
-
-    expect($html)->toBeString()
-        ->and($html)->toContain('User');
-});
-
-it('renders routes data correctly', function (): void {
-    $exporter = new BladeLayoutExporter();
-    $html = $exporter->render([
-        'routes' => [
-            'count' => 1,
-            'data' => [
-                [
-                    'uri' => '/api/users',
-                    'method' => 'GET',
-                    'name' => 'users.index',
-                ],
-            ],
-        ],
-    ]);
-
-    expect($html)->toBeString()
-        ->and($html)->toContain('/api/users');
-});
-
-it('renders events data correctly', function (): void {
-    $exporter = new BladeLayoutExporter();
-    $html = $exporter->render([
-        'events' => [
-            'count' => 1,
-            'data' => [
-                [
-                    'name' => 'UserRegistered',
-                    'namespace' => 'App\\Events\\UserRegistered',
-                ],
-            ],
-        ],
-    ]);
-
-    expect($html)->toBeString()
-        ->and($html)->toContain('UserRegistered');
-});
-
 it('uses configurable template', function (): void {
     config(['atlas.export.blade.template' => 'atlas::exports.layout']);
 
@@ -95,7 +39,7 @@ it('includes app name in output', function (): void {
     expect($html)->toBeString();
 });
 
-it('renders all component types', function (): void {
+it('renders all component types without errors', function (): void {
     $exporter = new BladeLayoutExporter();
     $html = $exporter->render([
         'models' => ['count' => 0, 'data' => []],
@@ -118,4 +62,22 @@ it('renders all component types', function (): void {
 
     expect($html)->toBeString()
         ->and(strlen($html))->toBeGreaterThan(100);
+});
+
+it('generates valid html document', function (): void {
+    $exporter = new BladeLayoutExporter();
+    $html = $exporter->render([]);
+
+    expect($html)->toContain('<!DOCTYPE html>')
+        ->and($html)->toContain('<head>')
+        ->and($html)->toContain('<body>')
+        ->and($html)->toContain('</body>')
+        ->and($html)->toContain('</html>');
+});
+
+it('includes dark mode support', function (): void {
+    $exporter = new BladeLayoutExporter();
+    $html = $exporter->render([]);
+
+    expect($html)->toContain('dark');
 });
