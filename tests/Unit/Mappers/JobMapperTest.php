@@ -26,6 +26,8 @@ describe('JobMapper', function (): void {
     test('job data has required keys when jobs exist', function (): void {
         $result = $this->mapper->scan();
 
+        expect($result['data'])->toBeArray();
+
         foreach ($result['data'] as $job) {
             expect($job)
                 ->toHaveKeys([
@@ -47,6 +49,8 @@ describe('JobMapper', function (): void {
     test('traits are array of strings', function (): void {
         $result = $this->mapper->scan();
 
+        expect($result['data'])->toBeArray();
+
         foreach ($result['data'] as $job) {
             expect($job['traits'])->toBeArray();
 
@@ -59,6 +63,8 @@ describe('JobMapper', function (): void {
     test('queueable is boolean', function (): void {
         $result = $this->mapper->scan();
 
+        expect($result['data'])->toBeArray();
+
         foreach ($result['data'] as $job) {
             expect($job['queueable'])->toBeBool();
         }
@@ -66,6 +72,8 @@ describe('JobMapper', function (): void {
 
     test('constructor has parameters key', function (): void {
         $result = $this->mapper->scan();
+
+        expect($result['data'])->toBeArray();
 
         foreach ($result['data'] as $job) {
             expect($job['constructor'])
@@ -76,6 +84,8 @@ describe('JobMapper', function (): void {
 
     test('flow has correct structure', function (): void {
         $result = $this->mapper->scan();
+
+        expect($result['data'])->toBeArray();
 
         foreach ($result['data'] as $job) {
             expect($job['flow'])
@@ -90,6 +100,8 @@ describe('JobMapper', function (): void {
 
     test('queue_config is array', function (): void {
         $result = $this->mapper->scan();
+
+        expect($result['data'])->toBeArray();
 
         foreach ($result['data'] as $job) {
             expect($job['queue_config'])->toBeArray();
