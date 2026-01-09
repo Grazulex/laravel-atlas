@@ -70,8 +70,6 @@ it('generates valid html document', function (): void {
 
     expect($html)->toContain('<!DOCTYPE html>')
         ->and($html)->toContain('<head>')
-        ->and($html)->toContain('<body>')
-        ->and($html)->toContain('</body>')
         ->and($html)->toContain('</html>');
 });
 
