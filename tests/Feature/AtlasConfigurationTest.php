@@ -2,74 +2,58 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature;
+it('atlas package can be disabled', function (): void {
+    config(['atlas.enabled' => false]);
 
-use Tests\TestCase;
+    expect(config('atlas.enabled'))->toBeFalse();
+});
 
-class AtlasConfigurationTest extends TestCase
-{
-    public function test_atlas_package_can_be_disabled(): void
-    {
-        // Temporarily disable the package
-        config(['atlas.enabled' => false]);
+it('atlas status tracking can be configured', function (): void {
+    config([
+        'atlas.status_tracking.enabled' => false,
+        'atlas.status_tracking.file_path' => '/tmp/custom_atlas.log',
+        'atlas.status_tracking.max_entries' => 500,
+    ]);
 
-        $this->assertFalse(config('atlas.enabled'));
-    }
+    expect(config('atlas.status_tracking.enabled'))->toBeFalse()
+        ->and(config('atlas.status_tracking.file_path'))->toBe('/tmp/custom_atlas.log')
+        ->and(config('atlas.status_tracking.max_entries'))->toBe(500);
+});
 
-    public function test_atlas_status_tracking_can_be_configured(): void
-    {
-        config([
-            'atlas.status_tracking.enabled' => false,
-            'atlas.status_tracking.file_path' => '/tmp/custom_atlas.log',
-            'atlas.status_tracking.max_entries' => 500,
-        ]);
+it('atlas generation formats can be configured', function (): void {
+    config([
+        'atlas.generation.formats.image' => false,
+        'atlas.generation.formats.json' => true,
+        'atlas.generation.formats.markdown' => true,
+        'atlas.generation.formats.blade' => true,
+    ]);
 
-        $this->assertFalse(config('atlas.status_tracking.enabled'));
-        $this->assertSame('/tmp/custom_atlas.log', config('atlas.status_tracking.file_path'));
-        $this->assertSame(500, config('atlas.status_tracking.max_entries'));
-    }
+    expect(config('atlas.generation.formats.image'))->toBeFalse()
+        ->and(config('atlas.generation.formats.json'))->toBeTrue()
+        ->and(config('atlas.generation.formats.markdown'))->toBeTrue()
+        ->and(config('atlas.generation.formats.blade'))->toBeTrue();
+});
 
-    public function test_atlas_generation_formats_can_be_configured(): void
-    {
-        config([
-            'atlas.generation.formats.image' => false,
-            'atlas.generation.formats.json' => true,
-            'atlas.generation.formats.markdown' => true,
-            'atlas.generation.formats.blade' => true,
-        ]);
+it('atlas analysis settings are configurable', function (): void {
+    config([
+        'atlas.analysis.include_vendors' => true,
+        'atlas.analysis.max_depth' => 15,
+    ]);
 
-        $this->assertFalse(config('atlas.generation.formats.image'));
-        $this->assertTrue(config('atlas.generation.formats.json'));
-        $this->assertTrue(config('atlas.generation.formats.markdown'));
-        $this->assertTrue(config('atlas.generation.formats.blade'));
-    }
+    expect(config('atlas.analysis.include_vendors'))->toBeTrue()
+        ->and(config('atlas.analysis.max_depth'))->toBe(15);
+});
 
-    public function test_atlas_analysis_settings_are_configurable(): void
-    {
-        config([
-            'atlas.analysis.include_vendors' => true,
-            'atlas.analysis.max_depth' => 15,
-        ]);
-
-        $this->assertTrue(config('atlas.analysis.include_vendors'));
-        $this->assertSame(15, config('atlas.analysis.max_depth'));
-    }
-
-    public function test_atlas_default_configuration_values(): void
-    {
-        // Test default values from our config file
-        $this->assertTrue(config('atlas.enabled'));
-        $this->assertTrue(config('atlas.status_tracking.enabled'));
-        $this->assertTrue(config('atlas.status_tracking.track_history'));
-        $this->assertSame(1000, config('atlas.status_tracking.max_entries'));
-
-        $this->assertTrue(config('atlas.generation.formats.image'));
-        $this->assertTrue(config('atlas.generation.formats.json'));
-        $this->assertTrue(config('atlas.generation.formats.markdown'));
-        $this->assertTrue(config('atlas.generation.formats.blade'));
-
-        $this->assertFalse(config('atlas.analysis.include_vendors'));
-        $this->assertSame(10, config('atlas.analysis.max_depth'));
-        $this->assertIsArray(config('atlas.analysis.scan_paths'));
-    }
-}
+it('atlas default configuration values', function (): void {
+    expect(config('atlas.enabled'))->toBeTrue()
+        ->and(config('atlas.status_tracking.enabled'))->toBeTrue()
+        ->and(config('atlas.status_tracking.track_history'))->toBeTrue()
+        ->and(config('atlas.status_tracking.max_entries'))->toBe(1000)
+        ->and(config('atlas.generation.formats.image'))->toBeTrue()
+        ->and(config('atlas.generation.formats.json'))->toBeTrue()
+        ->and(config('atlas.generation.formats.markdown'))->toBeTrue()
+        ->and(config('atlas.generation.formats.blade'))->toBeTrue()
+        ->and(config('atlas.analysis.include_vendors'))->toBeFalse()
+        ->and(config('atlas.analysis.max_depth'))->toBe(10)
+        ->and(config('atlas.analysis.scan_paths'))->toBeArray();
+});
