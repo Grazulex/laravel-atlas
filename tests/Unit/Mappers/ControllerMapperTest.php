@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use LaravelAtlas\Mappers\ControllerMapper;
 
 it('can scan controllers and extract dependencies correctly', function () {
@@ -18,6 +20,8 @@ it('returns structured dependencies with correct format', function () {
     $mapper = new ControllerMapper;
 
     $result = $mapper->scan();
+
+    expect($result['data'])->toBeArray();
 
     // If there are controllers, verify the structure
     if (! empty($result['data'])) {

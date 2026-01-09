@@ -2,52 +2,29 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit;
-
 use LaravelAtlas\LaravelAtlasServiceProvider;
-use Orchestra\Testbench\TestCase;
 
-class BasicTest extends TestCase
-{
-    protected function getPackageProviders($app): array
-    {
-        return [
-            LaravelAtlasServiceProvider::class,
-        ];
-    }
+it('service provider is loaded', function (): void {
+    $providers = $this->app->getLoadedProviders();
 
-    protected function getEnvironmentSetUp($app): void
-    {
-        // Setup the application environment for testing
-        $app['config']->set('atlas.enabled', true);
-    }
+    expect($this->app)->not->toBeNull()
+        ->and($providers)->toHaveKey(LaravelAtlasServiceProvider::class);
+});
 
-    public function test_service_provider_is_loaded(): void
-    {
-        $this->assertNotNull($this->app);
-        // Test that the service provider is registered instead of bound
-        $providers = $this->app->getLoadedProviders();
-        $this->assertArrayHasKey(LaravelAtlasServiceProvider::class, $providers);
-    }
+it('config is published', function (): void {
+    expect(config('atlas.status_tracking.enabled', true))->toBeTrue();
+});
 
-    public function test_config_is_published(): void
-    {
-        $this->assertTrue(config('atlas.status_tracking.enabled', true));
-    }
+it('package configuration is available', function (): void {
+    expect($this->app)->not->toBeNull()
+        ->and(config('atlas'))->toBeArray()
+        ->and(config('atlas'))->toHaveKey('status_tracking');
 
-    public function test_package_configuration_is_available(): void
-    {
-        $this->assertNotNull($this->app);
-        // Test that config is properly merged
-        $this->assertIsArray(config('atlas'));
-        $this->assertArrayHasKey('status_tracking', config('atlas'));
+    $statusTracking = config('atlas.status_tracking');
 
-        // Test status tracking config structure
-        $statusTracking = config('atlas.status_tracking');
-        $this->assertIsArray($statusTracking);
-        $this->assertArrayHasKey('enabled', $statusTracking);
-        $this->assertArrayHasKey('file_path', $statusTracking);
-        $this->assertArrayHasKey('track_history', $statusTracking);
-        $this->assertArrayHasKey('max_entries', $statusTracking);
-    }
-}
+    expect($statusTracking)->toBeArray()
+        ->and($statusTracking)->toHaveKey('enabled')
+        ->and($statusTracking)->toHaveKey('file_path')
+        ->and($statusTracking)->toHaveKey('track_history')
+        ->and($statusTracking)->toHaveKey('max_entries');
+});

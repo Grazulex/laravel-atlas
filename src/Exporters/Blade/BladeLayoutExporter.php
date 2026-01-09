@@ -2,19 +2,18 @@
 
 declare(strict_types=1);
 
-namespace LaravelAtlas\Exporters\Html;
+namespace LaravelAtlas\Exporters\Blade;
 
 use Illuminate\Support\Facades\View;
 use LaravelAtlas\Contracts\AtlasExporter;
 
-class HtmlLayoutExporter implements AtlasExporter
+class BladeLayoutExporter implements AtlasExporter
 {
     /**
      * @param  array<string, mixed>  $data
      */
     public function render(array $data): string
     {
-        // Extraire les données selon le type
         $modelsData = [];
         $commandsData = [];
         $routesData = [];
@@ -102,7 +101,7 @@ class HtmlLayoutExporter implements AtlasExporter
         }
 
         // Get project information from composer.json
-        $projectName = 'Laravel Project';
+        $projectName = config('app.name') ?? 'Laravel Project';
         $projectDescription = 'Atlas - Code Architecture';
         $createdAt = date('d/m/Y H:i');
 
@@ -122,7 +121,7 @@ class HtmlLayoutExporter implements AtlasExporter
             }
         }
 
-        return View::make('atlas::exports.layout', [
+        return View::make(config('atlas.export.blade.template', 'atlas::exports.layout'), [
             'models' => $modelsData,
             'commands' => $commandsData,
             'routes' => $routesData,

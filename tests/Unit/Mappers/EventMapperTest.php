@@ -25,6 +25,8 @@ describe('EventMapper', function (): void {
     test('event data has required keys', function (): void {
         $result = $this->mapper->scan();
 
+        expect($result['data'])->toBeArray();
+
         if ($result['count'] > 0) {
             $event = $result['data'][0];
 
@@ -41,14 +43,13 @@ describe('EventMapper', function (): void {
                     'listeners',
                     'flow',
                 ]);
-        } else {
-            // No events found - this is valid
-            expect($result['data'])->toBeArray();
         }
     });
 
     test('listeners have correct structure', function (): void {
         $result = $this->mapper->scan();
+
+        expect($result['data'])->toBeArray();
 
         foreach ($result['data'] as $event) {
             expect($event['listeners'])->toBeArray();
@@ -76,6 +77,8 @@ describe('EventMapper', function (): void {
     test('properties have correct structure', function (): void {
         $result = $this->mapper->scan();
 
+        expect($result['data'])->toBeArray();
+
         foreach ($result['data'] as $event) {
             expect($event['properties'])->toBeArray();
 
@@ -89,6 +92,8 @@ describe('EventMapper', function (): void {
 
     test('flow has correct structure', function (): void {
         $result = $this->mapper->scan();
+
+        expect($result['data'])->toBeArray();
 
         foreach ($result['data'] as $event) {
             expect($event['flow'])

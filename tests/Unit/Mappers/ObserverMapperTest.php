@@ -26,6 +26,8 @@ describe('ObserverMapper', function (): void {
     test('observer data has required keys when observers exist', function (): void {
         $result = $this->mapper->scan();
 
+        expect($result['data'])->toBeArray();
+
         foreach ($result['data'] as $observer) {
             expect($observer)
                 ->toHaveKeys([
@@ -44,6 +46,8 @@ describe('ObserverMapper', function (): void {
 
     test('methods have correct structure', function (): void {
         $result = $this->mapper->scan();
+
+        expect($result['data'])->toBeArray();
 
         foreach ($result['data'] as $observer) {
             expect($observer['methods'])->toBeArray();
@@ -64,6 +68,8 @@ describe('ObserverMapper', function (): void {
 
         $result = $this->mapper->scan();
 
+        expect($result['data'])->toBeArray();
+
         foreach ($result['data'] as $observer) {
             expect($observer['model_events'])->toBeArray();
 
@@ -76,6 +82,8 @@ describe('ObserverMapper', function (): void {
     test('is_abstract and is_final are booleans', function (): void {
         $result = $this->mapper->scan();
 
+        expect($result['data'])->toBeArray();
+
         foreach ($result['data'] as $observer) {
             expect($observer['is_abstract'])->toBeBool();
             expect($observer['is_final'])->toBeBool();
@@ -84,6 +92,8 @@ describe('ObserverMapper', function (): void {
 
     test('model is string or null', function (): void {
         $result = $this->mapper->scan();
+
+        expect($result['data'])->toBeArray();
 
         foreach ($result['data'] as $observer) {
             expect($observer['model'])->toBeIn([null, ...array_filter([$observer['model']], 'is_string')]);
