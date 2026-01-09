@@ -183,7 +183,7 @@ class ListenerMapper implements ComponentMapper
         }
 
         // Events dispatched via Event::dispatch()
-        if (preg_match_all('/Event::dispatch\(\s*new\s+([A-Z][\w\\\\]+)/', $source, $matches)) {
+        if (preg_match_all('/(?:([A-Z][\w\\\\]+)::dispatch|new\s+([A-Z][\w\\\\]+))/', $source, $matches)) {
             foreach ($matches[1] as $class) {
                 $flow['events'][] = ['class' => $class];
             }
