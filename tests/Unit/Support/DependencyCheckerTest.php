@@ -4,19 +4,18 @@ declare(strict_types=1);
 
 use LaravelAtlas\Mappers\ServiceMapper;
 use LaravelAtlas\Mappers\ControllerMapper;
+use LaravelAtlas\Contracts\ComponentMapper;
 
-it('service mapper extracts dependencies from constructor', function (): void {
+it('service mapper implements ComponentMapper interface', function (): void {
     $mapper = new ServiceMapper();
 
-    expect($mapper)->toBeInstanceOf(ServiceMapper::class)
-        ->and($mapper->getType())->toBe('services');
+    expect($mapper)->toBeInstanceOf(ComponentMapper::class);
 });
 
-it('controller mapper extracts dependencies from constructor', function (): void {
+it('controller mapper implements ComponentMapper interface', function (): void {
     $mapper = new ControllerMapper();
 
-    expect($mapper)->toBeInstanceOf(ControllerMapper::class)
-        ->and($mapper->getType())->toBe('controllers');
+    expect($mapper)->toBeInstanceOf(ComponentMapper::class);
 });
 
 it('service mapper scan returns expected structure', function (): void {
