@@ -59,20 +59,26 @@ class BladeLayoutExporterTest extends TestCase
 
     public function test_accepts_custom_output_path(): void
     {
+        $customOutput = $this->app->resourcePath('views/docs/docs.blade.php');
+
+        // Ensure views/docs directory exists
+        $docsDir = dirname($customOutput);
+        if (! is_dir($docsDir)) {
+            mkdir($docsDir, 0755, true);
+        }
+
         $this->artisan('atlas:export', [
             '--type' => 'all',
             '--format' => 'blade',
-            '--output' => 'resources/views/docs/docs.blade.php',
+            '--output' => $customOutput,
         ])
             ->expectsOutput('🔍 Exporting all components as blade...')
             ->assertSuccessful();
 
-        $exportFile = $this->app->resourcePath('views/docs/docs.blade.php');
+        $this->assertFileExists($customOutput);
+        $this->assertGreaterThan(0, filesize($customOutput), 'The exported blade file is empty.');
+        $this->assertStringContainsString('<div>', file_get_contents($customOutput));
 
-        $this->assertFileExists($exportFile);
-        $this->assertGreaterThan(0, filesize($exportFile), 'The exported blade file is empty.');
-        $this->assertStringContainsString('<div>', file_get_contents($exportFile));
-
-        $this->cleanUpExportFile($exportFile);
+        $this->cleanUpExportFile($customOutput);
     }
 }
