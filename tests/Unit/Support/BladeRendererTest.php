@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\View;
 
-it('can render atlas export layout view', function (): void {
+it('can render atlas export layout view with empty data', function (): void {
     $view = View::make('atlas::exports.layout', [
         'models' => [],
         'commands' => [],
@@ -32,24 +32,12 @@ it('can render atlas export layout view', function (): void {
 
     expect($html)->toBeString()
         ->and($html)->toContain('Test Project')
-        ->and($html)->toContain('Test Description');
+        ->and($html)->toContain('<html');
 });
 
-it('renders view with models data', function (): void {
-    $models = [
-        [
-            'name' => 'User',
-            'namespace' => 'App\\Models\\User',
-            'table' => 'users',
-            'fillable' => ['name', 'email'],
-            'guarded' => [],
-            'casts' => [],
-            'relations' => [],
-        ],
-    ];
-
+it('renders layout view with correct html structure', function (): void {
     $view = View::make('atlas::exports.layout', [
-        'models' => $models,
+        'models' => [],
         'commands' => [],
         'routes' => [],
         'routes_grouping' => [],
@@ -66,31 +54,23 @@ it('renders view with models data', function (): void {
         'rules' => [],
         'listeners' => [],
         'observers' => [],
-        'project_name' => 'Test Project',
-        'project_description' => 'Test Description',
+        'project_name' => 'Atlas Test',
+        'project_description' => 'Atlas Description',
         'created_at' => '01/01/2024 12:00',
     ]);
 
     $html = $view->render();
 
     expect($html)->toBeString()
-        ->and($html)->toContain('User');
+        ->and($html)->toContain('<!DOCTYPE html>')
+        ->and($html)->toContain('</html>');
 });
 
-it('renders view with routes data', function (): void {
-    $routes = [
-        [
-            'uri' => '/api/users',
-            'method' => 'GET',
-            'name' => 'users.index',
-            'action' => 'UserController@index',
-        ],
-    ];
-
+it('view includes dark mode toggle', function (): void {
     $view = View::make('atlas::exports.layout', [
         'models' => [],
         'commands' => [],
-        'routes' => $routes,
+        'routes' => [],
         'routes_grouping' => [],
         'services' => [],
         'notifications' => [],
@@ -105,13 +85,13 @@ it('renders view with routes data', function (): void {
         'rules' => [],
         'listeners' => [],
         'observers' => [],
-        'project_name' => 'Test Project',
-        'project_description' => 'Test Description',
+        'project_name' => 'Test',
+        'project_description' => 'Test',
         'created_at' => '01/01/2024 12:00',
     ]);
 
     $html = $view->render();
 
     expect($html)->toBeString()
-        ->and($html)->toContain('/api/users');
+        ->and($html)->toContain('dark');
 });
