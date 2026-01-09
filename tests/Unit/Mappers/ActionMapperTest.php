@@ -26,6 +26,8 @@ describe('ActionMapper', function (): void {
     test('action data has required keys when actions exist', function (): void {
         $result = $this->mapper->scan();
 
+        expect($result['data'])->toBeArray();
+
         foreach ($result['data'] as $action) {
             expect($action)
                 ->toHaveKeys([
@@ -43,6 +45,8 @@ describe('ActionMapper', function (): void {
     test('methods have correct structure', function (): void {
         $result = $this->mapper->scan();
 
+        expect($result['data'])->toBeArray();
+
         foreach ($result['data'] as $action) {
             expect($action['methods'])->toBeArray();
 
@@ -56,6 +60,8 @@ describe('ActionMapper', function (): void {
 
     test('dependencies are array of strings', function (): void {
         $result = $this->mapper->scan();
+
+        expect($result['data'])->toBeArray();
 
         foreach ($result['data'] as $action) {
             expect($action['dependencies'])->toBeArray();
