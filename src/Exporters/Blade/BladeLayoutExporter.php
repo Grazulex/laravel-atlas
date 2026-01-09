@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaravelAtlas\Exporters\Blade;
 
 use Illuminate\Support\Facades\View;
