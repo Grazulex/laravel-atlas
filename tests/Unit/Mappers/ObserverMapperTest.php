@@ -96,7 +96,7 @@ describe('ObserverMapper', function (): void {
         expect($result['data'])->toBeArray();
 
         foreach ($result['data'] as $observer) {
-            expect($observer['model'])->toBeIn([null, ...array_filter([$observer['model']], 'is_string')]);
+            expect($observer['model'])->toBeIn([null, ...array_filter([$observer['model']], is_string(...))]);
         }
     });
 });

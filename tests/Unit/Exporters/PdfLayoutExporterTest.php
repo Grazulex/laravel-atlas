@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-use LaravelAtlas\Exporters\Pdf\PdfLayoutExporter;
 use LaravelAtlas\Contracts\AtlasExporter;
+use LaravelAtlas\Exporters\Pdf\PdfLayoutExporter;
 
 it('implements AtlasExporter interface', function (): void {
-    $exporter = new PdfLayoutExporter();
+    $exporter = new PdfLayoutExporter;
 
     expect($exporter)->toBeInstanceOf(AtlasExporter::class);
 });
 
 it('renders empty data without errors', function (): void {
-    $exporter = new PdfLayoutExporter();
+    $exporter = new PdfLayoutExporter;
     $pdf = $exporter->render([]);
 
     expect($pdf)->toBeString()
@@ -20,7 +20,7 @@ it('renders empty data without errors', function (): void {
 });
 
 it('generates valid PDF content', function (): void {
-    $exporter = new PdfLayoutExporter();
+    $exporter = new PdfLayoutExporter;
     $pdf = $exporter->render([]);
 
     // PDF files start with %PDF
@@ -28,7 +28,7 @@ it('generates valid PDF content', function (): void {
 });
 
 it('renders all component types without errors', function (): void {
-    $exporter = new PdfLayoutExporter();
+    $exporter = new PdfLayoutExporter;
     $pdf = $exporter->render([
         'models' => ['count' => 0, 'data' => []],
         'commands' => ['count' => 0, 'data' => []],
@@ -54,7 +54,7 @@ it('renders all component types without errors', function (): void {
 });
 
 it('produces pdf with reasonable file size', function (): void {
-    $exporter = new PdfLayoutExporter();
+    $exporter = new PdfLayoutExporter;
     $pdf = $exporter->render([]);
 
     // PDF should be at least 1KB
@@ -62,7 +62,7 @@ it('produces pdf with reasonable file size', function (): void {
 });
 
 it('pdf ends with eof marker', function (): void {
-    $exporter = new PdfLayoutExporter();
+    $exporter = new PdfLayoutExporter;
     $pdf = $exporter->render([]);
 
     // PDF files typically end with %%EOF

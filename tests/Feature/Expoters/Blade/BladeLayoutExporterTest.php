@@ -13,7 +13,7 @@ afterEach(function (): void {
     foreach ($paths as $path) {
         if (file_exists($path)) {
             unlink($path);
-            $directory = dirname($path);
+            $directory = dirname((string) $path);
             if (is_dir($directory) && count(scandir($directory)) === 2) {
                 rmdir($directory);
             }
@@ -54,7 +54,7 @@ it('can export specific components in blade format', function (): void {
 it('accepts custom output path', function (): void {
     $customOutput = $this->app->resourcePath('views/docs/docs.blade.php');
 
-    $docsDir = dirname($customOutput);
+    $docsDir = dirname((string) $customOutput);
     if (! is_dir($docsDir)) {
         mkdir($docsDir, 0755, true);
     }

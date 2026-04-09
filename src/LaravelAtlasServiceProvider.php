@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaravelAtlas;
 
 use Illuminate\Support\ServiceProvider;

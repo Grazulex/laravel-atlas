@@ -283,8 +283,8 @@ class RouteMapper implements ComponentMapper
             'stats' => [
                 'total' => count($routes),
                 'by_method' => $byMethod,
-                'by_type' => array_map('count', $byType),
-                'by_prefix' => array_map('count', $byPrefix),
+                'by_type' => array_map(count(...), $byType),
+                'by_prefix' => array_map(count(...), $byPrefix),
             ],
         ];
     }

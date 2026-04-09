@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-use LaravelAtlas\Exporters\Html\HtmlLayoutExporter;
 use LaravelAtlas\Contracts\AtlasExporter;
+use LaravelAtlas\Exporters\Html\HtmlLayoutExporter;
 
 it('implements AtlasExporter interface', function (): void {
-    $exporter = new HtmlLayoutExporter();
+    $exporter = new HtmlLayoutExporter;
 
     expect($exporter)->toBeInstanceOf(AtlasExporter::class);
 });
 
 it('renders empty data without errors', function (): void {
-    $exporter = new HtmlLayoutExporter();
+    $exporter = new HtmlLayoutExporter;
     $html = $exporter->render([]);
 
     expect($html)->toBeString()
@@ -21,7 +21,7 @@ it('renders empty data without errors', function (): void {
 });
 
 it('includes project name from composer.json', function (): void {
-    $exporter = new HtmlLayoutExporter();
+    $exporter = new HtmlLayoutExporter;
     $html = $exporter->render([]);
 
     expect($html)->toBeString()
@@ -29,7 +29,7 @@ it('includes project name from composer.json', function (): void {
 });
 
 it('renders all component types without errors', function (): void {
-    $exporter = new HtmlLayoutExporter();
+    $exporter = new HtmlLayoutExporter;
     $html = $exporter->render([
         'models' => ['count' => 0, 'data' => []],
         'commands' => ['count' => 0, 'data' => []],
@@ -54,7 +54,7 @@ it('renders all component types without errors', function (): void {
 });
 
 it('generates valid html document', function (): void {
-    $exporter = new HtmlLayoutExporter();
+    $exporter = new HtmlLayoutExporter;
     $html = $exporter->render([]);
 
     expect($html)->toContain('<!DOCTYPE html>')
@@ -63,7 +63,7 @@ it('generates valid html document', function (): void {
 });
 
 it('includes styles', function (): void {
-    $exporter = new HtmlLayoutExporter();
+    $exporter = new HtmlLayoutExporter;
     $html = $exporter->render([]);
 
     // Check for either inline styles or stylesheet link
@@ -72,7 +72,7 @@ it('includes styles', function (): void {
 });
 
 it('includes javascript for interactivity', function (): void {
-    $exporter = new HtmlLayoutExporter();
+    $exporter = new HtmlLayoutExporter;
     $html = $exporter->render([]);
 
     expect($html)->toContain('<script');

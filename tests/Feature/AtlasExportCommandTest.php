@@ -79,7 +79,7 @@ it('supports different export formats', function (): void {
 it('accepts custom output path', function (): void {
     $customOutput = $this->app->storagePath('app/custom-atlas-export.html');
 
-    $storageDir = dirname($customOutput);
+    $storageDir = dirname((string) $customOutput);
     if (! is_dir($storageDir)) {
         mkdir($storageDir, 0755, true);
     }

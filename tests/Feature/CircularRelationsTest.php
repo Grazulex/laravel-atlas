@@ -13,7 +13,7 @@ beforeEach(function (): void {
 
 afterEach(function (): void {
     // Clean up temporary models
-    if (isset($this->modelsPath) && File::isDirectory($this->modelsPath)) {
+    if (property_exists($this, 'modelsPath') && $this->modelsPath !== null && File::isDirectory($this->modelsPath)) {
         File::deleteDirectory($this->modelsPath);
     }
 });

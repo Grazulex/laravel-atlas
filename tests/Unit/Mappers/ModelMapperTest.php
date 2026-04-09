@@ -77,7 +77,7 @@ describe('ModelMapper', function (): void {
         foreach ($result['data'] as $model) {
             expect($model['relations'])->toBeArray();
 
-            foreach ($model['relations'] as $name => $relation) {
+            foreach ($model['relations'] as $relation) {
                 expect($relation)
                     ->toBeArray()
                     ->toHaveKeys(['type', 'related', 'foreignKey']);

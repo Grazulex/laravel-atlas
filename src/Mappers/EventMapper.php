@@ -14,7 +14,9 @@ use ReflectionClass;
 use ReflectionIntersectionType;
 use ReflectionNamedType;
 use ReflectionParameter;
+use ReflectionType;
 use ReflectionUnionType;
+use Throwable;
 
 class EventMapper implements ComponentMapper
 {
@@ -38,7 +40,7 @@ class EventMapper implements ComponentMapper
         $events = [];
         /** @var array<int, string> $paths */
         $paths = isset($options['paths']) && is_array($options['paths'])
-            ? array_values(array_filter($options['paths'], 'is_string'))
+            ? array_values(array_filter($options['paths'], is_string(...)))
             : $this->getEventPaths();
         $recursive = $options['recursive'] ?? true;
 
@@ -351,7 +353,7 @@ class EventMapper implements ComponentMapper
                         return;
                     }
                 }
-            } catch (\Throwable) {
+            } catch (Throwable) {
                 // Fall through to regex parsing
             }
         }
@@ -408,7 +410,10 @@ class EventMapper implements ComponentMapper
             $files = File::allFiles($path);
             foreach ($files as $file) {
                 $fqcn = ClassResolver::resolveFromPath($file->getRealPath());
-                if (! $fqcn || ! class_exists($fqcn)) {
+                if (! $fqcn) {
+                    continue;
+                }
+                if (! class_exists($fqcn)) {
                     continue;
                 }
 
@@ -434,7 +439,7 @@ class EventMapper implements ComponentMapper
                             }
                         }
                     }
-                } catch (\Throwable) {
+                } catch (Throwable) {
                     // Skip problematic classes
                 }
             }
@@ -447,9 +452,9 @@ class EventMapper implements ComponentMapper
      * Check if a reflection type matches the given event class
      * Supports named types, union types, and nullable types
      */
-    protected function typeMatchesEvent(?\ReflectionType $type, string $eventClass): bool
+    protected function typeMatchesEvent(?ReflectionType $type, string $eventClass): bool
     {
-        if ($type === null) {
+        if (! $type instanceof ReflectionType) {
             return false;
         }
 
@@ -490,7 +495,7 @@ class EventMapper implements ComponentMapper
         $configPaths = config('atlas.paths.listeners', []);
 
         if (is_array($configPaths) && $configPaths !== []) {
-            return array_values(array_filter($configPaths, 'is_string'));
+            return array_values(array_filter($configPaths, is_string(...)));
         }
 
         // Default paths
@@ -516,7 +521,7 @@ class EventMapper implements ComponentMapper
         $configPaths = config('atlas.paths.events', []);
 
         if (is_array($configPaths) && $configPaths !== []) {
-            return array_values(array_filter($configPaths, 'is_string'));
+            return array_values(array_filter($configPaths, is_string(...)));
         }
 
         // Default path

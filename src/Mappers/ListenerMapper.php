@@ -32,7 +32,7 @@ class ListenerMapper implements ComponentMapper
 
         /** @var array<int, string> $paths */
         $paths = isset($options['paths']) && is_array($options['paths'])
-            ? array_values(array_filter($options['paths'], 'is_string'))
+            ? array_values(array_filter($options['paths'], is_string(...)))
             : $defaultPaths;
         $recursive = $options['recursive'] ?? true;
         $seen = [];
@@ -143,7 +143,7 @@ class ListenerMapper implements ComponentMapper
         $configPaths = config('atlas.paths.listeners', []);
 
         if (is_array($configPaths) && $configPaths !== []) {
-            return array_values(array_filter($configPaths, 'is_string'));
+            return array_values(array_filter($configPaths, is_string(...)));
         }
 
         // Default paths
@@ -216,7 +216,7 @@ class ListenerMapper implements ComponentMapper
         // Remove duplicates
         foreach ($flow as $key => $items) {
             $seen = [];
-            $flow[$key] = array_values(array_filter($items, function ($item) use (&$seen) {
+            $flow[$key] = array_values(array_filter($items, function (array $item) use (&$seen): bool {
                 $class = $item['class'];
                 if (isset($seen[$class])) {
                     return false;
