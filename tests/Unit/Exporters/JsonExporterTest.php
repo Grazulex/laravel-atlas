@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-use LaravelAtlas\Exporters\Json\JsonExporter;
 use LaravelAtlas\Contracts\AtlasExporter;
+use LaravelAtlas\Exporters\Json\JsonExporter;
 
 it('implements AtlasExporter interface', function (): void {
-    $exporter = new JsonExporter();
+    $exporter = new JsonExporter;
 
     expect($exporter)->toBeInstanceOf(AtlasExporter::class);
 });
 
 it('renders empty data as valid JSON', function (): void {
-    $exporter = new JsonExporter();
+    $exporter = new JsonExporter;
     $json = $exporter->render([]);
 
     expect($json)->toBeString()
@@ -20,7 +20,7 @@ it('renders empty data as valid JSON', function (): void {
 });
 
 it('renders models data correctly', function (): void {
-    $exporter = new JsonExporter();
+    $exporter = new JsonExporter;
     $data = [
         'models' => [
             'count' => 1,
@@ -43,7 +43,7 @@ it('renders models data correctly', function (): void {
 });
 
 it('renders routes data correctly', function (): void {
-    $exporter = new JsonExporter();
+    $exporter = new JsonExporter;
     $data = [
         'routes' => [
             'count' => 2,
@@ -63,7 +63,7 @@ it('renders routes data correctly', function (): void {
 });
 
 it('produces pretty printed JSON', function (): void {
-    $exporter = new JsonExporter();
+    $exporter = new JsonExporter;
     $json = $exporter->render(['test' => 'value']);
 
     // Pretty printed JSON contains newlines
@@ -71,7 +71,7 @@ it('produces pretty printed JSON', function (): void {
 });
 
 it('preserves all data types correctly', function (): void {
-    $exporter = new JsonExporter();
+    $exporter = new JsonExporter;
     $data = [
         'string' => 'value',
         'int' => 42,
@@ -93,7 +93,7 @@ it('preserves all data types correctly', function (): void {
 });
 
 it('handles nested data structures', function (): void {
-    $exporter = new JsonExporter();
+    $exporter = new JsonExporter;
     $data = [
         'models' => [
             'count' => 1,

@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-use LaravelAtlas\Exporters\Blade\BladeLayoutExporter;
 use LaravelAtlas\Contracts\AtlasExporter;
+use LaravelAtlas\Exporters\Blade\BladeLayoutExporter;
 
 it('implements AtlasExporter interface', function (): void {
-    $exporter = new BladeLayoutExporter();
+    $exporter = new BladeLayoutExporter;
 
     expect($exporter)->toBeInstanceOf(AtlasExporter::class);
 });
 
 it('renders empty data without errors', function (): void {
-    $exporter = new BladeLayoutExporter();
+    $exporter = new BladeLayoutExporter;
     $html = $exporter->render([]);
 
     expect($html)->toBeString()
@@ -23,7 +23,7 @@ it('renders empty data without errors', function (): void {
 it('uses configurable template', function (): void {
     config(['atlas.export.blade.template' => 'atlas::exports.layout']);
 
-    $exporter = new BladeLayoutExporter();
+    $exporter = new BladeLayoutExporter;
     $html = $exporter->render([]);
 
     expect($html)->toBeString()
@@ -33,14 +33,14 @@ it('uses configurable template', function (): void {
 it('includes app name in output', function (): void {
     config(['app.name' => 'TestApp']);
 
-    $exporter = new BladeLayoutExporter();
+    $exporter = new BladeLayoutExporter;
     $html = $exporter->render([]);
 
     expect($html)->toBeString();
 });
 
 it('renders all component types without errors', function (): void {
-    $exporter = new BladeLayoutExporter();
+    $exporter = new BladeLayoutExporter;
     $html = $exporter->render([
         'models' => ['count' => 0, 'data' => []],
         'commands' => ['count' => 0, 'data' => []],
@@ -65,7 +65,7 @@ it('renders all component types without errors', function (): void {
 });
 
 it('generates valid html document', function (): void {
-    $exporter = new BladeLayoutExporter();
+    $exporter = new BladeLayoutExporter;
     $html = $exporter->render([]);
 
     expect($html)->toContain('<!DOCTYPE html>')
@@ -74,7 +74,7 @@ it('generates valid html document', function (): void {
 });
 
 it('includes dark mode support', function (): void {
-    $exporter = new BladeLayoutExporter();
+    $exporter = new BladeLayoutExporter;
     $html = $exporter->render([]);
 
     expect($html)->toContain('dark');
