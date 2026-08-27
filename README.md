@@ -53,7 +53,7 @@ Laravel Atlas is perfect for:
 
 - 🚀 **Comprehensive Scanning** - Analyze 16 Laravel component types
 - 🗺️ **Architecture Mapping** - Generate detailed application structure maps
-- 📊 **Multiple Export Formats** - Export to JSON, HTML, Blade and PDF
+- 📊 **Multiple Export Formats** - Export to JSON, Markdown, HTML, Blade and PDF
 - 🔍 **Dependency Analysis** - Track relationships and dependencies between components
 - 📋 **Extensible Architecture** - Support for custom mappers and exporters
 - 🎯 **Smart Detection** - Intelligent component discovery and classification
@@ -136,6 +136,9 @@ php artisan atlas:export --format=json
 # Generate interactive HTML map
 php artisan atlas:export --format=html
 
+# Generate Markdown documentation
+php artisan atlas:export --format=markdown
+
 # Generate PDF documentation
 php artisan atlas:export --format=pdf
 
@@ -168,6 +171,7 @@ $observerData = Atlas::scan('observers');
 
 // Export to different formats
 $jsonOutput = Atlas::export('models', 'json');
+$markdownDoc = Atlas::export('models', 'markdown');
 $htmlReport = Atlas::export('routes', 'html');
 $htmlReport = Atlas::export('events', 'blade');
 $pdfDocument = Atlas::export('commands', 'pdf');
@@ -236,15 +240,49 @@ $controllerData = Atlas::scan('controllers', [
     'include_dependencies' => true,
 ]);
 
+// Job mapping
+$jobData = Atlas::scan('jobs', [
+    'include_methods' => true,
+    'include_properties' => true,
+    'include_trait_methods' => false, // drop Dispatchable/Queueable/... methods
+]);
+
 // Additional component mappings for other types
 $resourceData = Atlas::scan('resources');
-$jobData = Atlas::scan('jobs');
 $actionData = Atlas::scan('actions');
 $policyData = Atlas::scan('policies');
 $ruleData = Atlas::scan('rules');
 $listenerData = Atlas::scan('listeners');
 $observerData = Atlas::scan('observers');
 ```
+
+### Scan Options
+
+Every mapper accepts `paths` and `recursive`, plus the `include_*` options listed
+below. **All `include_*` options default to `true`**, so scanning without options
+returns the complete component description; passing `false` removes the matching
+keys from the scanned data.
+
+| Type | Options | Keys they control |
+| --- | --- | --- |
+| `models` | `include_relationships`, `include_observers`, `include_factories` | `relations`, `observers`, `factories` |
+| `routes` | `include_middleware`, `include_controllers`, `group_by_prefix` | `middleware`, `controller` + `uses`, top-level `grouping` |
+| `commands` | `include_signatures`, `include_descriptions` | `signature` + `parsed_signature`, `description` |
+| `services` | `include_methods`, `include_dependencies` | `methods`, `dependencies` |
+| `notifications` | `include_channels`, `include_flow` | `channels`, `flow` |
+| `middlewares` | `include_parameters`, `include_dependencies` | `parameters`, `dependencies` |
+| `form_requests` | `include_rules`, `include_authorization`, `include_attributes` | `rules`, `authorization`, `attributes` |
+| `events` | `include_listeners`, `include_properties` | `listeners`, `properties` |
+| `controllers` | `include_actions`, `include_dependencies` | `methods`, `dependencies` |
+| `jobs` | `include_methods`, `include_properties`, `include_trait_methods` | `methods`, `properties`, trait-inherited entries inside `methods` |
+
+`include_trait_methods => false` is the way to keep a job's `methods` limited to
+what the job itself declares, instead of the ~40 methods inherited from
+`Dispatchable`, `InteractsWithQueue`, `Queueable` and `SerializesModels`.
+
+Model observers are read from the model's registered event listeners, so both
+`Model::observe()` and the `#[ObservedBy]` attribute are reported. Factories are
+reported as `['uses_factory' => bool, 'class' => ?string, 'exists' => bool]`.
 
 ### Available Component Types
 
@@ -274,6 +312,9 @@ Multiple export formats for different use cases:
 ```bash
 # JSON for data processing and API integration
 php artisan atlas:export --format=json --output=storage/atlas/map.json
+
+# Markdown for READMEs, wikis and code review
+php artisan atlas:export --format=markdown --output=docs/atlas/map.md
 
 # Interactive HTML maps with full component visualization
 php artisan atlas:export --format=html --output=public/atlas/map.html
@@ -388,9 +429,26 @@ use LaravelAtlas\Facades\Atlas;
 
 // Export specific types to different formats
 $jsonOutput = Atlas::export('models', 'json');
+$markdownDoc = Atlas::export('models', 'markdown');
 $htmlReport = Atlas::export('routes', 'html');
 $htmlReport = Atlas::export('events', 'blade');
 $pdfDocument = Atlas::export('commands', 'pdf');
+```
+
+#### Markdown export options
+
+The Markdown exporter accepts two options:
+
+| Option | Default | Effect |
+| --- | --- | --- |
+| `include_stats` | `true` | Prepend a summary table with a row per component type |
+| `detailed_sections` | `true` | Render every component with its full detail; set to `false` for a plain list of class names |
+
+```php
+$analysisReport = Atlas::export('all', 'markdown', [
+    'include_stats' => true,
+    'detailed_sections' => true,
+]);
 ```
 
 ## 🧪 Testing Your Architecture
@@ -499,8 +557,11 @@ $formRequestAnalysis = Atlas::scan('form_requests', [
     'include_attributes' => true
 ]);
 
-// Generate detailed reports
-$allComponents = Atlas::scan('all', ['detailed' => true]);
+// Generate a detailed report across every component type
+$allComponents = [];
+foreach (['models', 'routes', 'commands', 'services', 'jobs'] as $type) {
+    $allComponents[$type] = Atlas::scan($type);
+}
 
 // Export analysis results
 $analysisReport = Atlas::export('all', 'markdown', [
@@ -815,7 +876,7 @@ class ArchitectureTest extends TestCase
 ## 🔧 Requirements
 
 - PHP: ^8.3
-- Laravel: ^12.0
+- Laravel: ^12.0 | ^13.0
 - Carbon: ^3.10
 
 ## 🚀 Performance

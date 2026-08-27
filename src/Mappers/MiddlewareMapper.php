@@ -7,6 +7,7 @@ namespace LaravelAtlas\Mappers;
 use Illuminate\Support\Facades\File;
 use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
+use LaravelAtlas\Support\ScanOptions;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionParameter;
@@ -42,7 +43,7 @@ class MiddlewareMapper implements ComponentMapper
                 $fqcn = $this->resolveClassFromFile($file->getRealPath());
 
                 if ($fqcn && class_exists($fqcn)) {
-                    $middlewares[] = $this->analyzeMiddleware($fqcn, $file->getPathname());
+                    $middlewares[] = $this->analyzeMiddleware($fqcn, $file->getPathname(), $options);
                 }
             }
         }
@@ -60,9 +61,11 @@ class MiddlewareMapper implements ComponentMapper
     }
 
     /**
+     * @param  array<string, mixed>  $options
+     *
      * @return array<string, mixed>
      */
-    protected function analyzeMiddleware(string $fqcn, string $filePath): array
+    protected function analyzeMiddleware(string $fqcn, string $filePath, array $options = []): array
     {
         if (! class_exists($fqcn)) {
             return [
@@ -82,7 +85,7 @@ class MiddlewareMapper implements ComponentMapper
             $source = null;
         }
 
-        return [
+        return ScanOptions::filter([
             'class' => $fqcn,
             'namespace' => $reflection->getNamespaceName(),
             'name' => $reflection->getShortName(),
@@ -92,7 +95,10 @@ class MiddlewareMapper implements ComponentMapper
             'parameters' => $this->extractHandleParameters($reflection),
             'has_terminate' => $reflection->hasMethod('terminate'),
             'flow' => $this->analyzeFlow($source),
-        ];
+        ], $options, [
+            'include_parameters' => ['parameters'],
+            'include_dependencies' => ['dependencies'],
+        ]);
     }
 
     /**

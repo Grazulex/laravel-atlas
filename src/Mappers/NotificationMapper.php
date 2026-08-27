@@ -8,6 +8,7 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\File;
 use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
+use LaravelAtlas\Support\ScanOptions;
 use ReflectionClass;
 
 class NotificationMapper implements ComponentMapper
@@ -38,7 +39,7 @@ class NotificationMapper implements ComponentMapper
                     class_exists($fqcn) &&
                     is_subclass_of($fqcn, Notification::class)
                 ) {
-                    $notifications[] = $this->analyzeNotification($fqcn);
+                    $notifications[] = $this->analyzeNotification($fqcn, $options);
                 }
             }
         }
@@ -51,9 +52,11 @@ class NotificationMapper implements ComponentMapper
     }
 
     /**
+     * @param  array<string, mixed>  $options
+     *
      * @return array<string, mixed>
      */
-    protected function analyzeNotification(string $fqcn): array
+    protected function analyzeNotification(string $fqcn, array $options = []): array
     {
         if (! class_exists($fqcn)) {
             return [
@@ -76,7 +79,7 @@ class NotificationMapper implements ComponentMapper
             $source = $fileContents !== false ? $fileContents : null;
         }
 
-        return [
+        return ScanOptions::filter([
             'class' => $fqcn,
             'namespace' => $reflection->getNamespaceName(),
             'name' => $reflection->getShortName(),
@@ -84,7 +87,10 @@ class NotificationMapper implements ComponentMapper
             'channels' => $this->detectChannels($source),
             'methods' => $this->detectDefinedMethods($source),
             'flow' => $this->analyzeFlow($source),
-        ];
+        ], $options, [
+            'include_channels' => ['channels'],
+            'include_flow' => ['flow'],
+        ]);
     }
 
     /**
