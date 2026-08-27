@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.8.0](https://github.com/Grazulex/laravel-atlas/releases/tag/v1.8.0) (2026-08-27)
+## [2.0.0](https://github.com/Grazulex/laravel-atlas/releases/tag/v2.0.0) (2026-08-27)
+
+### Breaking Changes
+
+- **support:** drop Laravel 11. Every `laravel/framework` 11.x release is blocked by published security advisories, so it can no longer be installed or tested. Laravel 12 and 13 are supported.
 
 ### Features
 

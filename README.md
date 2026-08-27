@@ -557,8 +557,11 @@ $formRequestAnalysis = Atlas::scan('form_requests', [
     'include_attributes' => true
 ]);
 
-// Generate detailed reports
-$allComponents = Atlas::scan('all', ['detailed' => true]);
+// Generate a detailed report across every component type
+$allComponents = [];
+foreach (['models', 'routes', 'commands', 'services', 'jobs'] as $type) {
+    $allComponents[$type] = Atlas::scan($type);
+}
 
 // Export analysis results
 $analysisReport = Atlas::export('all', 'markdown', [
@@ -873,7 +876,7 @@ class ArchitectureTest extends TestCase
 ## 🔧 Requirements
 
 - PHP: ^8.3
-- Laravel: ^12.0
+- Laravel: ^12.0 | ^13.0
 - Carbon: ^3.10
 
 ## 🚀 Performance
