@@ -8,6 +8,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
+use LaravelAtlas\Support\ScanOptions;
 use ReflectionClass;
 
 class CommandMapper implements ComponentMapper
@@ -46,7 +47,7 @@ class CommandMapper implements ComponentMapper
                     }
 
                     $instance = app($fqcn);
-                    $commands[] = $this->analyzeCommand($instance);
+                    $commands[] = $this->analyzeCommand($instance, $options);
                 }
             }
         }
@@ -61,7 +62,12 @@ class CommandMapper implements ComponentMapper
     /**
      * @return array<string, mixed>
      */
-    protected function analyzeCommand(Command $command): array
+    /**
+     * @param  array<string, mixed>  $options
+     *
+     * @return array<string, mixed>
+     */
+    protected function analyzeCommand(Command $command, array $options = []): array
     {
         $class = $command::class;
         $reflection = new ReflectionClass($command);
@@ -73,7 +79,7 @@ class CommandMapper implements ComponentMapper
             $source = $content !== false ? $content : null;
         }
 
-        return [
+        return ScanOptions::filter([
             'class' => $class,
             'namespace' => $reflection->getNamespaceName(),
             'name' => $reflection->getShortName(),
@@ -83,7 +89,10 @@ class CommandMapper implements ComponentMapper
             'description' => $this->getDescription($command),
             'aliases' => $command->getAliases(),
             'flow' => $this->analyzeFlow($source),
-        ];
+        ], $options, [
+            'include_signatures' => ['signature', 'parsed_signature'],
+            'include_descriptions' => ['description'],
+        ]);
     }
 
     /**

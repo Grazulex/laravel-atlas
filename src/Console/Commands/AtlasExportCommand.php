@@ -10,20 +10,20 @@ use Throwable;
 
 class AtlasExportCommand extends Command
 {
-    protected $signature = 'atlas:export {--type= : Filter to a specific component type (models, routes, etc.) or "all" for all components} {--format=html : Export format (html, json, pdf, blade, etc.)} {--output= : Output file path}';
+    protected $signature = 'atlas:export {--type= : Filter to a specific component type (models, routes, etc.) or "all" for all components} {--format=html : Export format (html, json, markdown, pdf, blade)} {--output= : Output file path}';
 
-    protected $description = 'Export all components or filter to a specific type to a chosen format (HTML, JSON, PDF, etc.)';
+    protected $description = 'Export all components or filter to a specific type to a chosen format (HTML, JSON, Markdown, PDF, Blade)';
 
     public function handle(): int
     {
         $type = $this->option('type');
         $format = $this->option('format') ?? 'html';
 
-        $output = $this->option('output') ?? ($format === 'blade' ? resource_path('views/atlas/export.blade.php') : public_path("atlas/export.{$format}"));
+        $output = $this->option('output') ?? ($format === 'blade' ? resource_path('views/atlas/export.blade.php') : public_path('atlas/export.' . $this->extensionFor($format)));
 
         if ($type && $type !== 'all') {
             $this->info("🔍 Exporting {$type} as {$format}...");
-            $output = $this->option('output') ?? ($format === 'blade' ? resource_path("views/atlas/{$type}.blade.php") : public_path("atlas/{$type}.{$format}"));
+            $output = $this->option('output') ?? ($format === 'blade' ? resource_path("views/atlas/{$type}.blade.php") : public_path("atlas/{$type}." . $this->extensionFor($format)));
         } else {
             $this->info("🔍 Exporting all components as {$format}...");
         }
@@ -48,6 +48,14 @@ class AtlasExportCommand extends Command
         $this->info("✅ Exported to: {$output}");
 
         return self::SUCCESS;
+    }
+
+    protected function extensionFor(string $format): string
+    {
+        return match ($format) {
+            'markdown' => 'md',
+            default => $format,
+        };
     }
 
     protected function ensureDirectory(string $dir): void

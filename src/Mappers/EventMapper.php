@@ -10,6 +10,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\File;
 use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
+use LaravelAtlas\Support\ScanOptions;
 use ReflectionClass;
 use ReflectionIntersectionType;
 use ReflectionNamedType;
@@ -64,7 +65,7 @@ class EventMapper implements ComponentMapper
 
                     // Vérifier si c'est un événement (utilise le trait Dispatchable ou a une méthode handle/fire)
                     if ($this->isEvent($reflection)) {
-                        $events[] = $this->analyzeEvent($reflection);
+                        $events[] = $this->analyzeEvent($reflection, $options);
                     }
                 }
             }
@@ -105,9 +106,11 @@ class EventMapper implements ComponentMapper
     }
 
     /**
+     * @param  array<string, mixed>  $options
+     *
      * @return array<string, mixed>
      */
-    protected function analyzeEvent(ReflectionClass $reflection): array
+    protected function analyzeEvent(ReflectionClass $reflection, array $options = []): array
     {
         $class = $reflection->getName();
         $file = $reflection->getFileName();
@@ -118,7 +121,7 @@ class EventMapper implements ComponentMapper
             $source = $content !== false ? $content : null;
         }
 
-        return [
+        return ScanOptions::filter([
             'class' => $class,
             'namespace' => $reflection->getNamespaceName(),
             'name' => $reflection->getShortName(),
@@ -129,7 +132,10 @@ class EventMapper implements ComponentMapper
             'channels' => $this->extractBroadcastChannels($source),
             'listeners' => $this->findListeners($class),
             'flow' => $this->analyzeFlow($source),
-        ];
+        ], $options, [
+            'include_listeners' => ['listeners'],
+            'include_properties' => ['properties'],
+        ]);
     }
 
     protected function isBroadcastable(ReflectionClass $reflection): bool

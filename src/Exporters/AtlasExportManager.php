@@ -8,6 +8,7 @@ use InvalidArgumentException;
 use LaravelAtlas\Exporters\Blade\BladeLayoutExporter;
 use LaravelAtlas\Exporters\Html\HtmlLayoutExporter;
 use LaravelAtlas\Exporters\Json\JsonExporter;
+use LaravelAtlas\Exporters\Markdown\MarkdownExporter;
 use LaravelAtlas\Exporters\Pdf\PdfLayoutExporter;
 use LaravelAtlas\Facades\Atlas;
 
@@ -25,6 +26,9 @@ class AtlasExportManager
                 $type => $data,
             ]),
             'json' => (new JsonExporter)->render($data),
+            'markdown' => (new MarkdownExporter($options))->render([
+                $type => $data,
+            ]),
             'pdf' => (new PdfLayoutExporter)->render([
                 $type => $data,
             ]),
@@ -56,6 +60,7 @@ class AtlasExportManager
         return match ($format) {
             'html' => (new HtmlLayoutExporter)->render($allData),
             'json' => (new JsonExporter)->render($allData),
+            'markdown' => (new MarkdownExporter($options))->render($allData),
             'pdf' => (new PdfLayoutExporter)->render($allData),
             'blade' => (new BladeLayoutExporter)->render($allData),
             default => throw new InvalidArgumentException("Unsupported export format: $format"),

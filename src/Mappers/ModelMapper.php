@@ -4,10 +4,15 @@ declare(strict_types=1);
 
 namespace LaravelAtlas\Mappers;
 
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Events\Dispatcher;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
+use LaravelAtlas\Support\ScanOptions;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionParameter;
@@ -52,7 +57,7 @@ class ModelMapper implements ComponentMapper
                     $reflection = new ReflectionClass($fqcn);
                     if (! $reflection->isAbstract()) {
                         $instance = app($fqcn);
-                        $models[] = $this->analyzeModel($instance);
+                        $models[] = $this->analyzeModel($instance, $options);
                         $seen[$fqcn] = true;
                     }
                 }
@@ -72,13 +77,15 @@ class ModelMapper implements ComponentMapper
     }
 
     /**
+     * @param  array<string, mixed>  $options
+     *
      * @return array<string, mixed>
      */
-    protected function analyzeModel(Model $model): array
+    protected function analyzeModel(Model $model, array $options = []): array
     {
         $reflection = new ReflectionClass($model);
 
-        return [
+        return ScanOptions::filter([
             'class' => $model::class,
             'namespace' => $reflection->getNamespaceName(),
             'name' => $reflection->getShortName(),
@@ -89,9 +96,71 @@ class ModelMapper implements ComponentMapper
             'guarded' => $model->getGuarded(),
             'casts' => $model->getCasts(),
             'relations' => $this->guessRelations($model),
+            'observers' => $this->guessObservers($model),
+            'factories' => $this->guessFactories($model),
             'scopes' => $this->guessScopes($model),
             'booted_hooks' => $this->guessBootHooks($model),
             'flow' => $this->analyzeFlow($model),
+        ], $options, [
+            'include_relationships' => ['relations'],
+            'include_observers' => ['observers'],
+            'include_factories' => ['factories'],
+        ]);
+    }
+
+    /**
+     * Observers registered for the model, either through `Model::observe()`
+     * or through the `#[ObservedBy]` attribute — both end up as model event
+     * listeners once the model has booted.
+     *
+     * @return array<int, string>
+     */
+    protected function guessObservers(Model $model): array
+    {
+        $dispatcher = $model::getEventDispatcher();
+
+        if (! $dispatcher instanceof Dispatcher) {
+            return [];
+        }
+
+        $observers = [];
+        $suffix = ': ' . $model::class;
+
+        foreach ($dispatcher->getRawListeners() as $event => $listeners) {
+            if (! is_string($event) || ! str_ends_with($event, $suffix)) {
+                continue;
+            }
+
+            foreach ((array) $listeners as $listener) {
+                if (! is_string($listener) || ! str_contains($listener, '@')) {
+                    continue;
+                }
+
+                $observer = Str::before($listener, '@');
+
+                if ($observer !== '' && ! in_array($observer, $observers, true)) {
+                    $observers[] = $observer;
+                }
+            }
+        }
+
+        sort($observers);
+
+        return $observers;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function guessFactories(Model $model): array
+    {
+        $usesFactory = in_array(HasFactory::class, class_uses_recursive($model), true);
+        $factory = $usesFactory ? Factory::resolveFactoryName($model::class) : null;
+
+        return [
+            'uses_factory' => $usesFactory,
+            'class' => $factory,
+            'exists' => is_string($factory) && class_exists($factory),
         ];
     }
 

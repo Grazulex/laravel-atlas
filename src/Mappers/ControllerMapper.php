@@ -8,6 +8,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\File;
 use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
+use LaravelAtlas\Support\ScanOptions;
 use ReflectionClass;
 use ReflectionIntersectionType;
 use ReflectionMethod;
@@ -42,7 +43,7 @@ class ControllerMapper implements ComponentMapper
                     $reflection = new ReflectionClass($fqcn);
 
                     if ($this->isController($reflection)) {
-                        $controllers[] = $this->analyzeController($reflection);
+                        $controllers[] = $this->analyzeController($reflection, $options);
                     }
                 }
             }
@@ -66,9 +67,11 @@ class ControllerMapper implements ComponentMapper
     }
 
     /**
+     * @param  array<string, mixed>  $options
+     *
      * @return array<string, mixed>
      */
-    protected function analyzeController(ReflectionClass $reflection): array
+    protected function analyzeController(ReflectionClass $reflection, array $options = []): array
     {
         $class = $reflection->getName();
         $file = $reflection->getFileName();
@@ -79,7 +82,7 @@ class ControllerMapper implements ComponentMapper
             $source = $content !== false ? $content : null;
         }
 
-        return [
+        return ScanOptions::filter([
             'class' => $class,
             'namespace' => $reflection->getNamespaceName(),
             'name' => $reflection->getShortName(),
@@ -90,7 +93,10 @@ class ControllerMapper implements ComponentMapper
             'methods' => $this->extractMethods($reflection),
             'dependencies' => $this->extractDependencies($reflection),
             'flow' => $this->analyzeFlow($source),
-        ];
+        ], $options, [
+            'include_actions' => ['methods'],
+            'include_dependencies' => ['dependencies'],
+        ]);
     }
 
     /**

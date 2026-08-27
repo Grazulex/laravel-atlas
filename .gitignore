@@ -42,3 +42,5 @@ examples/workflow-*
 examples/realistic-app-data.php
 CLAUDE.md
 backlog/
+# Package test suite must stay versioned despite the *test*.php rule above
+!/tests/**/*.php

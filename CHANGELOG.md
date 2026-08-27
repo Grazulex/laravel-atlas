@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.8.0](https://github.com/Grazulex/laravel-atlas/releases/tag/v1.8.0) (2026-08-27)
+
+### Features
+
+- **exporters:** add the Markdown exporter, so `--format=markdown` and `Atlas::export($type, 'markdown')` work as documented (#63)
+- **mappers:** honour the documented `scan()` options — every `include_*` option now filters the scanned data instead of being ignored (#62)
+- **mappers:** report model observers and factories (`include_observers`, `include_factories`)
+- **mappers:** add `include_trait_methods` for jobs, to drop the methods inherited from `Dispatchable`, `InteractsWithQueue`, `Queueable` and `SerializesModels`
+- **console:** `atlas:export --format=markdown` writes a `.md` file by default
+
+### Bug Fixes
+
+- **package:** remove the stray `src/Mappers/RuleMapper.php.backup` shipped in the dist tree, and add a `.gitattributes` with `export-ignore` rules (#62)
+
 ## [1.6.0](https://github.com/Grazulex/laravel-atlas/releases/tag/v1.6.0) (2026-01-09)
 ## [1.5.0](https://github.com/Grazulex/laravel-atlas/releases/tag/v1.5.0) (2026-01-08)
 

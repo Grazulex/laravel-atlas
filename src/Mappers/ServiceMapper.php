@@ -7,6 +7,7 @@ namespace LaravelAtlas\Mappers;
 use Illuminate\Support\Facades\File;
 use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
+use LaravelAtlas\Support\ScanOptions;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionParameter;
@@ -41,7 +42,7 @@ class ServiceMapper implements ComponentMapper
                     ! isset($seen[$fqcn])
                 ) {
                     $seen[$fqcn] = true;
-                    $services[] = $this->analyzeService($fqcn, $file->getRealPath());
+                    $services[] = $this->analyzeService($fqcn, $file->getRealPath(), $options);
                 }
             }
         }
@@ -54,9 +55,11 @@ class ServiceMapper implements ComponentMapper
     }
 
     /**
+     * @param  array<string, mixed>  $options
+     *
      * @return array<string, mixed>
      */
-    protected function analyzeService(string $fqcn, string $filePath): array
+    protected function analyzeService(string $fqcn, string $filePath, array $options = []): array
     {
         if (! class_exists($fqcn)) {
             return [
@@ -77,7 +80,7 @@ class ServiceMapper implements ComponentMapper
             $source = null;
         }
 
-        return [
+        return ScanOptions::filter([
             'class' => $fqcn,
             'namespace' => $reflection->getNamespaceName(),
             'name' => $reflection->getShortName(),
@@ -85,7 +88,10 @@ class ServiceMapper implements ComponentMapper
             'methods' => $this->extractPublicMethods($reflection),
             'dependencies' => $this->extractConstructorDependencies($reflection),
             'flow' => $this->analyzeFlow($source),
-        ];
+        ], $options, [
+            'include_methods' => ['methods'],
+            'include_dependencies' => ['dependencies'],
+        ]);
     }
 
     /**

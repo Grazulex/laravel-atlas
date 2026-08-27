@@ -13,6 +13,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\File;
 use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
+use LaravelAtlas\Support\ScanOptions;
 use ReflectionClass;
 use ReflectionIntersectionType;
 use ReflectionMethod;
@@ -47,7 +48,7 @@ class JobMapper implements ComponentMapper
                     $reflection = new ReflectionClass($fqcn);
 
                     if ($this->isJob($reflection)) {
-                        $jobs[] = $this->analyzeJob($reflection);
+                        $jobs[] = $this->analyzeJob($reflection, $options);
                     }
                 }
             }
@@ -90,9 +91,11 @@ class JobMapper implements ComponentMapper
     }
 
     /**
+     * @param  array<string, mixed>  $options
+     *
      * @return array<string, mixed>
      */
-    protected function analyzeJob(ReflectionClass $reflection): array
+    protected function analyzeJob(ReflectionClass $reflection, array $options = []): array
     {
         $class = $reflection->getName();
         $file = $reflection->getFileName();
@@ -103,7 +106,7 @@ class JobMapper implements ComponentMapper
             $source = $content !== false ? $content : null;
         }
 
-        return [
+        return ScanOptions::filter([
             'class' => $class,
             'namespace' => $reflection->getNamespaceName(),
             'name' => $reflection->getShortName(),
@@ -112,10 +115,13 @@ class JobMapper implements ComponentMapper
             'queueable' => $this->isQueueable($reflection),
             'properties' => $this->extractProperties($reflection, $source),
             'constructor' => $this->analyzeConstructor($reflection),
-            'methods' => $this->extractMethods($reflection),
+            'methods' => $this->extractMethods($reflection, ScanOptions::includes($options, 'include_trait_methods')),
             'queue_config' => $this->extractQueueConfig($source),
             'flow' => $this->analyzeFlow($source),
-        ];
+        ], $options, [
+            'include_methods' => ['methods'],
+            'include_properties' => ['properties'],
+        ]);
     }
 
     /**
@@ -212,7 +218,7 @@ class JobMapper implements ComponentMapper
     /**
      * @return array<int, array<string, mixed>>
      */
-    protected function extractMethods(ReflectionClass $reflection): array
+    protected function extractMethods(ReflectionClass $reflection, bool $includeTraitMethods = true): array
     {
         $methods = [];
         $classTraits = $reflection->getTraitNames();
@@ -252,6 +258,10 @@ class JobMapper implements ComponentMapper
                         $source = 'parent: ' . class_basename($declaringClass->getName());
                     }
                 }
+            }
+
+            if (! $includeTraitMethods && $source !== 'class') {
+                continue;
             }
 
             $methods[] = [

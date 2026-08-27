@@ -74,7 +74,7 @@ describe('NotificationMapper', function (): void {
         $reflection = new ReflectionClass($this->mapper);
         $method = $reflection->getMethod('analyzeNotification');
 
-        $result = $method->invoke($this->mapper, 'Tests\Fixtures\TestNotification', $tempFile);
+        $result = $method->invoke($this->mapper, 'Tests\Fixtures\TestNotification');
 
         expect($result)
             ->toBeArray()
@@ -91,7 +91,7 @@ describe('NotificationMapper', function (): void {
         $reflection = new ReflectionClass($this->mapper);
         $method = $reflection->getMethod('analyzeNotification');
 
-        $result = $method->invoke($this->mapper, 'NonExistentNotification', '/fake/path');
+        $result = $method->invoke($this->mapper, 'NonExistentNotification');
 
         expect($result)
             ->toBeArray()

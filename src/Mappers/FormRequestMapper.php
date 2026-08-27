@@ -8,6 +8,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\File;
 use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
+use LaravelAtlas\Support\ScanOptions;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionParameter;
@@ -42,7 +43,7 @@ class FormRequestMapper implements ComponentMapper
                 $fqcn = $this->resolveClassFromFile($file->getRealPath());
 
                 if ($fqcn && class_exists($fqcn) && is_subclass_of($fqcn, FormRequest::class)) {
-                    $formRequests[] = $this->analyzeFormRequest($fqcn, $file->getPathname());
+                    $formRequests[] = $this->analyzeFormRequest($fqcn, $file->getPathname(), $options);
                 }
             }
         }
@@ -60,9 +61,11 @@ class FormRequestMapper implements ComponentMapper
     }
 
     /**
+     * @param  array<string, mixed>  $options
+     *
      * @return array<string, mixed>
      */
-    protected function analyzeFormRequest(string $fqcn, string $filePath): array
+    protected function analyzeFormRequest(string $fqcn, string $filePath, array $options = []): array
     {
         if (! class_exists($fqcn)) {
             return [
@@ -86,7 +89,7 @@ class FormRequestMapper implements ComponentMapper
             $source = null;
         }
 
-        return [
+        return ScanOptions::filter([
             'class' => $fqcn,
             'namespace' => $reflection->getNamespaceName(),
             'name' => $reflection->getShortName(),
@@ -97,7 +100,11 @@ class FormRequestMapper implements ComponentMapper
             'messages' => $this->extractMessages($source),
             'methods' => $this->extractMethods($reflection),
             'flow' => $this->analyzeFlow($source),
-        ];
+        ], $options, [
+            'include_rules' => ['rules'],
+            'include_authorization' => ['authorization'],
+            'include_attributes' => ['attributes'],
+        ]);
     }
 
     /**

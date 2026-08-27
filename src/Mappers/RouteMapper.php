@@ -8,6 +8,7 @@ use Closure;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Route as RouteFacade;
 use LaravelAtlas\Contracts\ComponentMapper;
+use LaravelAtlas\Support\ScanOptions;
 use ReflectionClass;
 use Throwable;
 
@@ -29,12 +30,26 @@ class RouteMapper implements ComponentMapper
 
         usort($routes, fn (array $a, array $b): int => strcmp((string) $a['uri'], (string) $b['uri']));
 
-        return [
+        // Grouping is computed on the untouched routes, so it stays accurate
+        // even when middleware or controller details are excluded below.
+        $grouping = $this->buildGroupingMetadata($routes);
+
+        $routes = array_map(fn (array $route): array => ScanOptions::filter($route, $options, [
+            'include_middleware' => ['middleware'],
+            'include_controllers' => ['controller', 'uses'],
+        ]), $routes);
+
+        $result = [
             'type' => $this->type(),
             'count' => count($routes),
             'data' => $routes,
-            'grouping' => $this->buildGroupingMetadata($routes),
         ];
+
+        if (ScanOptions::includes($options, 'group_by_prefix')) {
+            $result['grouping'] = $grouping;
+        }
+
+        return $result;
     }
 
     /**
