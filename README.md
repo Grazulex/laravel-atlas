@@ -2,6 +2,12 @@
 
 <img src="new_logo.png" alt="Laravel Atlas" width="200">
 
+> [!TIP]
+> **What Laravel Atlas does for you** — Get a map of your whole Laravel application — models, routes, jobs, events, services and how they connect — in one command. Onboard new team members and review architecture with a real picture instead of a guess.
+>
+> **This package is free and maintained on my own time.** If it saves you hours, a small contribution helps me keep it going:
+> [💖 GitHub Sponsors](https://github.com/sponsors/Grazulex) · [☕ Buy Me a Coffee](https://buymeacoffee.com/grazulex) · [PayPal](https://paypal.me/strauven)
+
 Advanced Laravel application mapping and visualization toolkit. Analyze, document, and visualize your Laravel project architecture with comprehensive dependency mapping and multiple export formats.
 
 [![Latest Version](https://img.shields.io/packagist/v/grazulex/laravel-atlas.svg?style=flat-square)](https://packagist.org/packages/grazulex/laravel-atlas)
