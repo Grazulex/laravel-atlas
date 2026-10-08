@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.0](https://github.com/Grazulex/laravel-atlas/releases/tag/v2.1.0) (2026-10-08)
+
+### Changed
+
+- **Minimum PHP version is now 8.4**: PHP 8.3 is no longer supported (#66)
+- CI test matrix now runs PHP 8.4 and 8.5 (#66)
+
 ## [2.0.0](https://github.com/Grazulex/laravel-atlas/releases/tag/v2.0.0) (2026-08-27)
 
 ### Breaking Changes
