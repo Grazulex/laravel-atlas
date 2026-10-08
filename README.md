@@ -881,7 +881,7 @@ class ArchitectureTest extends TestCase
 
 ## 🔧 Requirements
 
-- PHP: ^8.3
+- PHP: ^8.4
 - Laravel: ^12.0 | ^13.0
 - Carbon: ^3.10
 
