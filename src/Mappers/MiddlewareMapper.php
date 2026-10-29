@@ -149,7 +149,7 @@ class MiddlewareMapper implements ComponentMapper
         return array_map(function (ReflectionParameter $param) {
             $type = $param->getType();
 
-            if ($type === null) {
+            if (! $type instanceof ReflectionType) {
                 return;
             }
 

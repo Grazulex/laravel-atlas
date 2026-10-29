@@ -126,7 +126,7 @@ class ActionMapper implements ComponentMapper
     {
         $constructor = $reflection->getConstructor();
 
-        if (! $constructor) {
+        if (! $constructor instanceof ReflectionMethod) {
             return null;
         }
 
@@ -148,7 +148,7 @@ class ActionMapper implements ComponentMapper
     {
         $constructor = $reflection->getConstructor();
 
-        if (! $constructor) {
+        if (! $constructor instanceof ReflectionMethod) {
             return [];
         }
 

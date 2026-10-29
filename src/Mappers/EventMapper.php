@@ -13,6 +13,7 @@ use LaravelAtlas\Support\ClassResolver;
 use LaravelAtlas\Support\ScanOptions;
 use ReflectionClass;
 use ReflectionIntersectionType;
+use ReflectionMethod;
 use ReflectionNamedType;
 use ReflectionParameter;
 use ReflectionType;
@@ -173,7 +174,7 @@ class EventMapper implements ComponentMapper
         $properties = [];
         $constructor = $reflection->getConstructor();
 
-        if ($constructor) {
+        if ($constructor instanceof ReflectionMethod) {
             foreach ($constructor->getParameters() as $parameter) {
                 $properties[] = [
                     'name' => $parameter->getName(),
@@ -192,7 +193,7 @@ class EventMapper implements ComponentMapper
     {
         $type = $parameter->getType();
 
-        if ($type === null) {
+        if (! $type instanceof ReflectionType) {
             return 'mixed';
         }
 
@@ -201,7 +202,7 @@ class EventMapper implements ComponentMapper
         }
 
         if ($type instanceof ReflectionUnionType) {
-            return implode('|', array_map(fn (ReflectionIntersectionType|ReflectionNamedType $t) => $t instanceof ReflectionNamedType ? $t->getName() : (string) $t, $type->getTypes()));
+            return implode('|', array_map(fn (ReflectionIntersectionType|ReflectionNamedType $t): string => $t instanceof ReflectionNamedType ? $t->getName() : (string) $t, $type->getTypes()));
         }
 
         return 'mixed';
@@ -348,9 +349,7 @@ class EventMapper implements ComponentMapper
 
                     if (is_array($listen)) {
                         foreach ($listen as $event => $listeners) {
-                            if (! isset($this->eventListenerMap[$event])) {
-                                $this->eventListenerMap[$event] = [];
-                            }
+                            $this->eventListenerMap[$event] ??= [];
                             foreach ((array) $listeners as $listener) {
                                 $this->eventListenerMap[$event][] = $listener;
                             }
@@ -377,17 +376,13 @@ class EventMapper implements ComponentMapper
 
                     // Single listener
                     if (! empty($match[3])) {
-                        if (! isset($this->eventListenerMap[$eventClass])) {
-                            $this->eventListenerMap[$eventClass] = [];
-                        }
+                        $this->eventListenerMap[$eventClass] ??= [];
                         $this->eventListenerMap[$eventClass][] = $match[3];
                     }
                     // Array of listeners
                     elseif (! empty($match[2])) {
                         if (preg_match_all('/([A-Z][\w\\\\]+)::class/', $match[2], $listenerMatches)) {
-                            if (! isset($this->eventListenerMap[$eventClass])) {
-                                $this->eventListenerMap[$eventClass] = [];
-                            }
+                            $this->eventListenerMap[$eventClass] ??= [];
                             foreach ($listenerMatches[1] as $listener) {
                                 $this->eventListenerMap[$eventClass][] = $listener;
                             }

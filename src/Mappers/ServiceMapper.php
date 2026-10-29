@@ -11,6 +11,7 @@ use LaravelAtlas\Support\ScanOptions;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionParameter;
+use ReflectionType;
 
 class ServiceMapper implements ComponentMapper
 {
@@ -132,7 +133,7 @@ class ServiceMapper implements ComponentMapper
         return array_map(function (ReflectionParameter $param) {
             $type = $param->getType();
 
-            if ($type === null) {
+            if (! $type instanceof ReflectionType) {
                 return;
             }
 

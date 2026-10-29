@@ -14,6 +14,7 @@ use ReflectionIntersectionType;
 use ReflectionMethod;
 use ReflectionNamedType;
 use ReflectionParameter;
+use ReflectionType;
 use ReflectionUnionType;
 
 class ControllerMapper implements ComponentMapper
@@ -119,7 +120,7 @@ class ControllerMapper implements ComponentMapper
     {
         $constructor = $reflection->getConstructor();
 
-        if (! $constructor) {
+        if (! $constructor instanceof ReflectionMethod) {
             return ['parameters' => []];
         }
 
@@ -143,7 +144,7 @@ class ControllerMapper implements ComponentMapper
     {
         $type = $parameter->getType();
 
-        if ($type === null) {
+        if (! $type instanceof ReflectionType) {
             return 'mixed';
         }
 
@@ -152,7 +153,7 @@ class ControllerMapper implements ComponentMapper
         }
 
         if ($type instanceof ReflectionUnionType) {
-            return implode('|', array_map(fn (ReflectionIntersectionType|ReflectionNamedType $t) => $t instanceof ReflectionNamedType ? $t->getName() : (string) $t, $type->getTypes()));
+            return implode('|', array_map(fn (ReflectionIntersectionType|ReflectionNamedType $t): string => $t instanceof ReflectionNamedType ? $t->getName() : (string) $t, $type->getTypes()));
         }
 
         return 'mixed';
@@ -230,7 +231,7 @@ class ControllerMapper implements ComponentMapper
     {
         $type = $method->getReturnType();
 
-        if ($type === null) {
+        if (! $type instanceof ReflectionType) {
             return 'mixed';
         }
 
@@ -239,7 +240,7 @@ class ControllerMapper implements ComponentMapper
         }
 
         if ($type instanceof ReflectionUnionType) {
-            return implode('|', array_map(fn (ReflectionIntersectionType|ReflectionNamedType $t) => $t instanceof ReflectionNamedType ? $t->getName() : (string) $t, $type->getTypes()));
+            return implode('|', array_map(fn (ReflectionIntersectionType|ReflectionNamedType $t): string => $t instanceof ReflectionNamedType ? $t->getName() : (string) $t, $type->getTypes()));
         }
 
         return 'mixed';
@@ -259,7 +260,7 @@ class ControllerMapper implements ComponentMapper
         ];
 
         $constructor = $reflection->getConstructor();
-        if ($constructor) {
+        if ($constructor instanceof ReflectionMethod) {
             foreach ($constructor->getParameters() as $parameter) {
                 $type = $this->getParameterType($parameter);
 
