@@ -194,7 +194,7 @@ class RouteMapper implements ComponentMapper
     {
         preg_match_all('/dispatch(?:Now)?\(\s*([A-Z][\w\\\\]+)::class/', $source, $matches);
 
-        return array_map(fn ($fqcn): array => [
+        return array_map(fn (string $fqcn): array => [
             'class' => $fqcn,
             'async' => ! str_contains($source, "dispatchNow({$fqcn}"),
         ], $matches[1]);
@@ -207,7 +207,7 @@ class RouteMapper implements ComponentMapper
     {
         preg_match_all('/event\(\s*([A-Z][\w\\\\]+)::class/', $source, $matches);
 
-        return array_map(fn ($fqcn): array => ['class' => $fqcn], $matches[1]);
+        return array_map(fn (string $fqcn): array => ['class' => $fqcn], $matches[1]);
     }
 
     /**
@@ -240,9 +240,7 @@ class RouteMapper implements ComponentMapper
         foreach ($routes as $route) {
             // Group by prefix
             $prefix = $route['prefix'] ?? '_no_prefix';
-            if (! isset($byPrefix[$prefix])) {
-                $byPrefix[$prefix] = [];
-            }
+            $byPrefix[$prefix] ??= [];
             $byPrefix[$prefix][] = $route;
 
             if ($route['prefix'] !== null && ! in_array($route['prefix'], $allPrefixes)) {
@@ -251,16 +249,12 @@ class RouteMapper implements ComponentMapper
 
             // Group by type
             $type = $route['type'];
-            if (! isset($byType[$type])) {
-                $byType[$type] = [];
-            }
+            $byType[$type] ??= [];
             $byType[$type][] = $route;
 
             // Group by middleware
             foreach ($route['middleware'] as $middleware) {
-                if (! isset($byMiddleware[$middleware])) {
-                    $byMiddleware[$middleware] = [];
-                }
+                $byMiddleware[$middleware] ??= [];
                 $byMiddleware[$middleware][] = $route;
 
                 if (! in_array($middleware, $allMiddlewares)) {
@@ -270,9 +264,7 @@ class RouteMapper implements ComponentMapper
 
             // Count by HTTP method
             foreach ($route['methods'] as $method) {
-                if (! isset($byMethod[$method])) {
-                    $byMethod[$method] = 0;
-                }
+                $byMethod[$method] ??= 0;
                 $byMethod[$method]++;
             }
         }

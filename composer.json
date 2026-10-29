@@ -39,7 +39,8 @@
       "doctrine/dbal": "^4.2",
       "orchestra/testbench": "^10.0|^11.0",
       "dompdf/dompdf": "^3.1",
-      "league/html-to-markdown": "^5.1"
+      "league/html-to-markdown": "^5.1",
+      "phpstan/phpstan": "<2.3.4"
   },
   "suggest": {
     "pestphp/pest": "Required to run and generate Atlas tests (version >=3.0)",

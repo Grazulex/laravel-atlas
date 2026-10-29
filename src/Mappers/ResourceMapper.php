@@ -12,6 +12,7 @@ use ReflectionClass;
 use ReflectionIntersectionType;
 use ReflectionMethod;
 use ReflectionNamedType;
+use ReflectionType;
 use ReflectionUnionType;
 
 class ResourceMapper implements ComponentMapper
@@ -132,7 +133,7 @@ class ResourceMapper implements ComponentMapper
     {
         $type = $method->getReturnType();
 
-        if ($type === null) {
+        if (! $type instanceof ReflectionType) {
             return 'mixed';
         }
 
@@ -141,7 +142,7 @@ class ResourceMapper implements ComponentMapper
         }
 
         if ($type instanceof ReflectionUnionType) {
-            return implode('|', array_map(fn (ReflectionIntersectionType|ReflectionNamedType $t) => $t instanceof ReflectionNamedType ? $t->getName() : (string) $t, $type->getTypes()));
+            return implode('|', array_map(fn (ReflectionIntersectionType|ReflectionNamedType $t): string => $t instanceof ReflectionNamedType ? $t->getName() : (string) $t, $type->getTypes()));
         }
 
         return 'mixed';
