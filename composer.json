@@ -35,12 +35,11 @@
       "pestphp/pest": "^4.0",
       "pestphp/pest-plugin-laravel": "^4.0",
       "larastan/larastan": "^3.4",
-      "rector/rector": "^2.0",
+      "rector/rector": "^2.8.3",
       "doctrine/dbal": "^4.2",
       "orchestra/testbench": "^10.0|^11.0",
       "dompdf/dompdf": "^3.1",
-      "league/html-to-markdown": "^5.1",
-      "phpstan/phpstan": "<2.3.4"
+      "league/html-to-markdown": "^5.1"
   },
   "suggest": {
     "pestphp/pest": "Required to run and generate Atlas tests (version >=3.0)",
