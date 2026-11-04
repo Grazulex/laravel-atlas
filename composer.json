@@ -28,18 +28,18 @@
     "illuminate/support": "^12.0|^13.0",
     "illuminate/view": "^12.0|^13.0",
     "illuminate/contracts": "^12.0|^13.0",
-    "nesbot/carbon": "^2.72.2|^3.10"
+    "nesbot/carbon": "^2.73|^3.15"
   },
   "require-dev": {
-    "laravel/pint": "^1.22",
-    "pestphp/pest": "^4.0|^5.0",
-    "pestphp/pest-plugin-laravel": "^4.0|^5.0",
-    "larastan/larastan": "^3.4",
+    "laravel/pint": "^1.32",
+    "pestphp/pest": "^4.7|^5.3",
+    "pestphp/pest-plugin-laravel": "^4.1|^5.0",
+    "larastan/larastan": "^3.14",
     "rector/rector": "^2.8.3",
-    "doctrine/dbal": "^4.2",
+    "doctrine/dbal": "^4.5",
     "orchestra/testbench": "^10.0|^11.0",
     "dompdf/dompdf": "^3.1",
-    "league/html-to-markdown": "^5.1"
+    "league/html-to-markdown": "^5.2"
   },
   "suggest": {
     "pestphp/pest": "Required to run and generate Atlas tests (version >=3.0)",
