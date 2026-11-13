@@ -21,6 +21,7 @@ use LaravelAtlas\Mappers\PolicyMapper;
 use LaravelAtlas\Mappers\ResourceMapper;
 use LaravelAtlas\Mappers\RouteMapper;
 use LaravelAtlas\Mappers\RuleMapper;
+use LaravelAtlas\Mappers\ScheduleMapper;
 use LaravelAtlas\Mappers\ServiceMapper;
 use LaravelAtlas\Registry\MapperRegistry;
 
@@ -49,6 +50,7 @@ class AtlasManager
         $this->registry->register(new RuleMapper);
         $this->registry->register(new ListenerMapper);
         $this->registry->register(new ObserverMapper);
+        $this->registry->register(new ScheduleMapper);
     }
 
     /**
