@@ -292,7 +292,7 @@ reported as `['uses_factory' => bool, 'class' => ?string, 'exists' => bool]`.
 
 ### Available Component Types
 
-Laravel Atlas can analyze **16 component types**:
+Laravel Atlas can analyze **17 component types**:
 
 - **models** - Eloquent models with relationships, observers, and factories
 - **routes** - Application routes with middleware and controllers  
@@ -310,6 +310,7 @@ Laravel Atlas can analyze **16 component types**:
 - **rules** - Custom validation rule classes
 - **listeners** - Event listener classes with their handlers
 - **observers** - Model observer classes with their lifecycle hooks
+- **schedules** - Scheduled tasks (`Schedule::command/job/call/exec`) with their frequency and target
 
 ## 📊 Export Formats
 

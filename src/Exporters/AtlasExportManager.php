@@ -49,7 +49,7 @@ class AtlasExportManager
             'models', 'commands', 'routes', 'services', 'notifications',
             'middlewares', 'form_requests', 'events', 'controllers',
             'resources', 'jobs', 'actions', 'policies', 'rules',
-            'listeners', 'observers',
+            'listeners', 'observers', 'schedules',
         ];
         $allData = [];
 
