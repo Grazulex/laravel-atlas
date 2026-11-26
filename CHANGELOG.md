@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Features
+
+- **events:** detect listeners from every Laravel source — `$listen` arrays of the booted event service providers, `$subscribe` subscribers, event discovery (`handle*()` / `__invoke()` type-hints in the app's discovery directories) and the runtime dispatcher (`Event::listen()` in providers, closures, string and wildcard events). Each listener reports its `source` and `method` (#59)
+- **events:** report events listened to outside the event paths, with a new `origin` key, and the models dispatching them through `$dispatchesEvents` in `dispatched_by` (#59)
+- **observers:** report the models each observer is attached to (`models`, with `#[ObservedBy]`, `Model::observe()` or `dispatcher` as source), including observers stored outside `app/Observers` (#59)
+- **models:** add `dispatches_events`, and read `#[ObservedBy]` / `Model::observe()` statically for models that were not booted (#59)
+- **listeners:** add `events`, the events each listener handles (#59)
+- **exporters:** show listener sources, dispatching models and observed models in the HTML, Blade and PDF exports
+
+### Bug Fixes
+
+- **mappers:** in the events, listeners, observers and models mappers, classes autoloaded outside the app's `composer.json` PSR-4 roots (modules, packages) are now resolved from the file's namespace
+
 ## [2.1.0](https://github.com/Grazulex/laravel-atlas/releases/tag/v2.1.0) (2026-10-08)
 
 ### Changed

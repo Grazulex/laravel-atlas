@@ -289,6 +289,37 @@ what the job itself declares, instead of the ~40 methods inherited from
 Model observers are read from the model's registered event listeners, so both
 `Model::observe()` and the `#[ObservedBy]` attribute are reported. Factories are
 reported as `['uses_factory' => bool, 'class' => ?string, 'exists' => bool]`.
+Models also report their `$dispatchesEvents` map as `dispatches_events`.
+
+### Events, listeners and observers
+
+Laravel lets you wire listeners in several ways, and Atlas collects all of them.
+Each entry of an event's `listeners` has a `class`, `name`, `method` and a
+`source` telling where it comes from:
+
+| `source` | Where the listener is registered |
+| --- | --- |
+| `EventServiceProvider` | `$listen` array of an event service provider |
+| `subscriber` | an event subscriber listed in `$subscribe` |
+| `handle() type-hint` | a class in the listener paths whose `handle()` type-hints the event |
+| `event discovery` | Laravel event discovery: `handle*()` / `__invoke()` type-hints in the app's discovery directories (`withEvents(discover: [...])`, default `app/Listeners`) |
+| `dispatcher` | anything else registered on the event dispatcher of the booted app, such as `Event::listen()` in a service provider (closures are reported as `Closure (File.php:line)`) |
+
+Only application listeners are listed: listeners declared under `vendor/` are
+skipped unless `atlas.analysis.include_vendors` is enabled.
+
+Events that the application listens to but that live outside the event paths
+(framework events, string or wildcard events such as `orders.*`, events of other
+modules) are reported too. Every event has an `origin` (`scanned`, `listener` or
+`model`) and a `dispatched_by` list of the models that fire it through
+`$dispatchesEvents` (`['model' => ..., 'event' => 'created']`). Listeners get
+an `events` key listing the events they handle.
+
+Observers get a `models` key listing the models they observe and how they are
+attached (`source`: `#[ObservedBy]`, `Model::observe()` or `dispatcher`).
+Observers attached to a model but stored outside `app/Observers` are reported as
+well. The `events` and `observers` scans accept a `model_paths` option to choose
+the directories models are read from (default: `app/Models` and `app`).
 
 ### Available Component Types
 
@@ -301,15 +332,15 @@ Laravel Atlas can analyze **17 component types**:
 - **notifications** - Laravel notification classes with channels and methods
 - **middlewares** - HTTP middleware with parameters and dependencies
 - **form_requests** - Form request validation classes with rules and authorization
-- **events** - Laravel event classes with their properties and methods
+- **events** - Laravel event classes with their properties, listeners (from every registration source) and dispatching models
 - **controllers** - Application controllers with their actions and dependencies
 - **resources** - API resource classes with their transformations
 - **jobs** - Queue job classes with their handles and dependencies
 - **actions** - Single action controllers and action classes
 - **policies** - Authorization policy classes with their methods
 - **rules** - Custom validation rule classes
-- **listeners** - Event listener classes with their handlers
-- **observers** - Model observer classes with their lifecycle hooks
+- **listeners** - Event listener classes with their handlers and the events they listen to
+- **observers** - Model observer classes with their lifecycle hooks and the models they observe
 - **schedules** - Scheduled tasks (`Schedule::command/job/call/exec`) with their frequency and target
 
 ## 📊 Export Formats

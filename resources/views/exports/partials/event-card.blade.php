@@ -130,8 +130,32 @@
                 <div class="bg-gray-50 dark:bg-gray-700/50 rounded p-3">
                     <div class="flex flex-wrap gap-2">
                         @foreach ($item['listeners'] as $listener)
-                            <span class="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200 font-medium">
+                            <span class="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200 font-medium" title="{{ $listener['class'] ?? '' }}{{ !empty($listener['method']) ? '@' . $listener['method'] : '' }}">
                                 {{ $listener['name'] ?? class_basename($listener['class'] ?? 'Unknown') }}
+                                @if (!empty($listener['source']))
+                                    <span class="ml-1 opacity-70">· {{ $listener['source'] }}</span>
+                                @endif
+                            </span>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        {{-- Models dispatching the event ($dispatchesEvents) --}}
+        @if (!empty($item['dispatched_by']))
+            <div>
+                <div class="flex items-center mb-3">
+                    <span class="text-sm mr-2">🧱</span>
+                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Dispatched by Models ({{ count($item['dispatched_by']) }})
+                    </h4>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-700/50 rounded p-3">
+                    <div class="flex flex-wrap gap-2">
+                        @foreach ($item['dispatched_by'] as $dispatcher)
+                            <span class="text-xs px-2 py-1 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-200 font-medium" title="{{ $dispatcher['model'] ?? '' }}">
+                                {{ class_basename($dispatcher['model'] ?? 'Unknown') }} → {{ $dispatcher['event'] ?? '?' }}
                             </span>
                         @endforeach
                     </div>

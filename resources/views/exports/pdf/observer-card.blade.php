@@ -30,6 +30,20 @@
             </div>
         </div>
 
+        {{-- Observed Models - Compact --}}
+        @if (!empty($item['models']))
+            <div style="margin-bottom: 8px;">
+                <div style="font-weight: bold; font-size: 9px; color: #374151; margin-bottom: 3px; border-bottom: 1px solid #e5e7eb; padding-bottom: 1px;">
+                    OBSERVED MODELS ({{ count($item['models']) }})
+                </div>
+                <div style="background: #f8fafc; padding: 4px; border-radius: 2px; font-size: 7px; border: 1px solid #e5e7eb;">
+                    @foreach ($item['models'] as $observed)
+                        <span style="background: #cffafe; color: #155e75; padding: 1px 3px; border-radius: 1px; margin-right: 2px; margin-bottom: 1px; display: inline-block; font-weight: bold;">{{ class_basename($observed['model'] ?? 'Unknown') }} ({{ $observed['source'] ?? '' }})</span>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
         {{-- Observed Events - Compact --}}
         @if (!empty($item['events']))
             <div style="margin-bottom: 8px;">

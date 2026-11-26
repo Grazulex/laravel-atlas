@@ -19,6 +19,23 @@
         ])
     @endif
 
+    {{-- Observed Models with how the observer is registered --}}
+    @if (!empty($item['models']))
+        <div class="mb-3">
+            <h4 class="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                🧱 Observes ({{ count($item['models']) }})
+            </h4>
+            <div class="flex flex-wrap gap-2">
+                @foreach ($item['models'] as $observed)
+                    <span class="text-xs px-2 py-1 rounded-full bg-cyan-50 text-cyan-700 dark:bg-cyan-900/20 dark:text-cyan-300 font-medium" title="{{ $observed['model'] ?? '' }}">
+                        {{ class_basename($observed['model'] ?? 'Unknown') }}
+                        <span class="ml-1 opacity-70">· {{ $observed['source'] ?? '' }}</span>
+                    </span>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
     {{-- Event Methods --}}
     @if (!empty($item['event_methods']))
         <div class="mb-3">

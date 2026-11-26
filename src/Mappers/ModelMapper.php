@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
+use LaravelAtlas\Support\ModelLocator;
+use LaravelAtlas\Support\ObserverResolver;
 use LaravelAtlas\Support\ScanOptions;
 use ReflectionClass;
 use ReflectionMethod;
@@ -19,6 +21,8 @@ use ReflectionParameter;
 
 class ModelMapper implements ComponentMapper
 {
+    protected ?ObserverResolver $observerResolver = null;
+
     public function type(): string
     {
         return 'models';
@@ -32,6 +36,7 @@ class ModelMapper implements ComponentMapper
     public function scan(array $options = []): array
     {
         $models = [];
+        $this->observerResolver = new ObserverResolver;
 
         $paths = $options['paths'] ?? [app_path('Models'), app_path()];
         $recursive = $options['recursive'] ?? true;
@@ -73,7 +78,7 @@ class ModelMapper implements ComponentMapper
 
     protected function resolveClassFromFile(string $path): ?string
     {
-        return ClassResolver::resolveFromPath($path);
+        return ClassResolver::resolveFromFile($path);
     }
 
     /**
@@ -97,6 +102,7 @@ class ModelMapper implements ComponentMapper
             'casts' => $model->getCasts(),
             'relations' => $this->guessRelations($model),
             'observers' => $this->guessObservers($model),
+            'dispatches_events' => ModelLocator::dispatchedEvents($model::class),
             'factories' => $this->guessFactories($model),
             'scopes' => $this->guessScopes($model),
             'booted_hooks' => $this->guessBootHooks($model),
@@ -111,19 +117,24 @@ class ModelMapper implements ComponentMapper
     /**
      * Observers registered for the model, either through `Model::observe()`
      * or through the `#[ObservedBy]` attribute — both end up as model event
-     * listeners once the model has booted.
+     * listeners once the model has booted. The attribute and `observe()`
+     * calls are also read statically, for models that were not booted.
      *
      * @return array<int, string>
      */
     protected function guessObservers(Model $model): array
     {
+        // Observers declared statically (#[ObservedBy], Model::observe() calls)
+        $observers = array_column(($this->observerResolver ??= new ObserverResolver)->forModel($model::class), 'class');
+
         $dispatcher = $model::getEventDispatcher();
 
         if (! $dispatcher instanceof Dispatcher) {
-            return [];
+            sort($observers);
+
+            return $observers;
         }
 
-        $observers = [];
         $suffix = ': ' . $model::class;
 
         foreach ($dispatcher->getRawListeners() as $event => $listeners) {

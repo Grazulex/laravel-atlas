@@ -446,10 +446,11 @@
                 <table class="detail-table table-with-page-margin" style="font-size: 8px;">
                     <thead>
                         <tr>
-                            <th style="background: #f8fafc; width: 30%;">Event Name</th>
+                            <th style="background: #f8fafc; width: 25%;">Event Name</th>
                             <th style="background: #f8fafc; width: 25%;">Class</th>
-                            <th style="background: #f8fafc; width: 25%;">Namespace</th>
-                            <th style="background: #f8fafc; width: 20%;">Properties</th>
+                            <th style="background: #f8fafc; width: 20%;">Namespace</th>
+                            <th style="background: #f8fafc; width: 15%;">Properties</th>
+                            <th style="background: #f8fafc; width: 15%;">Listeners</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -460,6 +461,9 @@
                                 <td style="font-family: monospace; color: #7c3aed; font-size: 6px;">{{ $event['namespace'] ?? '-' }}</td>
                                 <td style="font-size: 6px;">
                                     {{ !empty($event['properties']) ? count($event['properties']) . ' props' : '0 props' }}
+                                </td>
+                                <td style="font-size: 6px;">
+                                    {{ !empty($event['listeners']) ? implode(', ', array_map(fn ($listener) => $listener['name'] ?? class_basename($listener['class'] ?? '?'), $event['listeners'])) : '-' }}
                                 </td>
                             </tr>
                         @endforeach

@@ -8,12 +8,22 @@ use Illuminate\Support\Facades\File;
 use InvalidArgumentException;
 use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
+use LaravelAtlas\Support\ModelLocator;
+use LaravelAtlas\Support\ObserverResolver;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionParameter;
+use Throwable;
 
 class ObserverMapper implements ComponentMapper
 {
+    /**
+     * Models observed by each observer class, for the current scan.
+     *
+     * @var array<string, array<int, array{model: string, source: string}>>
+     */
+    protected array $observedModels = [];
+
     public function type(): string
     {
         return 'observers';
@@ -38,6 +48,7 @@ class ObserverMapper implements ComponentMapper
         $paths = $options['paths'] ?? $defaultPaths;
         $recursive = $options['recursive'] ?? true;
         $seen = [];
+        $this->observedModels = $this->buildObservedModels($options);
 
         foreach ($paths as $path) {
             if (! is_dir($path)) {
@@ -47,7 +58,7 @@ class ObserverMapper implements ComponentMapper
             $files = $recursive ? File::allFiles($path) : File::files($path);
 
             foreach ($files as $file) {
-                $fqcn = ClassResolver::resolveFromPath($file->getRealPath());
+                $fqcn = ClassResolver::resolveFromFile($file->getRealPath());
 
                 if (
                     $fqcn &&
@@ -58,6 +69,18 @@ class ObserverMapper implements ComponentMapper
                     $observers[] = $this->analyzeObserver($fqcn, $file->getRealPath());
                 }
             }
+        }
+
+        // Observers attached to a model (#[ObservedBy], Model::observe(), ...)
+        // that live outside the scanned observer directories
+        foreach (array_keys($this->observedModels) as $fqcn) {
+            if (isset($seen[$fqcn]) || ! class_exists($fqcn)) {
+                continue;
+            }
+
+            $seen[$fqcn] = true;
+            $file = (new ReflectionClass($fqcn))->getFileName();
+            $observers[] = $this->analyzeObserver($fqcn, $file !== false ? $file : 'N/A');
         }
 
         return [
@@ -77,6 +100,7 @@ class ObserverMapper implements ComponentMapper
         }
 
         $reflection = new ReflectionClass($fqcn);
+        $models = $this->observedModels[$fqcn] ?? [];
 
         return [
             'class' => $fqcn,
@@ -85,10 +109,38 @@ class ObserverMapper implements ComponentMapper
             'name' => $reflection->getShortName(),
             'methods' => $this->extractMethods($reflection),
             'model_events' => $this->detectModelEvents($reflection),
-            'model' => $this->guessModel($reflection),
+            'model' => $models[0]['model'] ?? $this->guessModel($reflection),
+            'models' => $models,
             'is_abstract' => $reflection->isAbstract(),
             'is_final' => $reflection->isFinal(),
         ];
+    }
+
+    /**
+     * Map each observer class to the models it observes.
+     *
+     * @param  array<string, mixed>  $options
+     *
+     * @return array<string, array<int, array{model: string, source: string}>>
+     */
+    protected function buildObservedModels(array $options): array
+    {
+        $paths = ModelLocator::pathsFromOptions($options);
+
+        $resolver = new ObserverResolver;
+        $map = [];
+
+        try {
+            foreach (ModelLocator::find($paths) as $model) {
+                foreach ($resolver->forModel($model) as $observer) {
+                    $map[$observer['class']][] = ['model' => $model, 'source' => $observer['source']];
+                }
+            }
+        } catch (Throwable) {
+            // Model discovery is best effort
+        }
+
+        return $map;
     }
 
     /**

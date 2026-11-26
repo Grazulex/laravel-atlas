@@ -10,6 +10,8 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\File;
 use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
+use LaravelAtlas\Support\EventListenerDiscovery;
+use LaravelAtlas\Support\ModelLocator;
 use LaravelAtlas\Support\ScanOptions;
 use ReflectionClass;
 use ReflectionIntersectionType;
@@ -29,6 +31,19 @@ class EventMapper implements ComponentMapper
      */
     protected ?array $eventListenerMap = null;
 
+    /**
+     * Listeners collected from providers, subscribers, event discovery and
+     * the runtime dispatcher for the current scan.
+     */
+    protected ?EventListenerDiscovery $discovery = null;
+
+    /**
+     * Models dispatching each event through `$dispatchesEvents`.
+     *
+     * @var array<string, array<int, array{model: string, event: string}>>
+     */
+    protected array $modelDispatches = [];
+
     public function type(): string
     {
         return 'events';
@@ -38,8 +53,11 @@ class EventMapper implements ComponentMapper
     {
         // Build the event-listener map before scanning events
         $this->buildEventListenerMap();
+        $this->discovery = new EventListenerDiscovery;
+        $this->modelDispatches = $this->buildModelDispatches($options);
 
         $events = [];
+        $seen = [];
         /** @var array<int, string> $paths */
         $paths = isset($options['paths']) && is_array($options['paths'])
             ? array_values(array_filter($options['paths'], is_string(...)))
@@ -54,7 +72,7 @@ class EventMapper implements ComponentMapper
             $files = $recursive ? File::allFiles($path) : File::files($path);
 
             foreach ($files as $file) {
-                $fqcn = ClassResolver::resolveFromPath($file->getRealPath());
+                $fqcn = ClassResolver::resolveFromFile($file->getRealPath());
 
                 if ($fqcn && class_exists($fqcn)) {
                     $reflection = new ReflectionClass($fqcn);
@@ -65,10 +83,34 @@ class EventMapper implements ComponentMapper
                     }
 
                     // Vérifier si c'est un événement (utilise le trait Dispatchable ou a une méthode handle/fire)
-                    if ($this->isEvent($reflection)) {
+                    if ($this->isEvent($reflection) && ! isset($seen[$fqcn])) {
+                        $seen[$fqcn] = true;
                         $events[] = $this->analyzeEvent($reflection, $options);
                     }
                 }
+            }
+        }
+
+        // Events living outside the event paths (framework events, string
+        // events, events of other modules) that the application listens to,
+        // or that its models dispatch through `$dispatchesEvents`.
+        $external = array_merge(
+            array_keys($this->discovery->all()),
+            array_keys($this->modelDispatches),
+        );
+
+        foreach (array_unique($external) as $event) {
+            if (isset($seen[$event])) {
+                continue;
+            }
+
+            $seen[$event] = true;
+            $origin = isset($this->modelDispatches[$event]) && $this->discovery->forEvent($event) === [] ? 'model' : 'listener';
+
+            if (class_exists($event) || interface_exists($event)) {
+                $events[] = $this->analyzeEvent(new ReflectionClass($event), $options, $origin);
+            } else {
+                $events[] = $this->describeNamedEvent($event, $options, $origin);
             }
         }
 
@@ -111,7 +153,7 @@ class EventMapper implements ComponentMapper
      *
      * @return array<string, mixed>
      */
-    protected function analyzeEvent(ReflectionClass $reflection, array $options = []): array
+    protected function analyzeEvent(ReflectionClass $reflection, array $options = [], string $origin = 'scanned'): array
     {
         $class = $reflection->getName();
         $file = $reflection->getFileName();
@@ -133,10 +175,66 @@ class EventMapper implements ComponentMapper
             'channels' => $this->extractBroadcastChannels($source),
             'listeners' => $this->findListeners($class),
             'flow' => $this->analyzeFlow($source),
+            'origin' => $origin,
+            'dispatched_by' => $this->modelDispatches[$class] ?? [],
         ], $options, [
             'include_listeners' => ['listeners'],
             'include_properties' => ['properties'],
         ]);
+    }
+
+    /**
+     * Describe an event registered by name only (e.g. `Event::listen('orders.*', ...)`).
+     *
+     * @param  array<string, mixed>  $options
+     *
+     * @return array<string, mixed>
+     */
+    protected function describeNamedEvent(string $event, array $options, string $origin): array
+    {
+        return ScanOptions::filter([
+            'class' => $event,
+            'namespace' => '',
+            'name' => $event,
+            'file' => 'N/A',
+            'traits' => [],
+            'properties' => [],
+            'broadcastable' => false,
+            'channels' => [],
+            'listeners' => $this->findListeners($event),
+            'flow' => $this->analyzeFlow(null),
+            'origin' => $origin,
+            'dispatched_by' => $this->modelDispatches[$event] ?? [],
+        ], $options, [
+            'include_listeners' => ['listeners'],
+            'include_properties' => ['properties'],
+        ]);
+    }
+
+    /**
+     * Map each event to the models dispatching it through `$dispatchesEvents`.
+     *
+     * @param  array<string, mixed>  $options
+     *
+     * @return array<string, array<int, array{model: string, event: string}>>
+     */
+    protected function buildModelDispatches(array $options): array
+    {
+        $paths = ModelLocator::pathsFromOptions($options);
+
+        $map = [];
+
+        try {
+            foreach (ModelLocator::find($paths) as $model) {
+                foreach (ModelLocator::dispatchedEvents($model) as $modelEvent => $event) {
+                    $map[ltrim($event, '\\')][] = ['model' => $model, 'event' => $modelEvent];
+                }
+            }
+        } catch (Throwable) {
+            // Model discovery is best effort
+        }
+
+        return $map;
     }
 
     protected function isBroadcastable(ReflectionClass $reflection): bool
@@ -246,11 +344,7 @@ class EventMapper implements ComponentMapper
             // Check exact match
             if (isset($this->eventListenerMap[$eventClass])) {
                 foreach ($this->eventListenerMap[$eventClass] as $listenerClass) {
-                    $listeners[] = [
-                        'class' => $listenerClass,
-                        'name' => class_basename($listenerClass),
-                        'source' => 'EventServiceProvider',
-                    ];
+                    $listeners[] = $this->providerListener($listenerClass);
                 }
             }
 
@@ -259,15 +353,20 @@ class EventMapper implements ComponentMapper
             foreach ($this->eventListenerMap as $event => $eventListeners) {
                 if (class_basename($event) === $shortName && $event !== $eventClass) {
                     foreach ($eventListeners as $listenerClass) {
-                        $listeners[] = [
-                            'class' => $listenerClass,
-                            'name' => class_basename($listenerClass),
-                            'source' => 'EventServiceProvider',
-                        ];
+                        $listeners[] = $this->providerListener($listenerClass);
                     }
                 }
             }
         }
+
+        // Listeners declared explicitly ($listen arrays of the booted event
+        // service providers, subscribers) take precedence over type-hints
+        $discovered = $this->discovery?->forEvent($eventClass) ?? [];
+        $explicit = [EventListenerDiscovery::SOURCE_PROVIDER, EventListenerDiscovery::SOURCE_SUBSCRIBER];
+        $listeners = $this->mergeListeners($listeners, array_filter(
+            $discovered,
+            fn (array $listener): bool => in_array($listener['source'], $explicit, true),
+        ));
 
         // Also scan listener files for handle() method type hints
         $listenersFromHandleMethod = $this->findListenersFromHandleMethod($eventClass);
@@ -285,11 +384,54 @@ class EventMapper implements ComponentMapper
                     'class' => $listenerClass,
                     'name' => class_basename($listenerClass),
                     'source' => 'handle() type-hint',
+                    'method' => 'handle',
                 ];
             }
         }
 
+        // Then event discovery and the runtime dispatcher (Event::listen(), closures, ...)
+        return $this->mergeListeners($listeners, $discovered);
+    }
+
+    /**
+     * Append the listeners not already listed (same class and method).
+     *
+     * @param  array<int, array<string, mixed>>  $listeners
+     * @param  array<int, array{class: string, name: string, method: string|null, source: string}>  $additional
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    protected function mergeListeners(array $listeners, array $additional): array
+    {
+        foreach ($additional as $listener) {
+            foreach ($listeners as $existing) {
+                if ($existing['class'] === $listener['class']
+                    && ($existing['method'] ?? null) === $listener['method']) {
+                    continue 2;
+                }
+            }
+
+            $listeners[] = $listener;
+        }
+
         return $listeners;
+    }
+
+    /**
+     * @return array{class: string, name: string, source: string, method: string}
+     */
+    protected function providerListener(string $listener): array
+    {
+        [$class, $method] = str_contains($listener, '@')
+            ? explode('@', $listener, 2)
+            : [$listener, 'handle'];
+
+        return [
+            'class' => $class,
+            'name' => class_basename($class),
+            'source' => 'EventServiceProvider',
+            'method' => $method,
+        ];
     }
 
     /**
@@ -338,7 +480,7 @@ class EventMapper implements ComponentMapper
         }
 
         // Try to get the FQCN and use reflection if the class exists
-        $fqcn = ClassResolver::resolveFromPath($filePath);
+        $fqcn = ClassResolver::resolveFromFile($filePath);
         if ($fqcn && class_exists($fqcn)) {
             try {
                 $reflection = new ReflectionClass($fqcn);
@@ -410,7 +552,7 @@ class EventMapper implements ComponentMapper
 
             $files = File::allFiles($path);
             foreach ($files as $file) {
-                $fqcn = ClassResolver::resolveFromPath($file->getRealPath());
+                $fqcn = ClassResolver::resolveFromFile($file->getRealPath());
                 if (! $fqcn) {
                     continue;
                 }
