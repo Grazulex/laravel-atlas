@@ -272,7 +272,9 @@ class EventListenerDiscovery
                         continue;
                     }
 
-                    if ($reflection->implementsInterface(ShouldBeDiscovered::class)
+                    // ShouldBeDiscovered only exists since Laravel 13
+                    if (interface_exists(ShouldBeDiscovered::class)
+                        && $reflection->implementsInterface(ShouldBeDiscovered::class)
                         && $class::shouldBeDiscovered() === false) {
                         continue;
                     }
