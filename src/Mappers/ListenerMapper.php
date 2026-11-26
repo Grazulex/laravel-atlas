@@ -9,12 +9,15 @@ use Illuminate\Support\Facades\File;
 use InvalidArgumentException;
 use LaravelAtlas\Contracts\ComponentMapper;
 use LaravelAtlas\Support\ClassResolver;
+use LaravelAtlas\Support\EventListenerDiscovery;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionParameter;
 
 class ListenerMapper implements ComponentMapper
 {
+    protected ?EventListenerDiscovery $discovery = null;
+
     public function type(): string
     {
         return 'listeners';
@@ -36,6 +39,7 @@ class ListenerMapper implements ComponentMapper
             : $defaultPaths;
         $recursive = $options['recursive'] ?? true;
         $seen = [];
+        $this->discovery = new EventListenerDiscovery;
 
         foreach ($paths as $path) {
             if (! is_dir($path)) {
@@ -45,7 +49,7 @@ class ListenerMapper implements ComponentMapper
             $files = $recursive ? File::allFiles($path) : File::files($path);
 
             foreach ($files as $file) {
-                $fqcn = ClassResolver::resolveFromPath($file->getRealPath());
+                $fqcn = ClassResolver::resolveFromFile($file->getRealPath());
 
                 if (
                     $fqcn &&
@@ -85,6 +89,7 @@ class ListenerMapper implements ComponentMapper
             'methods' => $this->extractMethods($reflection),
             'handle_method' => $this->hasHandleMethod($reflection),
             'queued' => $this->isQueued($reflection),
+            'events' => $this->discovery?->eventsFor($fqcn) ?? [],
             'is_abstract' => $reflection->isAbstract(),
             'is_final' => $reflection->isFinal(),
             'flow' => $this->analyzeFlow($source),

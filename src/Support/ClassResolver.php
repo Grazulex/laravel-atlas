@@ -42,4 +42,29 @@ class ClassResolver
 
         return null;
     }
+
+    /**
+     * Resolve the class declared in a file: PSR-4 first (from the app's
+     * composer.json), then the `namespace` and class declared in the file
+     * itself, for classes autoloaded outside the app's PSR-4 roots.
+     */
+    public static function resolveFromFile(string $filePath): ?string
+    {
+        $fqcn = self::resolveFromPath($filePath);
+
+        if ($fqcn !== null) {
+            return $fqcn;
+        }
+
+        $source = @file_get_contents($filePath);
+
+        if ($source === false || ! preg_match('/^\s*(?:(?:abstract|final|readonly)\s+)*class\s+(\w+)/m', $source, $class)) {
+            return null;
+        }
+
+        $namespace = preg_match('/^\s*namespace\s+([\w\\\\]+)\s*;/m', $source, $match) ? $match[1] . '\\' : '';
+        $fqcn = $namespace . $class[1];
+
+        return class_exists($fqcn) ? $fqcn : null;
+    }
 }
