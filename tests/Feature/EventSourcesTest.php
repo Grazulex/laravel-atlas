@@ -34,7 +34,7 @@ use Tests\Fixtures\EventSources\Subscribers\InvoiceSubscriber;
 
 function fixturePath(string $directory): string
 {
-    return dirname(__DIR__) . '/Fixtures/EventSources/' . $directory;
+    return __DIR__ . '/../Fixtures/EventSources/' . $directory;
 }
 
 /**
